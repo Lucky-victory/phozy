@@ -1,0 +1,25 @@
+ <ion-modal [isOpen]="isModalOpen" (didDismiss)="setOpen(false)">
+    
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Photo preview</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="modal-image-wrapper">
+
+          <ion-img [src]="photoUrl" class="modal-image"></ion-img>
+        </div>
+       <div class="modal-info-wrapper">
+        <ion-list class="modal-info">
+          <ion-item>Owner: {{photoOwner}}</ion-item>
+          <ion-item>Uploaded on: {{photoUploadDate|date:'medium'}}</ion-item>
+          <ion-item></ion-item>
+        </ion-list>
+       </div>
+      </ion-content>
+    
+  </ion-modal>

@@ -1,0 +1,60 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Phozy App
+    </ion-title>
+    <ion-buttons slot="end" *ngIf="!isLoggedIn">
+      <ion-button [routerLink]="['/sign-in']">Sign in</ion-button>
+      <ion-button fill="outline" color="primary" [routerLink]="['/sign-up']">Sign up</ion-button>
+
+    </ion-buttons>
+    <ion-buttons *ngIf="isLoggedIn" slot="end">
+      <ion-button (click)="logout()">
+        Log out
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Phozy App</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+    <app-cards (onPhotoLike)="likeOrUnlikePhoto($event)" [generalPhotos]="generalResult" [isLoggedIn]="isLoggedIn"></app-cards>
+    <ion-item lines="none" [ngStyle]="{marginBottom:'1.5rem',textAlign:'center'}" *ngIf="!isLoading">
+
+      <span *ngIf="noMoreData" >You have reach the end</span>
+    </ion-item>
+    
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+
+      <ion-fab-button title="upload images" [routerLink]="[!isLoggedIn ? '/sign-in':'/new-photo']">
+        <ion-icon name="image-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button title="add new album" [routerLink]="[!isLoggedIn ? '/sign-in':'/new-album']">
+      <ion-icon name="albums-outline" ></ion-icon>
+    </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+  
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  <app-footer [info]="footerInfo"></app-footer>
+</ion-content>

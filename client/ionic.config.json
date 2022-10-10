@@ -1,0 +1,7 @@
+{
+  "name": "phozy-social",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

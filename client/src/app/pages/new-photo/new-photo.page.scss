@@ -1,0 +1,17 @@
+.photos-preview{
+    display: flex;
+    overflow-x: auto;
+    gap:1rem;
+    margin-bottom: 1.5rem;
+}
+.photos-preview img{
+    width: 150px;
+    max-height: 200px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+.error-message{
+    color: rgb(219, 40, 49);
+    text-align: center;
+    margin-top: 1rem;
+}

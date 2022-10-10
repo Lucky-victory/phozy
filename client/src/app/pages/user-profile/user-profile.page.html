@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-back-button slot="start"></ion-back-button>
+    <ion-title><span class="profile-name">{{userData?.fullname}}'s profile</span></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<ion-card>
+  <ion-card-header>
+    <div class="image-wrapper">
+
+      <img src="{{userData?.profile_image}}" class="profile-avatar">
+    </div>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-grid [ngStyle]="{maxWidth:'700px',margin:'auto'}">
+      <ion-row>
+        <ion-col>
+
+          <ion-button fill="outline" color="{{active?'primary':'medium'}}">Albums</ion-button>
+          <ion-list>
+            <ion-item *ngFor="let album of userAlbums">
+              <ion-label>{{album.title}}</ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <ion-col>
+
+          <ion-button fill="outline" color="{{active?'primary':'medium'}}">Photos</ion-button>
+        </ion-col>
+      
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>
+</ion-content>
