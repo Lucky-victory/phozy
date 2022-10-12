@@ -1,25 +1,47 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Add a new photo</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>Add a new photo</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
-  <ion-card>
-  
-  <ion-card-header>
-    <ion-card-title>
+    <app-notif-toast
+        [message]="infoMessage"
+        *ngIf="infoMessage"
+    ></app-notif-toast>
+    <ion-card>
+        <ion-card-header>
+            <ion-card-title> </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <ion-item lines="none">
+                <ion-button
+                    [disabled]="isSending"
+                    size="default"
+                    expand="block"
+                    (click)="fileInput.click()"
+                >
+                    <ion-icon lazy="true" slot="start" name="image"></ion-icon>
+                    <ion-label slot="end">Choose Photos</ion-label>
+                </ion-button>
+                <input
+                    class="ion-hide"
+                    #fileInput
+                    type="file"
+                    (change)="loadImageFromDevice($event)"
+                    id="file-input"
+                    accept="image/*"
+                    multiple
+                    max="10"
+                />
 
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
- <form [formGroup]="newPhotoForm">
-        <ion-item>
+                <ion-note slot="end">Max: 10 photos</ion-note>
+            </ion-item>
+            <form #newPhotoForm="ngForm" (ngSubmit)="addNewPhoto()">
+                <!-- <ion-item>
           <ion-label for="user-albums" position="floating">
             Select an album</ion-label
           >
@@ -32,40 +54,74 @@
       {{album.title}}
         </ion-select-option>
         </ion-select>
-        </ion-item>
-        <ion-item lines="none" *ngIf="!userAlbums.length">
+        </ion-item> -->
+                <!-- <ion-item lines="none" *ngIf="!userAlbums.length">
 
           <ion-text >You don't have any album yet <ion-button  [routerLink]="['/new-album']">create one</ion-button></ion-text>
-        </ion-item>
-          <br>
-<div class="photos-preview-container" *ngIf="photosToPreview.length" >
-  <ion-label>{{photosToPreview.length}} Photos</ion-label><br>
+        </ion-item> -->
 
-  <div class="photos-preview" >
-    <img src="{{photo}}"  *ngFor="let photo of photosToPreview">
-    
-  </div>
-</div>
+                <ion-label *ngIf="photosToPreview.length"
+                    >{{photosToPreview.length}} {{photosToPreview.length > 1?
+                    'Photos':'Photo'}}</ion-label
+                >
+                <div
+                    class="preview-container"
+                    *ngIf="photosToPreview.length;else previewPlaceholder"
+                >
+                    <div
+                        class="preview"
+                        *ngFor="let preview of photosToPreview"
+                    >
+                        <ion-buttons>
+                            <ion-button
+                                class="remove-btn"
+                                (click)="removeImage(preview.id)"
+                                fill="clear"
+                            >
+                                <ion-icon
+                                    slot="icon-only"
+                                    name="close"
+                                ></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                        <img src="{{preview.image}}" />
+                        <ion-item>
+                            <ion-label>caption:</ion-label>
+                            <ion-input
+                                type="text"
+                                name="caption-{{preview.id}}"
+                                [(ngModel)]="preview.caption"
+                            ></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>tags</ion-label>
+                            <ion-input
+                                name="tags-{{preview.id}}"
+                                type="text"
+                                [(ngModel)]="preview.tags"
+                            ></ion-input>
+                            <ion-note slot=""> e.g baby,girl</ion-note>
+                        </ion-item>
+                    </div>
+                </div>
 
-  <ion-item lines="none">
-            <ion-button [disabled]="isSending" size="default" expand="block" (click)="fileInput.click()">
-              <ion-icon lazy="true" slot="start" name="image"></ion-icon>
-              <ion-label slot="end">Choose Photos</ion-label>
-            </ion-button>
-              <input formControlName="photosUpload" class="ion-hide" #fileInput type="file" (change)="loadImageFromDevice($event)" id="file-input"
-                accept="image/*" multiple  max="10"/>
-                
-<ion-note slot="end">Max: 10 photos</ion-note>
-         </ion-item>
-
-        <br />
-        <ion-button
-          type="button"
-          
-          [disabled]="!newPhotoForm.valid || isSending" (click)="addNewPhoto()"
-          ><ion-spinner name="bubbles" *ngIf="isSending"></ion-spinner> {{isSending ? 'uploading':'Upload'}}</ion-button
-        >
-      </form>
-  </ion-card-content>
-</ion-card>
+                <ion-button
+                    type="submit"
+                    [ngClass]="{'ion-hide':!photosToPreview.length}"
+                    [disabled]="!newPhotoForm.valid || isSending"
+                    ><ion-spinner
+                        name="bubbles"
+                        *ngIf="isSending"
+                    ></ion-spinner>
+                    {{isSending ? 'uploading':'Upload'}}</ion-button
+                >
+            </form>
+        </ion-card-content>
+    </ion-card>
 </ion-content>
+
+<ng-template #previewPlaceholder>
+    <div class="preview-placeholder">
+        <span>Previews will appear here</span>
+    </div>
+</ng-template>

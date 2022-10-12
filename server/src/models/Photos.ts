@@ -7,7 +7,6 @@ const photosSchema = new Schema({
   fields: {
     user_id: HType.string().required(),
     url: HType.string().required(),
-    album_id: HType.string().required(),
     caption: HType.string(),
     created_at: HType.date().default(MyUtils.currentTime.getTime()),
     updated_at: HType.ref("created_at"),

@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,apiBaseUrl:'https://phozy-api.herokuapp.com/api'
+    production: false,
+    apiBaseUrl: 'http://localhost:3300/api',
 };
 
 /*

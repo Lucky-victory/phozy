@@ -7,7 +7,7 @@ import signUpRoute from "./routes/Sign-up";
 import signInRoute from "./routes/Sign-in";
 import generalRoute from "./routes/General";
 import photosRoute from "./routes/Photos";
-import likesRoute from "./routes/Likes";
+// import likesRoute from "./routes/Likes";
 import usersRoute from "./routes/Users";
 import { errorHandler } from "./middlewares/Error-handler";
 import cors from "cors";
@@ -27,7 +27,7 @@ app.use("/api/sign-up", signUpRoute);
 app.use("/api/sign-in", signInRoute);
 app.use("/api/albums", albumRoute);
 app.use("/api/photos", photosRoute);
-app.use("/api/likes", likesRoute);
+// app.use("/api/likes", likesRoute);
 app.use("/api/profile", usersRoute);
 app.use("/api", generalRoute);
 

@@ -1,3 +1,4 @@
+import { MyUtils } from "my-node-ts-utils";
 import randomWords from "random-words";
 import slugify from "slugify";
 import { ALBUM_RESULT } from "../interfaces/Albums";
@@ -79,12 +80,16 @@ export const nestObjectProps = (
   return newObj;
 };
 
-/**
- * Checks if a value is an empty string or undefined
- * @param val
- * @returns
- */
-export const isEmpty = (val: unknown): boolean => {
-  if (String(val).trim() === "" || typeof val === "undefined") return true;
-  return false;
-};
+export class Utils extends MyUtils {
+  constructor() {
+    super();
+  }
+
+  static getFields(queryFields: string, schemaFields: string[]) {
+    let fields = queryFields.split(",");
+    fields = fields.filter((field) => {
+      if (schemaFields.includes(field)) return field;
+    });
+    return fields;
+  }
+}

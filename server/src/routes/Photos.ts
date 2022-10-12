@@ -6,15 +6,14 @@ import PhotosController from "../controllers/Photos";
 import asyncHandler from "express-async-handler";
 
 // when a user is created, create an album titled 'Untitled'
-router.use(checkIfAuthenticated);
+// router.use(checkIfAuthenticated);
 router
   .get("/:id")
   .post(
-    "/:album_id",
-    PhotosController.checkIfAlbumExist,
-    ImageUploader.upload().array("album_images", 10),
-    asyncHandler(ImageUploader.albumImageUpload),
-    asyncHandler(PhotosController.createNewPhotos)
+    "/",
+    asyncHandler(ImageUploader.upload),
+    asyncHandler(ImageUploader.uploadToCloudinary),
+    asyncHandler(PhotosController.addNewPhotos)
   )
   .put(":/id")
   .delete("/:id", asyncHandler(PhotosController.deleteItem));
