@@ -2,18 +2,16 @@ import { v2 as cloudinary } from "cloudinary";
 import { NextFunction, Request, Response } from "express";
 // import multer, { FileFilterCallback } from "multer";
 import { MyUtils } from "my-node-ts-utils";
-import formidable, { Files } from "formidable";
-import { nextTick } from "process";
+import formidable from "formidable";
+const form = formidable({ multiples: true });
+import { zipWith } from "lodash/fp";
 
 export default class ImageUploader {
   static upload(req: Request, res: Response, next: NextFunction) {
-    const form = formidable({ multiples: true });
     form.parse(req, (err, fields, files) => {
       if (err) throw err;
       console.log(fields);
-
-      console.log("=======");
-      console.log(files.photos);
+      req.fields = JSON.parse(fields.all as string);
       req.files = files.photos;
       next();
     });
@@ -44,25 +42,28 @@ export default class ImageUploader {
     next: NextFunction
   ) {
     const photo_urls: string[] = [];
-    console.log(req.files, "in cloudinary");
 
-    // if (!req.photos?.length) {
-    //   res.status(400).json({
-    //     message: "No photos to upload",
-    //   });
-    //   return;
-    // }
+    if (!req.files?.length) {
+      res.status(400).json({
+        message: "No photos to upload",
+      });
+      return;
+    }
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.filepath, {
         public_id: `image_${MyUtils.generateID()}`,
+        folder: "phozy",
       });
-      // console.log(result);
-      console.log("=====");
 
       photo_urls.push(result.secure_url);
-      console.log(photo_urls);
     }
-    req.photo_urls = photo_urls;
+    const { fields } = req;
+
+    req.photo_urls = zipWith(
+      (url, field: object) => ({ url, ...field }),
+      photo_urls,
+      fields
+    );
     next();
   }
 }

@@ -18,10 +18,11 @@ declare global {
       jwtToken: string;
       photos: PHOTO_FROM_CLIENT[];
       photo_url: string;
-      photo_urls: string[];
+      photo_urls: any[];
       album: ALBUM_RESULT;
       user: USER_RESULT;
       files: any;
+      fields: any;
     }
   }
 }

@@ -8,9 +8,11 @@ import asyncHandler from "express-async-handler";
 // when a user is created, create an album titled 'Untitled'
 // router.use(checkIfAuthenticated);
 router
+  .get("/", PhotosController.getAll)
   .get("/:id")
   .post(
     "/",
+    checkIfAuthenticated,
     asyncHandler(ImageUploader.upload),
     asyncHandler(ImageUploader.uploadToCloudinary),
     asyncHandler(PhotosController.addNewPhotos)

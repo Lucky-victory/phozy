@@ -1,11 +1,7 @@
 import { ALBUM_RESULT } from "./../interfaces/Albums";
 import config from "../config";
 import jwt from "jsonwebtoken";
-import {
-  defaultProfileImage,
-  removePropFromObject,
-  generateUsername,
-} from "../utils";
+import { defaultProfileImage, Utils } from "../utils";
 import { NEW_USER, USER_RESULT } from "../interfaces/Users";
 
 import { NextFunction, Request, Response } from "express";
@@ -95,16 +91,17 @@ export default class UsersController {
    * @param res
    * @returns
    */
-  static async createNewUser(req: Request, res: Response): Promise<void> {
+  static async addNewUser(req: Request, res: Response): Promise<void> {
     try {
-      let { password, username } = req.body;
+      let { password } = req.body;
       const { email, fullname } = req.body;
-      username = generateUsername(username);
+      const shortId = Math.random().toString(16).substring(2, 7);
+      const username = Utils.generateUsername(undefined, "", shortId);
 
       // check if user already exist
       const [usernameExist, emailExist] = await Promise.all([
         await usersModel.findOne({ username }),
-        usersModel.findOne(email),
+        await usersModel.findOne({ email }),
       ]);
 
       if (usernameExist.data) {
@@ -131,14 +128,15 @@ export default class UsersController {
 
       const insertId = await usersModel.create(newUser);
       // get the newly added user with the id
-      const result = (await usersModel.findOne)<USER_RESULT>({
-        id: insertId.data?.inserted_hashes[0] as string,
-      });
-      const user = result;
+      const result = await usersModel.findOne<USER_RESULT>(
+        {
+          id: insertId.data?.inserted_hashes[0] as string,
+        },
+        ["id", "profile_image", "fullname", "username"]
+      );
+      const user = result.data;
       // remove profile image from the object before generating a token from it
-      const userToToken = removePropFromObject(user as unknown as NEW_USER, [
-        "profile_image",
-      ]);
+      const userToToken = Utils.omit(user as USER_RESULT, ["profile_image"]);
 
       // generate JWT token
       jwt.sign(
@@ -157,6 +155,8 @@ export default class UsersController {
         }
       );
     } catch (error) {
+      console.log(error);
+
       res.status(500).json({
         error,
         message: "an error occured",

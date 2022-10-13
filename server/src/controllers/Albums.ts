@@ -1,7 +1,6 @@
-
 import { PHOTO_RESULT } from "./../interfaces/Photos";
 import { USER_RESULT } from "./../interfaces/Users";
-import { isAuthorized, Utils } from "./../utils/index";
+import { Utils } from "./../utils/index";
 import { IAlbum, ALBUM_RESULT, NEW_ALBUM } from "../interfaces/Albums";
 import { Request, Response } from "express";
 
@@ -25,20 +24,17 @@ export default class AlbumsController {
   static async createNewAlbum(req: Request, res: Response): Promise<void> {
     try {
       const { auth } = req;
-      const { title, is_public, description } = req.body;
 
       const album: NEW_ALBUM = {
-        title,
-        description,
-        is_public,
+        ...req.body,
         user_id: auth?.user?.id,
       };
 
       // get the insert id
-      const result = await albumsModel.create(album);
+      const result = await (await albumsModel.create(album)).data;
       // query with the insert id
       const insertedAlbum = await albumsModel.findOne<ALBUM_RESULT>(
-        { id: result.data?.inserted_hashes[0] as string },
+        { id: result?.inserted_hashes[0] as string },
         ["id", "description", "title", "created_at", "user_id", "is_public"]
       );
       const data = insertedAlbum?.data;
@@ -130,7 +126,10 @@ export default class AlbumsController {
         });
         return;
       }
-      const hasAccess = isAuthorized(album?.data as ALBUM_RESULT, auth?.user);
+      const hasAccess = Utils.isAuthorized(
+        album?.data as ALBUM_RESULT,
+        auth?.user
+      );
       // if the album is private and the current user isn't the owner of the resource
       if (!album?.data?.is_public && !hasAccess) {
         res.status(401).json({
@@ -187,7 +186,7 @@ export default class AlbumsController {
         });
         return;
       }
-      const hasAccess = isAuthorized(album.data, auth?.user);
+      const hasAccess = Utils.isAuthorized(album.data, auth?.user);
       if (!hasAccess) {
         res.status(401).json({
           message: "Unauthorized, don't have access to this resource",
@@ -214,14 +213,14 @@ export default class AlbumsController {
       const userId = auth?.user?.id;
       const albumId = parseInt(album_id, 10);
 
-      const album = await albumsModel.findOne<ALBUM_RESULT>({id:albumId});
+      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: albumId });
       if (!album?.data) {
         res.status(404).json({
           message: `Album with '${album_id}' was not found`,
         });
         return;
       }
-      const hasAccess = isAuthorized(album?.data, auth?.user);
+      const hasAccess = Utils.isAuthorized(album?.data, auth?.user);
       if (!hasAccess) {
         res.status(401).json({
           message: "Unauthorized, don't have access to this resource",

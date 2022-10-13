@@ -11,9 +11,7 @@ export interface IUser {
   created_at?: string | number;
   updated_at?: string | number;
 }
-export interface IUserProfile {
-  profile_image?: string;
-}
+
 export type NEW_USER = Pick<
   IUser,
   "username" | "email" | "password" | "fullname" | "profile_image"

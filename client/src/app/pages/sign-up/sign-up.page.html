@@ -35,14 +35,14 @@
           ></ion-input>
         </ion-item>
 
-        <ion-item>
+        <!-- <ion-item>
           <ion-label for="username" position="floating"> Username:</ion-label>
           <ion-input
             type="text"
             formControlName="username"
             id="username"
           ></ion-input>
-        </ion-item>
+        </ion-item> -->
 
         <ion-item>
           <ion-label for="password" position="floating"> Password:</ion-label>
@@ -54,7 +54,7 @@
           <ion-icon slot="end" name="{{isText ? 'eye-off-outline':'eye-outline'}}" (click)="passwordToText()"></ion-icon>
           <ion-note>min: 6 characters (uppercase/lowercase) with atleast one number</ion-note>
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
           <ion-label for="confirm_password" position="floating"> Confirm password:</ion-label>
           <ion-input #confirmPassword
     type="{{isText? 'text':'password'}}"
@@ -64,7 +64,7 @@
           <ion-icon slot="end" name="{{isText ? 'eye-off-outline':'eye-outline'}}" (click)="passwordToText()"></ion-icon>
         </ion-item>
         <ion-text color="danger" *ngIf="password.value!==confirmPassword.value">Passwords doesn't match</ion-text>
-        
+         -->
         <br>
 <ion-text>Already have an account? <ion-button [routerLink]="['/sign-in']" color="primary" fill="clear">Sign in</ion-button> </ion-text>
         <br />

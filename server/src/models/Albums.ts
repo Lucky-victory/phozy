@@ -1,7 +1,8 @@
 import { harpee, HType } from "harpee";
 const { Model, Schema } = harpee;
 import { MyUtils } from "my-node-ts-utils";
-
+import { connectDB } from "../config/db";
+connectDB();
 const albumsSchema = new Schema({
   name: "phozy",
   fields: {

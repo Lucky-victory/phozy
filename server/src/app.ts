@@ -21,15 +21,15 @@ app.use(
   })
 );
 app.use(express.json());
-//app.use("/uploads", express.static("uploads"));
+const prefix='/api'
 // routes
-app.use("/api/sign-up", signUpRoute);
-app.use("/api/sign-in", signInRoute);
-app.use("/api/albums", albumRoute);
-app.use("/api/photos", photosRoute);
+app.use(`${prefix}/sign-up`, signUpRoute);
+app.use(`${prefix}/sign-in`, signInRoute);
+app.use(`${prefix}/albums`, albumRoute);
+app.use(`${prefix}/photos`, photosRoute);
 // app.use("/api/likes", likesRoute);
-app.use("/api/profile", usersRoute);
-app.use("/api", generalRoute);
+app.use(`${prefix}/profile`, usersRoute);
+app.use(`${prefix}`, generalRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("PHOZY API 1.0");

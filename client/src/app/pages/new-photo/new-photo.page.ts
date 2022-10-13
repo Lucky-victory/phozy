@@ -43,6 +43,9 @@ export class NewPhotoPage implements OnInit {
         this.photosToPreview = this.photosToPreview.filter(
             (preview) => preview.id !== id
         );
+        this.photosToUpload = this.photosToUpload.filter(
+            (photo) => photo.id !== id
+        );
     }
     fetchUserAlbums() {
         const user = this.authService.getUser();
@@ -60,22 +63,24 @@ export class NewPhotoPage implements OnInit {
         // const albumId = this.newPhotoForm.get('prevAlbums').value;
         this.isSending = true;
         console.log(this.photosToPreview, 'preview');
-        const p = [...this.photosToPreview];
-        this.photosToUpload = this.photosToUpload.reduce((accum, photo) => {
-            let newPhoto: Photo;
-            for (const preview of p) {
-                newPhoto = Object.assign({}, preview, photo);
-                accum.push(newPhoto);
+        const photosToPreview = [...this.photosToPreview];
+        let newPhoto: Photo;
+        this.photosToUpload = photosToPreview.reduce((accum, preview) => {
+            for (const photo of this.photosToUpload) {
+                if (photo.id === preview.id) {
+                    newPhoto = Object.assign({}, preview, photo);
+                    accum.push(newPhoto);
+                }
             }
+
             return accum;
         }, [] as Photo[]);
-        console.log(this.photosToUpload, 'to upload');
 
         this.apiService.uploadPhotos(this.photosToUpload).subscribe(
             (res) => {
                 this.isSending = false;
                 // this.newPhotoForm.reset();
-                // this.photosToPreview = [];
+                this.photosToPreview = [];
                 this.infoMessage = 'Photos uploaded successfully';
             },
             (error) => {
@@ -93,13 +98,13 @@ export class NewPhotoPage implements OnInit {
         }
         if (files.length > 0) {
             for (const file of filesArray) {
-                this.photosToUpload.push({ image: file });
                 const reader = new FileReader();
                 let result = '';
                 reader.onload = () => {
                     result = reader.result as string;
 
                     const id = Math.random().toString(16).substring(2);
+                    this.photosToUpload.push({ id, image: file });
 
                     this.photosToPreview.push({
                         id,

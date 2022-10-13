@@ -31,6 +31,10 @@ export class ApiService {
     }
     uploadPhotos(photos: any[]) {
         const formdata = new FormData();
+        photos = photos.map((photo) => {
+            delete photo?.id;
+            return photo;
+        });
         for (const photo of photos) {
             formdata.append('photos', photo.image);
             // formdata.append('tags', photo.tags);
