@@ -135,6 +135,14 @@ export default class PhotosController {
       );
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
+      await photosModel.updateNested({
+        id,
+        path: ".views",
+        value: (data: IPhoto) => {
+          (data.views as number) += 1;
+          return data.views;
+        },
+      });
       res.status(200).json({ message: "photo retrieved successfully", data });
     } catch (error) {
       console.log(error);
