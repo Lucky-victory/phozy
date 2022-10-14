@@ -3,7 +3,7 @@ import randomWords from "random-words";
 import { ALBUM_RESULT } from "../interfaces/Albums";
 import { AuthUser } from "../interfaces/common";
 import { PHOTO_RESULT } from "../interfaces/Photos";
-
+import isEmpty from "just-is-empty";
 import omit from "just-omit";
 import pick from "just-pick";
 import merge from "just-merge";
@@ -52,17 +52,19 @@ export class Utils extends MyUtils {
     return fields;
   }
   static stringToObjectArray(text: string, propTitle = "title") {
-    if (Utils.isEmpty(text)) return [];
+    if (Utils.isEmpty(text.trim())) return [];
     const _text = text.split(",");
-    console.log(_text, "text");
+
     const textToObject = _text.map((str) => {
       return {
         [propTitle]: str,
       };
     });
-    console.log(textToObject);
 
     return textToObject;
+  }
+  static isEmpty(val: any) {
+    return isEmpty(val);
   }
   static merge<T extends object, O extends object[]>(obj: T, ...objs: O) {
     return merge(obj, ...objs);

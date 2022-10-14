@@ -10,10 +10,10 @@ export default class ImageUploader {
     const form = formidable({ multiples: true });
     form.parse(req, (err, fields, files) => {
       if (err) throw err;
-      console.log(files);
 
       req.fields = JSON.parse(fields.all as string);
       req.files = files.photos as formidable.File[];
+      if (!Array.isArray(req.files)) req.files = [req.files];
       next();
     });
     // req.f=

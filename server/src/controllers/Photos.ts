@@ -1,6 +1,6 @@
 import { Utils } from "./../utils/index";
 
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { photosModel } from "../models/Photos";
 import { IPhoto, NEW_PHOTO, PHOTO_RESULT } from "./../interfaces/Photos";
 import { albumsModel } from "../models/Albums";
@@ -146,8 +146,8 @@ export default class PhotosController {
     }
   }
   /**
-   * @desc adds new photos to an album
-   * @route POST /api/photos/:album_id
+   * @desc add new photos
+   * @route POST /api/photos
    * @param req
    * @param res
    * @returns
@@ -157,8 +157,6 @@ export default class PhotosController {
       const { photo_urls, auth } = req;
 
       const newPhotos: NEW_PHOTO[] = photo_urls.map((photo) => {
-        console.log(photo.tags, "tags");
-
         return {
           url: photo.url,
           caption: photo.caption,
@@ -302,7 +300,7 @@ export default class PhotosController {
   }
   /**
    * @desc
-   * @route PUT /api/photos/:id
+   * @route PUT /api/photos/:id/unlike
    * @param req
    * @param res
    * @returns
