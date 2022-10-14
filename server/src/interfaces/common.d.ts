@@ -1,6 +1,7 @@
 import { USER_RESULT } from "./Users";
 import { ALBUM_RESULT } from "./Albums";
 import { PHOTO_FROM_CLIENT } from "./Photos";
+import formidable from "formidable";
 
 export interface Config {
   db_host: string;
@@ -21,7 +22,7 @@ declare global {
       photo_urls: any[];
       album: ALBUM_RESULT;
       user: USER_RESULT;
-      files: any;
+      files: formidable.File[];
       fields: any;
     }
   }

@@ -1,18 +1,19 @@
 import { v2 as cloudinary } from "cloudinary";
 import { NextFunction, Request, Response } from "express";
-// import multer, { FileFilterCallback } from "multer";
-import { MyUtils } from "my-node-ts-utils";
+
 import formidable from "formidable";
-const form = formidable({ multiples: true });
 import { zipWith } from "lodash/fp";
+import { Utils } from ".";
 
 export default class ImageUploader {
   static upload(req: Request, res: Response, next: NextFunction) {
+    const form = formidable({ multiples: true });
     form.parse(req, (err, fields, files) => {
       if (err) throw err;
-      console.log(fields);
+      console.log(files);
+
       req.fields = JSON.parse(fields.all as string);
-      req.files = files.photos;
+      req.files = files.photos as formidable.File[];
       next();
     });
     // req.f=
@@ -51,7 +52,7 @@ export default class ImageUploader {
     }
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.filepath, {
-        public_id: `image_${MyUtils.generateID()}`,
+        public_id: `image_${Utils.generateID()}`,
         folder: "phozy",
       });
 

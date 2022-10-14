@@ -51,6 +51,19 @@ export class Utils extends MyUtils {
     });
     return fields;
   }
+  static stringToObjectArray(text: string, propTitle = "title") {
+    if (Utils.isEmpty(text)) return [];
+    const _text = text.split(",");
+    console.log(_text, "text");
+    const textToObject = _text.map((str) => {
+      return {
+        [propTitle]: str,
+      };
+    });
+    console.log(textToObject);
+
+    return textToObject;
+  }
   static merge<T extends object, O extends object[]>(obj: T, ...objs: O) {
     return merge(obj, ...objs);
   }
