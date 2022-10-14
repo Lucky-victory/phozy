@@ -1,38 +1,64 @@
-<app-photo-modal  [isModalOpen]="isModalOpen" (onModalClose)="modalClose($event)" [photo]="photoForModal" >
+<app-photo-modal
+    [isModalOpen]="isModalOpen"
+    (onModalClose)="modalClose($event)"
+    [photo]="photoForModal"
+>
 </app-photo-modal>
 <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
 <div class="cards-container">
-  <ng-container *ngIf="!generalPhotos?.length">
+    <!-- <ng-container *ngIf="!generalPhotos?.length">
 <h2>No Photos Available yet</h2>
-  </ng-container>
-  <div class="single-card-container" *ngFor="let photo of generalPhotos">
-  
-  <div class="single-card-image-wrapper">
-    <ion-img [src]="photo.url" alt=""  class="single-card-image" (click)="showPhotoModal(photo)"></ion-img>
-  </div>
+  </ng-container> -->
+    <div class="single-card" *ngFor="let photo of generalPhotos">
+        <div class="single-card-top flex jc-end">
+            <div class="single-card-btns-wrapper flex">
+                <ion-button class="single-card-btn">
+                    <ion-icon slot="icon-only" name="bookmarks"></ion-icon>
+                </ion-button>
+                <ion-button class="single-card-btn">
+                    <ion-icon slot="icon-only" name="heart"></ion-icon>
+                </ion-button>
+            </div>
+        </div>
+        <div class="single-card-image-wrapper">
+            <ion-img
+                [src]="photo.url"
+                alt=""
+                class="single-card-image"
+                (click)="showPhotoModal(photo)"
+            ></ion-img>
+        </div>
 
-  <div class="single-card-meta">
-<ion-avatar  class="single-card-meta__avatar">
-  <ion-img [src]="photo.user?.profile_image" alt=""></ion-img>
-</ion-avatar>
-<div class="single-card-meta__info">
-  <ion-text color="dark" fill="clear"  class="single-card-meta__info-name" >{{photo.user?.fullname}}</ion-text><br>
-  
-</div>
-<div class="single-card-add-btn-wrapper">
-<ion-buttons>
-<!-- <ion-button class="single-card-like-btn" (click)="like(photo)">
-    <ion-icon slot="icon-only" name="{{photo?.liked ? 'heart': 'heart-outline'}}" class="like-icon"></ion-icon>
-  </ion-button> -->
-<!-- <ion-button >
-    <ion-icon slot="icon-only" name="share-outline"  ></ion-icon>
+        <div class="single-card-bottom">
+            <div class="single-card-meta">
+                <div class="single-card-meta-inner">
+                    <ion-avatar class="single-card-meta__avatar">
+                        <ion-img
+                            class="single-card-meta__avatar"
+                            [src]="photo.user?.profile_image"
+                            alt=""
+                        ></ion-img>
+                    </ion-avatar>
+                    <div class="single-card-meta__info">
+                        <ion-text
+                            color="dark"
+                            fill="clear"
+                            class="single-card-meta__info-name"
+                            >{{ photo.user?.fullname }}</ion-text
+                        >
+                    </div>
+                </div>
 
-</ion-button> -->
-  <!-- <ion-button class="single-card-add-btn" (click)="addToAlbum(photo)">
-    <ion-icon slot="icon-only" name="add" class="add-to-album-icon"></ion-icon>
-  </ion-button> -->
-</ion-buttons>
+                <div class="single-card-btns-wrapper">
+                    <ion-button
+                        download
+                        [href]="photo.url"
+                        class="single-card-btn"
+                    >
+                        <ion-icon slot="icon-only" name="download"></ion-icon>
+                    </ion-button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-  </div>
-</div>
-

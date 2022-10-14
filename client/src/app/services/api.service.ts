@@ -23,7 +23,7 @@ export class ApiService {
 
     getGeneral(page: number = 1, perPage = 10) {
         return this.http
-            .get(`${this.apiBaseUrl}?page=${page}&perPage=${perPage}`)
+            .get(`${this.apiBaseUrl}/photos?page=${page}&perPage=${perPage}`)
             .pipe(catchError(this.errorHandler)) as any;
     }
     errorHandler(error: HttpErrorResponse) {

@@ -1,3 +1,4 @@
 export const environment = {
-  production: true,apiBaseUrl:'https://phozy-api.herokuapp.com/api'
+    production: true,
+    apiBaseUrl: 'http://localhost:3300/api',
 };
