@@ -10,15 +10,20 @@ import { CardsModule } from 'src/app/components/cards/cards.module';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { FooterModule } from 'src/app/components/footer/footer.module';
-
+import { BannerComponent } from 'src/app/components/banner/banner.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    HomePageRoutingModule,CardsModule,FooterModule
-  ],
-  declarations: [HomePage],providers:[ApiService,AuthService],exports:[HomePage]
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        HomePageRoutingModule,
+        CardsModule,
+        FooterModule,
+        BannerComponent,
+    ],
+    declarations: [HomePage],
+    providers: [ApiService, AuthService],
+    exports: [HomePage],
 })
 export class HomePageModule {}

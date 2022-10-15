@@ -14,6 +14,7 @@ export class HomePage implements OnInit, DoCheck {
     noMoreData: boolean;
     isLoading: boolean = true;
     footerInfo: string;
+    isLoaded: boolean = false;
     constructor(
         private apiService: ApiService,
         private authService: AuthService,
@@ -21,17 +22,15 @@ export class HomePage implements OnInit, DoCheck {
     ) {}
 
     ngOnInit() {
-        this.footerInfo =
-            'This project was built for Planetscale X Hashnode hackathon';
         this.apiService.getGeneral(this.currentPage).subscribe((response) => {
-            this.isLoading = false;
+            this.isLoaded = true;
             this.generalResult = response.data;
         });
         this.isLoggedIn = this.authService.isLoggedIn();
     }
     loadData() {
         this.apiService.getGeneral(1).subscribe((response) => {
-            this.isLoading = false;
+            this.isLoaded = true;
             this.generalResult = response.data;
         });
     }

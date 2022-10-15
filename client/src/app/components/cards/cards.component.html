@@ -6,59 +6,93 @@
 </app-photo-modal>
 <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
 <div class="cards-container">
-    <!-- <ng-container *ngIf="!generalPhotos?.length">
+    <ng-container *ngIf="loaded; else loading">
+        <!-- <ng-container *ngIf="!generalPhotos?.length">
 <h2>No Photos Available yet</h2>
   </ng-container> -->
-    <div class="single-card" *ngFor="let photo of generalPhotos">
-        <div class="single-card-top flex jc-end">
-            <div class="single-card-btns-wrapper flex">
-                <ion-button class="single-card-btn">
-                    <ion-icon slot="icon-only" name="bookmarks"></ion-icon>
-                </ion-button>
-                <ion-button class="single-card-btn">
-                    <ion-icon slot="icon-only" name="heart"></ion-icon>
-                </ion-button>
-            </div>
-        </div>
-        <div class="single-card-image-wrapper">
-            <ion-img
-                [src]="photo.url"
-                alt=""
-                class="single-card-image"
-                (click)="showPhotoModal(photo)"
-            ></ion-img>
-        </div>
 
-        <div class="single-card-bottom">
-            <div class="single-card-meta">
-                <div class="single-card-meta-inner">
-                    <ion-avatar class="single-card-meta__avatar">
-                        <ion-img
-                            class="single-card-meta__avatar"
-                            [src]="photo.user?.profile_image"
-                            alt=""
-                        ></ion-img>
-                    </ion-avatar>
-                    <div class="single-card-meta__info">
-                        <ion-text
-                            color="dark"
-                            fill="clear"
-                            class="single-card-meta__info-name"
-                            >{{ photo.user?.fullname }}</ion-text
-                        >
-                    </div>
-                </div>
-
-                <div class="single-card-btns-wrapper">
-                    <ion-button
-                        download
-                        [href]="photo.url"
-                        class="single-card-btn"
-                    >
-                        <ion-icon slot="icon-only" name="download"></ion-icon>
+        <div class="card" *ngFor="let photo of generalPhotos">
+            <div class="card-top flex jc-end">
+                <div class="card-btns-wrapper flex">
+                    <ion-button class="card-btn">
+                        <ion-icon
+                            slot="icon-only"
+                            name="bookmarks-outline"
+                        ></ion-icon>
+                    </ion-button>
+                    <ion-button class="card-btn">
+                        <ion-icon
+                            slot="icon-only"
+                            name="heart-outline"
+                        ></ion-icon>
                     </ion-button>
                 </div>
             </div>
+            <div class="card-image-wrapper">
+                <div class="card-image-wrapper-overlay"></div>
+                <ion-img
+                    [src]="photo.url"
+                    alt=""
+                    class="card-image"
+                    (click)="showPhotoModal(photo)"
+                ></ion-img>
+            </div>
+
+            <div class="card-bottom">
+                <div class="card-meta">
+                    <div class="card-meta-inner">
+                        <ion-avatar class="card-meta__avatar">
+                            <ion-img
+                                class="card-meta__avatar"
+                                [src]="photo.user?.profile_image"
+                                alt=""
+                            ></ion-img>
+                        </ion-avatar>
+                        <div class="card-meta__info">
+                            <ion-label
+                                color="dark"
+                                fill="clear"
+                                class="card-meta__info-name"
+                                >{{ photo.user?.fullname }}</ion-label
+                            >
+                        </div>
+                    </div>
+
+                    <div class="card-btns-wrapper">
+                        <ion-button
+                            (click)="downloadPhoto(photo.url)"
+                            class="card-btn"
+                        >
+                            <ion-icon
+                                slot="icon-only"
+                                name="download-outline"
+                            ></ion-icon>
+                        </ion-button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </div>
+
+<ng-template #loading>
+    <ng-container *ngFor="let skeleton of skeletons">
+        <div class="card">
+            <ion-skeleton-text
+                [animated]="true"
+                [style]="{ width: '300px', height: '350px' }"
+            >
+            </ion-skeleton-text>
+
+            <ion-item>
+                <ion-avatar>
+                    <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+                </ion-avatar>
+                <ion-skeleton-text
+                    [animated]="true"
+                    [style]="{ width: '50%', marginLeft: '16px' }"
+                ></ion-skeleton-text>
+            </ion-item>
+        </div>
+    </ng-container>
+</ng-template>

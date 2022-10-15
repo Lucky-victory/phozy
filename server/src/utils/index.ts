@@ -7,6 +7,7 @@ import isEmpty from "just-is-empty";
 import omit from "just-omit";
 import pick from "just-pick";
 import merge from "just-merge";
+import values from "just-values";
 export const defaultProfileImage =
   "https://images.pexels.com/photos/3494648/pexels-photo-3494648.jpeg?auto=compress&cs=tinysrgb&w=640&h=854&dpr=2";
 
@@ -29,6 +30,9 @@ export class Utils extends MyUtils {
     }
     return false;
   };
+  static values() {
+    // return values();
+  }
   /**
    * Generates a short username, if no name is provided
    */
