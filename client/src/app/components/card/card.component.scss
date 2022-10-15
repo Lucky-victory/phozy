@@ -1,0 +1,143 @@
+.card {
+    overflow: hidden;
+    position: relative;
+    --bg: rgba(var(--ion-color-light-rgb));
+    --text-color: var(--ion-text-color);
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+}
+.card-image-wrapper {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    max-height: 80%;
+    .card-image {
+        &::part(image) {
+            width: 100%;
+            object-fit: cover;
+        }
+    }
+}
+
+.card-meta {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px;
+    // align-items: center;
+    display: flex;
+}
+.card-btns-wrapper {
+    padding: 0.5rem;
+    gap: 0.25rem;
+    align-self: flex-end;
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+}
+.card-btn {
+    background: var(--bg);
+    height: 35px;
+    width: 40px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    color: var(--text-color);
+    box-shadow: 0 3px 5px #0003;
+    background: var(--bg);
+
+    &::part(native) {
+        background: inherit;
+        color: inherit;
+        padding-inline-start: 0;
+        padding-inline-end: 0;
+        box-shadow: none;
+    }
+}
+
+ion-avatar.card-meta__avatar {
+    max-width: 40px;
+    max-height: 40px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+.card-meta-inner {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+}
+.card-meta__info {
+    flex: 1 0 auto;
+}
+.card-meta__info-name {
+    text-transform: capitalize;
+    font-size: 14px;
+}
+
+.card-top {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transition: 0.5s ease-out;
+    z-index: 3;
+}
+.card-bottom {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    transition: 0.5s ease-out;
+    z-index: 3;
+}
+
+ion-icon.like-icon,
+ion-icon.add-to-album-icon {
+}
+
+@media all and (prefers-color-scheme: dark) {
+}
+@media screen and (max-width: 727px) {
+    .card {
+        grid-column: unset !important;
+
+        grid-row: unset;
+    }
+    .card-meta {
+        background: transparent;
+        backdrop-filter: unset;
+    }
+    .card-bottom {
+        position: relative;
+    }
+    ion-avatar.card-meta__avatar {
+        max-width: 30px;
+        max-height: 30px;
+        margin-right: 0.5rem;
+    }
+}
+
+@media screen and (min-width: 728px) {
+    .card:hover {
+        .card-bottom {
+            transform: translateY(0);
+        }
+        .card-top {
+            top: 0;
+        }
+    }
+    .card-top {
+        top: -100px;
+    }
+    .card-bottom {
+        transform: translateY(100px);
+        background-color: var(--ion-color-light);
+    }
+    .card-image-wrapper {
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+}

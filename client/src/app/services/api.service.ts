@@ -52,7 +52,7 @@ export class ApiService {
     }
     likePhoto(photoId: number) {
         return this.http
-            .post(`${this.apiBaseUrl}/likes/like/${photoId}`, {})
+            .put(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
             .pipe(catchError(this.errorHandler));
     }
 

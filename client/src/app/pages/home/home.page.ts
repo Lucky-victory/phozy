@@ -41,6 +41,8 @@ export class HomePage implements OnInit, DoCheck {
         this.currentPage += 1;
         this.apiService.getGeneral(this.currentPage).subscribe((response) => {
             setTimeout(() => {
+                console.log(response.data);
+
                 event.target.complete();
                 if (!response.data?.length) {
                     this.noMoreData = true;
@@ -62,10 +64,10 @@ export class HomePage implements OnInit, DoCheck {
         console.log(photo);
 
         if (isLiked) {
-            this.apiService.unlikePhoto(photo.pid);
+            this.apiService.unlikePhoto(photo.id);
             console.log('unlike');
         } else {
-            this.apiService.likePhoto(photo.pid);
+            this.apiService.likePhoto(photo.id);
             console.log('like');
         }
     }

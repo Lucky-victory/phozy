@@ -1,9 +1,11 @@
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { Component, DoCheck, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
-  styleUrls: ['./photo-modal.component.scss'],
+  styleUrls: ['./photo-modal.component.scss'],standalone:true,imports:[CommonModule,IonicModule]
 })
 export class PhotoModalComponent implements OnInit,DoCheck {
  @Input() isModalOpen: boolean=false;

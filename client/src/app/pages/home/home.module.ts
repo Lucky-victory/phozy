@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CardsComponent } from './../../components/cards/cards.component';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
-import { CardsModule } from 'src/app/components/cards/cards.module';
 
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -18,7 +18,7 @@ import { BannerComponent } from 'src/app/components/banner/banner.component';
         FormsModule,
         IonicModule,
         HomePageRoutingModule,
-        CardsModule,
+        CardsComponent,
         FooterModule,
         BannerComponent,
     ],

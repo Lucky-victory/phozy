@@ -23,6 +23,16 @@ export default class PhotosController {
       const offset = (page - 1) * perPage;
       if (!(sort === "desc" || sort === "asc")) sort = "desc";
 
+      // get the total records and use it restrict the offset, this is crucial.
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recordCountResult = await photosModel.describeModel<any>();
+      const recordCount = recordCountResult.data.record_count;
+
+      if (recordCount - offset <= 0 || offset > recordCount) {
+        res.status(200).json({ message: "No more Photos", data: [] });
+        return;
+      }
       const defaultFields = [
         "id",
         "created_at",
