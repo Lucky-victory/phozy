@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
     styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, DoCheck {
-    generalResult!: any;
+    photos!: any;
     isLoggedIn!: boolean;
     currentPage = 1;
     noMoreData: boolean;
@@ -24,14 +24,14 @@ export class HomePage implements OnInit, DoCheck {
     ngOnInit() {
         this.apiService.getGeneral(this.currentPage).subscribe((response) => {
             this.isLoaded = true;
-            this.generalResult = response.data;
+            this.photos = response.data;
         });
         this.isLoggedIn = this.authService.isLoggedIn();
     }
     loadData() {
         this.apiService.getGeneral(1).subscribe((response) => {
             this.isLoaded = true;
-            this.generalResult = response.data;
+            this.photos = response.data;
         });
     }
     ngDoCheck(): void {
@@ -41,7 +41,7 @@ export class HomePage implements OnInit, DoCheck {
         this.currentPage += 1;
         this.apiService.getGeneral(this.currentPage).subscribe((response) => {
             setTimeout(() => {
-                console.log(response.data);
+                console.log(response);
 
                 event.target.complete();
                 if (!response.data?.length) {
@@ -49,7 +49,7 @@ export class HomePage implements OnInit, DoCheck {
                     event.target.disabled = true;
                 }
 
-                this.generalResult.push(...response.data);
+                this.photos.push(...response.data);
             }, 500);
         });
     }
@@ -59,16 +59,32 @@ export class HomePage implements OnInit, DoCheck {
             event.target.complete();
         }, 2000);
     }
-    // not yet implemented
-    likeOrUnlikePhoto([photo, isLiked]) {
+
+    likeOrUnlikePhoto(photo) {
         console.log(photo);
 
-        if (isLiked) {
-            this.apiService.unlikePhoto(photo.id);
-            console.log('unlike');
+        if (photo.liked) {
+            this.apiService.unlikePhoto(photo.id).subscribe((response: any) => {
+                console.log(response, 'unlike');
+                const data = response.data;
+                this.photos = this.photos.map((photo) => {
+                    data.id === photo.id
+                        ? (photo.liked = data.liked)
+                        : photo.liked;
+                    return photo;
+                });
+            });
         } else {
-            this.apiService.likePhoto(photo.id);
-            console.log('like');
+            this.apiService.likePhoto(photo.id).subscribe((response: any) => {
+                console.log(response, 'like');
+                const data = response.data;
+                this.photos = this.photos.map((photo) => {
+                    data.id === photo.id
+                        ? (photo.liked = data.liked)
+                        : photo.liked;
+                    return photo;
+                });
+            });
         }
     }
     logout() {

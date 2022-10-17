@@ -14,6 +14,7 @@ export class BannerComponent implements OnInit {
         'https://images.pexels.com/photos/3494648/pexels-photo-3494648.jpeg?auto=compress&cs=tinysrgb&w=640&h=854&dpr=2';
     bg = `url(${this.bannerBg})`;
     @Input() maxHeight: string = '500px';
+    @Input() loaded:boolean=false;
     constructor() {}
 
     ngOnInit() {}

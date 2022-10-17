@@ -22,7 +22,7 @@ import { PhotoModalComponent } from '../photo-modal/photo-modal.component';
     ],
 })
 export class CardsComponent implements OnInit {
-    @Input() generalPhotos = [];
+    @Input() photos = [];
     @Input() isLoggedIn: boolean;
     @Output() onLike = new EventEmitter<[any, boolean]>();
     @Output() onAddToAlbum = new EventEmitter();
@@ -65,13 +65,13 @@ export class CardsComponent implements OnInit {
         this.isModalOpen = isOpen;
     }
     downloadPhoto(photo) {
-        console.log(photo.url);
+        const urlSegments = photo.url.split('.');
+        const ext = urlSegments[urlSegments.length - 1];
 
-        saveAs(photo.url);
+        saveAs(photo.url, `phozy_${photo.id}.${ext}`);
     }
     likePhoto(photo) {
-        photo.liked = photo.liked;
-        this.onLike.emit([photo, photo.liked]);
+        this.onLike.emit(photo);
     }
     collectPhoto(photo) {}
 }

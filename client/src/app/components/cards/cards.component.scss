@@ -1,19 +1,20 @@
 .cards-container {
     padding-bottom: 3rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 
     grid-template-rows: minmax(250px, auto);
 
-    grid-auto-flow: row dense;
+    grid-auto-flow: dense;
 
     grid-gap: 12px;
 }
 
 @media screen and (max-width: 727px) {
     .cards-container {
-        grid-template-columns: repeat(auto-fill, minmax(250px, auto));
+        grid-template-columns: repeat(auto-fill, minmax(230px, auto));
 
         grid-template-rows: minmax(auto, auto);
+        grid-gap: 8px;
     }
 }

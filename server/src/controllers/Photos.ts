@@ -7,7 +7,8 @@ import { albumsModel } from "../models/Albums";
 import { Order } from "harpee";
 import { usersModel } from "../models/Users";
 import { USER_RESULT } from "../interfaces/Users";
-
+import CacheManager from "../utils/cache-manager";
+const photoCache = new CacheManager();
 export default class PhotosController {
   static async getAll(req: Request, res: Response) {
     try {
@@ -22,7 +23,14 @@ export default class PhotosController {
       page = +page;
       const offset = (page - 1) * perPage;
       if (!(sort === "desc" || sort === "asc")) sort = "desc";
-
+      // check if th result was in cache
+      const cachedData = photoCache.get<PHOTO_RESULT>("photos_" + page);
+      if (cachedData) {
+        res
+          .status(200)
+          .json({ message: "photos retrieved from cache", data: cachedData });
+        return;
+      }
       // get the total records and use it restrict the offset, this is crucial.
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,6 +89,7 @@ export default class PhotosController {
       });
       // remove user_id property since the user object now has the ID
       data = Utils.omit(data, ["user_id"]) as (USER_RESULT & PHOTO_RESULT)[];
+      photoCache.set(`photos_${page}`, data, 1000);
       res.status(200).json({ message: "photos retrieved", data });
     } catch (error) {
       console.log(error);
@@ -95,7 +104,7 @@ export default class PhotosController {
     try {
       const { id } = req.params;
       const { fields } = req.query;
-
+      const { auth } = req;
       const defaultFields = [
         "id",
         "created_at",
@@ -113,7 +122,7 @@ export default class PhotosController {
         defaultFields
       );
 
-      const photo = await (
+      let photo = await (
         await photosModel.findOne<PHOTO_RESULT>({ id }, getAttributes)
       ).data;
 
@@ -134,15 +143,10 @@ export default class PhotosController {
           "id",
         ])
       ).data;
-      // check if the user has liked that photo
-      const hasLiked = photo.likes?.users?.includes(user?.id as string);
 
-      // merge it with the photo before sending out to client
-      const mergedData = Object.assign(
-        {},
-        { ...photo, liked: hasLiked },
-        { user }
-      );
+      photo = PhotosController.checkLike(photo, auth?.user?.id);
+
+      const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
       await photosModel.updateNested({
@@ -153,6 +157,7 @@ export default class PhotosController {
           return data.views;
         },
       });
+
       res.status(200).json({ message: "photo retrieved successfully", data });
     } catch (error) {
       console.log(error);
@@ -278,7 +283,7 @@ export default class PhotosController {
   }
   /**
    * @desc
-   * @route PUT /api/photos/:id/like
+   * @route POST /api/photos/:id/like
    * @param req
    * @param res
    * @returns
@@ -289,6 +294,7 @@ export default class PhotosController {
       const { id } = req.params;
       const userId = auth?.user?.id;
       const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
+
       if (!photo.data) {
         res
           .status(404)
@@ -296,20 +302,28 @@ export default class PhotosController {
         return;
       }
 
-      await photosModel.updateNested({
+      const updatedData = await photosModel.updateNested<PHOTO_RESULT>({
         id,
         path: ".likes",
         value: (data: IPhoto) => {
           if (data?.likes?.users?.includes(userId)) return data.likes;
           data.likes.count += 1;
           data.likes.users.push(userId);
+
           return data.likes;
         },
       });
+      const data = PhotosController.checkLike(
+        updatedData.data as PHOTO_RESULT,
+        userId
+      );
       res.status(200).json({
         message: "photo liked successfully",
+        data,
       });
     } catch (error) {
+      console.log(error);
+
       res.status(500).json({
         message: "An error occcured",
         error,
@@ -318,7 +332,7 @@ export default class PhotosController {
   }
   /**
    * @desc
-   * @route PUT /api/photos/:id/unlike
+   * @route POST /api/photos/:id/unlike
    * @param req
    * @param res
    * @returns
@@ -336,18 +350,27 @@ export default class PhotosController {
         return;
       }
 
-      await photosModel.updateNested({
+      const updatedData = await photosModel.updateNested<PHOTO_RESULT>({
         id,
         path: ".likes",
         value: (data: IPhoto) => {
           if (!data?.likes?.users?.includes(userId)) return data.likes;
           data.likes.count -= 1;
-          data.likes.users.filter((user) => user !== userId);
+
+          // reset to 0 incase of it mistakenly goes below 0, e.g -1
+          if (data.likes.count < 0) data.likes.count = 0;
+          data.likes.users = data.likes.users.filter((user) => user !== userId);
+
           return data.likes;
         },
       });
+      const data = PhotosController.checkLike(
+        updatedData.data as PHOTO_RESULT,
+        userId
+      );
       res.status(200).json({
         message: "photo unliked successfully",
+        data,
       });
     } catch (error) {
       res.status(500).json({
@@ -355,5 +378,15 @@ export default class PhotosController {
         error,
       });
     }
+  }
+  /**
+   * checks if a user has liked a photo and adds a 'liked' property to the photo object
+   * @param photo
+   * @param userId
+   * @returns
+   */
+  private static checkLike(photo: PHOTO_RESULT, userId: string) {
+    photo.liked = photo.likes?.users?.includes(userId);
+    return photo;
   }
 }

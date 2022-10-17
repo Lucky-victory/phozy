@@ -1,9 +1,19 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>photo-view</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title>photo-view</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
+    <div class="container">
+        <div class="photo-view-wrapper">
+            <div class="photo-view-top">
+                <ion-avatar>
+                    <img [src]="photo?.user?.profile_image" />
+                </ion-avatar>
+            </div>
 
+            <ion-img [src]="photo?.url"></ion-img>
+        </div>
+    </div>
 </ion-content>

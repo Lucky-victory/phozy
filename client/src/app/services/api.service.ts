@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, delay, retry, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { IResponseResult } from '../interfaces/common';
 
@@ -11,7 +11,8 @@ import { IResponseResult } from '../interfaces/common';
 })
 export class ApiService {
     private apiBaseUrl: string = environment.apiBaseUrl;
-
+    private retryCount: number = 3;
+    private retryDelay: number = 3000;
     constructor(private http: HttpClient, private router: Router) {}
     getUserAlbums(username: string) {
         return this.http
@@ -23,10 +24,14 @@ export class ApiService {
 
     getGeneral(page: number = 1, perPage = 10) {
         return this.http
-            .get(`${this.apiBaseUrl}/photos?page=${page}&perPage=${perPage}`)
-            .pipe(catchError(this.errorHandler)) as any;
+            .get(`${this.apiBaseUrl}/photos`, { params: { page, perPage } })
+            .pipe(
+                retry(this.retryCount),
+                delay(this.retryDelay),
+                catchError(this.errorHandler)
+            ) as any;
     }
-    errorHandler(error: HttpErrorResponse) {
+    private errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
     }
     uploadPhotos(photos: any[]) {
@@ -43,22 +48,35 @@ export class ApiService {
 
         return this.http
             .post(`${this.apiBaseUrl}/photos`, formdata)
-            .pipe(catchError(this.errorHandler));
+            .pipe(
+                retry(this.retryCount),
+                delay(this.retryDelay),
+                catchError(this.errorHandler)
+            );
     }
     createNewAlbum(title: string, description?: string, privacy?: boolean) {
         return this.http
             .post(`${this.apiBaseUrl}/albums`, { title, description, privacy })
             .pipe(catchError(this.errorHandler));
     }
-    likePhoto(photoId: number) {
+    likePhoto(photoId: string) {
         return this.http
-            .put(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
+            .post(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
             .pipe(catchError(this.errorHandler));
     }
-
-    unlikePhoto(photoId: number) {
+    getPhoto(photoId: string) {
         return this.http
-            .post(`${this.apiBaseUrl}/likes/unlike/${photoId}`, {})
+            .get(`${this.apiBaseUrl}/photos/${photoId}`,)
+            .pipe(
+                retry(this.retryCount),
+                delay(this.retryDelay),
+                catchError(this.errorHandler)
+            );
+    }
+
+    unlikePhoto(photoId: string) {
+        return this.http
+            .post(`${this.apiBaseUrl}/photos/${photoId}/unlike`, {})
             .pipe(catchError(this.errorHandler));
     }
 

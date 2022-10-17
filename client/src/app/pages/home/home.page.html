@@ -16,7 +16,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-    <app-banner></app-banner>
+    <app-banner  [loaded]="isLoaded"></app-banner>
 
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
         <ion-refresher-content></ion-refresher-content>
@@ -25,7 +25,7 @@
     <app-cards
         (onLike)="likeOrUnlikePhoto($event)"
         [loaded]="isLoaded"
-        [generalPhotos]="generalResult"
+        [photos]="photos"
         [isLoggedIn]="isLoggedIn"
     ></app-cards>
     <ion-item
@@ -53,7 +53,7 @@
         </ion-fab-list>
     </ion-fab>
 
-    <ion-infinite-scroll threshold="50px" (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore($event)">
         <ion-infinite-scroll-content
             loadingSpinner="lines-sharp"
             loadingText="Loading more..."

@@ -15,50 +15,53 @@
             >
                 <ion-icon
                     slot="icon-only"
-                    [name]="photo.liked ? 'heart' : 'heart-outline'"
+                    [name]="isLiked ? 'heart' : 'heart-outline'"
                 ></ion-icon>
             </ion-button>
         </div>
     </div>
-    <div class="card-image-wrapper">
-        <ion-img
-            [src]="photo.url"
-            alt=""
-            class="card-image"
-            (click)="showPhotoModal(photo)"
-        ></ion-img>
+    <div class="card-image-wrapper" (click)="showPhotoModal(photo)">
+        <a [routerLink]="['/photo', photo.id]">
+            <ion-img
+                [src]="photo.url"
+                [alt]="photo.caption"
+                class="card-image"
+            ></ion-img>
+        </a>
     </div>
 
     <div class="card-bottom">
         <div class="card-meta">
             <div class="card-meta-inner">
-                <ion-avatar class="card-meta__avatar">
-                    <ion-img
-                        class="card-meta__avatar"
-                        [src]="photo.user?.profile_image"
-                        alt=""
-                        [routerLink]="['/profile', photo.user?.username]"
-                    ></ion-img>
-                </ion-avatar>
                 <div class="card-meta__info">
-                    <ion-button
+                    <a
                         [routerLink]="['/profile', photo.user?.username]"
                         fill="clear"
-                        class="card-meta__info-name"
-                        >{{ photo.user?.fullname }}</ion-button
+                        class="card-meta__info"
+                    >
+                        <ion-avatar class="card-meta__avatar">
+                            <ion-img
+                                class="card-meta__avatar"
+                                [src]="photo.user?.profile_image"
+                                alt=""
+                                [routerLink]="[
+                                    '/profile',
+                                    photo.user?.username
+                                ]"
+                            ></ion-img>
+                        </ion-avatar>
+                        {{ photo.user?.fullname }}</a
                     >
                 </div>
             </div>
 
-            <div class="card-btns-wrapper">
-                <ion-button
-                    (click)="downloadPhoto(photo)"
-                    class="card-btn download-btn"
-                    title="download"
-                >
-                    <ion-icon slot="icon-only" name="arrow-down"></ion-icon>
-                </ion-button>
-            </div>
+            <ion-button
+                (click)="downloadPhoto(photo)"
+                class="card-btn download-btn"
+                title="download"
+            >
+                <ion-icon slot="icon-only" name="arrow-down"></ion-icon>
+            </ion-button>
         </div>
     </div>
 </div>

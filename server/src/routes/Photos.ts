@@ -11,17 +11,12 @@ router
   .use(checkIfAuthenticated)
   .post(
     "/",
-
     asyncHandler(ImageUploader.upload),
     asyncHandler(ImageUploader.uploadToCloudinary),
     asyncHandler(PhotosController.addNewPhotos)
   )
   .put("/:id", PhotosController.updatePhoto)
-  .put("/:id/like", PhotosController.likePhoto)
-  .put("/:id/unlike", PhotosController.unlikePhoto)
-  .delete(
-    "/:id",
-
-    asyncHandler(PhotosController.deletePhoto)
-  );
+  .post("/:id/like", PhotosController.likePhoto)
+  .post("/:id/unlike", PhotosController.unlikePhoto)
+  .delete("/:id", asyncHandler(PhotosController.deletePhoto));
 export default router;
