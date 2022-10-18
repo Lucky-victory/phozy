@@ -2,7 +2,7 @@ import { ALBUM_RESULT } from "./../interfaces/Albums";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import { defaultProfileImage, Utils } from "../utils";
-import { NEW_USER, USER_RESULT } from "../interfaces/Users";
+import { IUser, NEW_USER, USER_AUTH, USER_RESULT } from "../interfaces/Users";
 
 import { NextFunction, Request, Response } from "express";
 import { hash as hashPassword, compare as comparePassword } from "bcrypt";
@@ -26,14 +26,18 @@ export default class UsersController {
 
       // check if user exist by username or email
       const [usernameExist, emailExist] = await Promise.all([
-        await usersModel.findOne<Pick<NEW_USER, "password">>(
-          { email: emailOrUsername },
-          ["password"]
-        ),
-        usersModel.findOne<Pick<NEW_USER, "password">>(
-          { username: emailOrUsername },
-          ["password"]
-        ),
+        await usersModel.findOne<USER_AUTH>({ email: emailOrUsername }, [
+          "password",
+          "id",
+          "fullname",
+          "username",
+        ]),
+        await usersModel.findOne<USER_AUTH>({ username: emailOrUsername }, [
+          "password",
+          "id",
+          "fullname",
+          "username",
+        ]),
       ]);
 
       if (!(usernameExist.data || emailExist.data)) {
@@ -57,14 +61,15 @@ export default class UsersController {
         });
         return;
       }
-      const user = usernameExist.data ? usernameExist.data : emailExist.data;
+      let user = usernameExist.data ? usernameExist.data : emailExist.data;
       // remove password from the object before sending it out to the client
-      // user = removePropFromObject(user, ["password"]);
-      // // remove profile image from the object before generating a token from it
-      // const userToToken = removePropFromObject(user, ["profile_image"]);
+      user = Utils.omit(user as USER_AUTH, ["password"]) as USER_AUTH;
+
+      // // remove profile image and password from the object before generating a token from it
+      const userToToken = Utils.omit(user as USER_AUTH, ["profile_image"]);
       // generate a jwt token
       jwt.sign(
-        { user },
+        { user: userToToken },
         config.jwt_secret_key as string,
         (err: unknown, encoded: unknown) => {
           if (err) throw err;
@@ -95,7 +100,7 @@ export default class UsersController {
     try {
       let { password } = req.body;
       const { email, fullname } = req.body;
-      const shortId = Math.random().toString(16).substring(2, 7);
+      const shortId = Utils.shortID(6);
       const username = Utils.generateUsername(undefined, "", shortId);
 
       // check if user already exist

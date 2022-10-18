@@ -3,7 +3,6 @@ export interface IUser {
   fullname: string;
   profile_image?: string;
   profile_cover?: string;
-
   username: string;
   email: string;
   password?: string;
@@ -19,4 +18,8 @@ export type NEW_USER = Pick<
 export type USER_RESULT = Pick<
   IUser,
   "fullname" | "id" | "username" | "socials"
+>;
+export type USER_AUTH = Pick<
+  IUser,
+  "password" | "id" | "fullname" | "username"|"profile_image"
 >;

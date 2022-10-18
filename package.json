@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm run move && cd server && npm i && npm run start",
+    "build": "cd server && npm i && npm run start",
     "postinstall": "cd client && npm i && npm run build",
     "start": "npm run build",
-    "move": "node index.js"
+    "move": "node index.js",
+    "dev": "cd server && npm run dev"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "fs-extra": "^10.1.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.13"
+    "@types/fs-extra": "^9.0.13",
+    "nodemon": "^2.0.20"
   }
 }

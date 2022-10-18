@@ -18,7 +18,7 @@ export default class PhotosController {
         sort = "desc",
         orderby = "created_at",
       } = req.query;
-      console.log(req.auth, "ath");
+      console.log(req.auth, "auth");
 
       const { fields } = req.query;
       perPage = +perPage;
@@ -182,6 +182,7 @@ export default class PhotosController {
   static async addNewPhotos(req: Request, res: Response) {
     try {
       const { photo_urls, auth } = req;
+      console.log(auth, "auth at new");
 
       const newPhotos: NEW_PHOTO[] = photo_urls.map((photo) => {
         return {
