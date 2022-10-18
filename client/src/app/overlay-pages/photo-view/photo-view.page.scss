@@ -31,13 +31,16 @@
     &::part(native) {
         padding: 0.65rem;
     }
+    &.liked {
+        color: var(--primary);
+    }
     border: 1px solid #ccc;
     border-radius: 8px;
     &:not(:last-child) {
         margin-right: 1rem;
     }
     &.download-btn {
-        background-color: #7c0ab1;
+        background-color: var(--primary);
         color: #fff;
         border-color: transparent;
     }

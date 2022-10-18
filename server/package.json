@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "A simple image API for organising images in albums",
   "scripts": {
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon app.ts",
     "db:init": "ts-node src/config/init.ts",
-    "start": "node dist/app.js",
+    "start": "npm run build && node dist/app.js",
     "build": "tsc",
     "lint": "eslint ./src/**/** --fix"
   },

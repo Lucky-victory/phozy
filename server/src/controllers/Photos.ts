@@ -18,6 +18,8 @@ export default class PhotosController {
         sort = "desc",
         orderby = "created_at",
       } = req.query;
+      console.log(req.auth, "ath");
+
       const { fields } = req.query;
       perPage = +perPage;
       page = +page;
@@ -105,6 +107,8 @@ export default class PhotosController {
       const { id } = req.params;
       const { fields } = req.query;
       const { auth } = req;
+      console.log(auth);
+
       const defaultFields = [
         "id",
         "created_at",
@@ -387,6 +391,8 @@ export default class PhotosController {
    */
   private static checkLike(photo: PHOTO_RESULT, userId: string) {
     photo.liked = photo.likes?.users?.includes(userId);
+    console.log(photo);
+
     return photo;
   }
 }

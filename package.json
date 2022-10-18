@@ -1,0 +1,28 @@
+{
+  "name": "phozy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run move && cd server && npm i && npm run start",
+    "postinstall": "cd client && npm i && npm run build",
+    "start": "npm run build",
+    "move": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucky-victory/phozy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucky-victory/phozy/issues"
+  },
+  "homepage": "https://github.com/lucky-victory/phozy#readme",
+  "dependencies": {
+    "fs-extra": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13"
+  }
+}

@@ -47,7 +47,7 @@
     box-shadow: 0 3px 5px #0003;
     background: var(--bg);
     &.liked {
-        color: #9d07d8;
+        color: var(--primary);
     }
     &::part(native) {
         background: inherit;

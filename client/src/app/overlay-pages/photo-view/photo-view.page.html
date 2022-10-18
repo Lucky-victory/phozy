@@ -42,15 +42,16 @@
                             </ion-button>
                             <ion-button
                                 [disabled]="!isLoaded"
+                                [ngClass]="{liked:isLiked}"
                                 class="btn"
-                                title="{{photo?.liked?'Unlike':'Like'}}"
+                                title="{{isLiked ?'Unlike':'Like'}}"
                             >
                                 <ion-icon
                                     slot="{{isDesktop ? 'start':''}}"
-                                    name="heart-outline"
+                                    name="{{isLiked ? 'heart':'heart-outline'}}"
                                 ></ion-icon>
                                 <span [ngClass]="{'ion-hide':!isDesktop}">
-                                    {{photo?.liked?'Unlike':'Like'}}
+                                    {{isLiked?'Unlike':'Like'}}
                                 </span>
                             </ion-button>
                             <ion-button
