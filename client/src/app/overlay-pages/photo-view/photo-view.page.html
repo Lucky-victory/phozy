@@ -6,14 +6,110 @@
 
 <ion-content>
     <div class="container">
-        <div class="photo-view-wrapper">
-            <div class="photo-view-top">
-                <ion-avatar>
-                    <img [src]="photo?.user?.profile_image" />
-                </ion-avatar>
-            </div>
+        <ng-container *ngIf="isLoaded;else loading ">
+            <div class="photo-view-wrapper">
+                <div class="photo-view-top">
+                    <div class="flex ai-center photo-owner">
+                        <ion-avatar class="photo-owner-avatar">
+                            <img
+                                [src]="photo?.user?.profile_image"
+                                class="photo-owner-avatar"
+                            />
+                        </ion-avatar>
 
-            <ion-img [src]="photo?.url"></ion-img>
-        </div>
+                        <strong class="photo-owner-name"
+                            >{{photo?.user?.fullname}}</strong
+                        >
+                    </div>
+
+                    <div class="btns-wrapper">
+                        <ion-buttons slot="end">
+                            <ion-button
+                                [disabled]="!isLoaded"
+                                class="btn"
+                                title="Add to collection"
+                            >
+                                <ion-icon
+                                    slot="{{isDesktop ?'start':''}}"
+                                    name="bookmarks-outline"
+                                ></ion-icon>
+                                <span [ngClass]="{'ion-hide':!isDesktop}">
+                                    {{'Collect'}}
+                                </span>
+                            </ion-button>
+                            <ion-button
+                                [disabled]="!isLoaded"
+                                class="btn"
+                                title="{{photo?.liked?'Unlike':'Like'}}"
+                            >
+                                <ion-icon
+                                    slot="{{isDesktop ? 'start':''}}"
+                                    name="heart-outline"
+                                ></ion-icon>
+                                <span [ngClass]="{'ion-hide':!isDesktop}">
+                                    {{photo?.liked?'Unlike':'Like'}}
+                                </span>
+                            </ion-button>
+                            <ion-button
+                                [disabled]="!isLoaded"
+                                class="btn download-btn"
+                                title="Download"
+                            >
+                                <ion-icon
+                                    slot="{{isDesktop ? 'start':''}}"
+                                    name="arrow-down-outline"
+                                ></ion-icon>
+                                <span [ngClass]="{'ion-hide':!isDesktop}">
+                                    Download
+                                </span>
+                            </ion-button>
+                        </ion-buttons>
+                    </div>
+                </div>
+                <div class="photo-wrapper">
+                    <ion-img [src]="photo?.url" class="photo"></ion-img>
+                </div>
+            </div>
+        </ng-container>
     </div>
 </ion-content>
+<ng-template #loading>
+    <div class="photo-view-wrapper">
+        <div class="photo-view-top">
+            <div class="flex ai-center">
+                <ion-avatar class="photo-owner-avatar">
+                    <ion-skeleton-text
+                        class="photo-owner-avatr"
+                    ></ion-skeleton-text>
+                </ion-avatar>
+                <ion-skeleton-text
+                    animated
+                    style="width: 100px; height: 15px"
+                ></ion-skeleton-text>
+            </div>
+            <div class="btns-wrapper">
+                <ion-skeleton-text
+                    animated
+                    style="width: 40px; height: 40px"
+                    class="btn"
+                ></ion-skeleton-text>
+                <ion-skeleton-text
+                    class="btn"
+                    animated
+                    style="width: 40px; height: 40px"
+                ></ion-skeleton-text>
+                <ion-skeleton-text
+                    class="btn"
+                    animated
+                    style="width: 70px; height: 40px"
+                ></ion-skeleton-text>
+            </div>
+        </div>
+        <div class="photo-wrapper">
+            <ion-skeleton-text
+                animated
+                style="width: 100%; height: 400px"
+            ></ion-skeleton-text>
+        </div>
+    </div>
+</ng-template>

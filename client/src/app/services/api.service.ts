@@ -5,6 +5,10 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, delay, retry, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { IResponseResult } from '../interfaces/common';
+import {
+    PHOTO_FROM_CLIENT,
+    PHOTO_TO_VIEW,
+} from '../interfaces/photo.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +26,7 @@ export class ApiService {
             .pipe(catchError(this.errorHandler));
     }
 
-    getGeneral(page: number = 1, perPage = 10) {
+    getPhotos(page: number = 1, perPage = 10) {
         return this.http
             .get(`${this.apiBaseUrl}/photos`, { params: { page, perPage } })
             .pipe(
@@ -34,7 +38,7 @@ export class ApiService {
     private errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
     }
-    uploadPhotos(photos: any[]) {
+    uploadPhotos(photos: PHOTO_FROM_CLIENT[]) {
         const formdata = new FormData();
         photos = photos.map((photo) => {
             delete photo?.id;
@@ -42,9 +46,16 @@ export class ApiService {
         });
         for (const photo of photos) {
             formdata.append('photos', photo.image);
-            // formdata.append('tags', photo.tags);
         }
-        formdata.append('all', JSON.stringify(photos));
+        formdata.append(
+            'all',
+            JSON.stringify(
+                photos.map((photo) => {
+                    delete photo?.image;
+                    return photo;
+                })
+            )
+        );
 
         return this.http
             .post(`${this.apiBaseUrl}/photos`, formdata)
@@ -54,10 +65,21 @@ export class ApiService {
                 catchError(this.errorHandler)
             );
     }
-    createNewAlbum(title: string, description?: string, privacy?: boolean) {
+    createNewCollection(
+        title: string,
+        description?: string,
+        is_public?: boolean
+    ) {
         return this.http
-            .post(`${this.apiBaseUrl}/albums`, { title, description, privacy })
+            .post(`${this.apiBaseUrl}/albums`, {
+                title,
+                description,
+                is_public,
+            })
             .pipe(catchError(this.errorHandler));
+    }
+    addToCollection(photo: PHOTO_TO_VIEW) {
+        this.http.post(`${this.apiBaseUrl}/albums`, {});
     }
     likePhoto(photoId: string) {
         return this.http
@@ -66,7 +88,7 @@ export class ApiService {
     }
     getPhoto(photoId: string) {
         return this.http
-            .get(`${this.apiBaseUrl}/photos/${photoId}`,)
+            .get(`${this.apiBaseUrl}/photos/${photoId}`)
             .pipe(
                 retry(this.retryCount),
                 delay(this.retryDelay),

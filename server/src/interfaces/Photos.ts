@@ -12,6 +12,12 @@ export interface IPhoto {
   updated_at?: number;
   liked?: boolean;
 }
+export type PHOTO_TO_VIEW = Pick<
+  IPhoto,
+  "caption" | "created_at" | "id" | "liked" | "likes" | "tags" | "url" | "views"
+> & {
+  user: USER_RESULT;
+};
 export type NEW_PHOTO = Pick<IPhoto, "caption" | "url" | "user_id" | "tags">;
 export type PHOTO_RESULT = Omit<IPhoto, "updated_at">;
 export type PHOTO_FROM_CLIENT = {

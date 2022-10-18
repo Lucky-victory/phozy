@@ -41,25 +41,6 @@
                 <ion-note slot="end">Max: 10 photos</ion-note>
             </ion-item>
             <form #newPhotoForm="ngForm" (ngSubmit)="addNewPhoto()">
-                <!-- <ion-item>
-          <ion-label for="user-albums" position="floating">
-            Select an album</ion-label
-          >
-          <ion-select
-      
-            formControlName="prevAlbums"
-            id="user-albums"
-          >
-        <ion-select-option [value]="album.id" *ngFor="let album of userAlbums">
-      {{album.title}}
-        </ion-select-option>
-        </ion-select>
-        </ion-item> -->
-                <!-- <ion-item lines="none" *ngIf="!userAlbums.length">
-
-          <ion-text >You don't have any album yet <ion-button  [routerLink]="['/new-album']">create one</ion-button></ion-text>
-        </ion-item> -->
-
                 <ion-label *ngIf="photosToPreview.length"
                     >{{photosToPreview.length}} {{photosToPreview.length > 1?
                     'Photos':'Photo'}}</ion-label
@@ -94,7 +75,7 @@
                             ></ion-input>
                         </ion-item>
                         <ion-item>
-                            <ion-label>tags</ion-label>
+                            <ion-label>tags:</ion-label>
                             <ion-input
                                 name="tags-{{preview.id}}"
                                 type="text"

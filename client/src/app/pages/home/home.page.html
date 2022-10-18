@@ -16,7 +16,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-    <app-banner  [loaded]="isLoaded"></app-banner>
+    <app-banner [loaded]="isLoaded"></app-banner>
 
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
         <ion-refresher-content></ion-refresher-content>
@@ -24,6 +24,8 @@
 
     <app-cards
         (onLike)="likeOrUnlikePhoto($event)"
+        (onCollect)="addToCollection($event)"
+        (onDownload)="downloadPhoto($event)"
         [loaded]="isLoaded"
         [photos]="photos"
         [isLoggedIn]="isLoggedIn"

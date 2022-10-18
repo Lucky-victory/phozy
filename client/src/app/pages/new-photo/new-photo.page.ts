@@ -1,16 +1,11 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IAlbumResult } from 'src/app/interfaces/albums.interface';
-import { IResponseResult } from 'src/app/interfaces/common';
+
+import { PHOTO_FROM_CLIENT } from 'src/app/interfaces/photo.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { INewPhotoForm } from '../../interfaces/new-photo.interface';
-interface Photo {
-    id?: string;
-    image: Blob | string;
-    tags?: string;
-    caption?: string;
-}
+
 @Component({
     selector: 'app-new-photo',
     templateUrl: './new-photo.page.html',
@@ -18,23 +13,18 @@ interface Photo {
 })
 export class NewPhotoPage implements OnInit {
     isSending: boolean = false;
-    photosToPreview: Photo[] = [];
-    photosToUpload: Partial<Photo[]> = [];
+    photosToPreview: PHOTO_FROM_CLIENT[] = [];
+    photosToUpload: Partial<PHOTO_FROM_CLIENT[]> = [];
     userAlbums: IAlbumResult[] = [];
     maxPhotoCount = 10;
-    newPhotoForm!: FormGroup<INewPhotoForm>;
+
     infoMessage!: string;
 
     constructor(
         private formBuilder: FormBuilder,
         private apiService: ApiService,
         private authService: AuthService
-    ) {
-        // this.newPhotoForm = this.formBuilder.group({
-        //     photosUpload: ['', Validators.required],
-        //     prevAlbums: ['', Validators.required],
-        // });
-    }
+    ) {}
 
     ngOnInit() {
         // this.fetchUserAlbums();
@@ -64,7 +54,7 @@ export class NewPhotoPage implements OnInit {
         this.isSending = true;
         console.log(this.photosToPreview, 'preview');
         const photosToPreview = [...this.photosToPreview];
-        let newPhoto: Photo;
+        let newPhoto: PHOTO_FROM_CLIENT;
         this.photosToUpload = photosToPreview.reduce((accum, preview) => {
             for (const photo of this.photosToUpload) {
                 if (photo.id === preview.id) {
@@ -74,12 +64,11 @@ export class NewPhotoPage implements OnInit {
             }
 
             return accum;
-        }, [] as Photo[]);
+        }, [] as PHOTO_FROM_CLIENT[]);
 
         this.apiService.uploadPhotos(this.photosToUpload).subscribe(
             (res) => {
                 this.isSending = false;
-                // this.newPhotoForm.reset();
                 this.photosToPreview = [];
                 this.infoMessage = 'Photos uploaded successfully';
             },
@@ -112,7 +101,6 @@ export class NewPhotoPage implements OnInit {
                         tags: '',
                         caption: '',
                     });
-                    console.log(this.photosToPreview, 'in load');
                 };
                 reader.readAsDataURL(file);
             }

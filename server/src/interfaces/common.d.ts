@@ -24,6 +24,7 @@ declare global {
       user: USER_RESULT;
       files: formidable.File[];
       fields: any;
+      captions: string[];
     }
   }
 }

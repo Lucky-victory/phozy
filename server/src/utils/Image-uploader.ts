@@ -12,6 +12,9 @@ export default class ImageUploader {
       if (err) throw err;
 
       req.fields = JSON.parse(fields.all as string);
+
+      req.captions = req.fields.map((field: any) => field?.caption);
+
       req.files = files.photos as formidable.File[];
       if (!Array.isArray(req.files)) req.files = [req.files];
       next();
@@ -50,9 +53,9 @@ export default class ImageUploader {
       });
       return;
     }
-    for (const file of req.files) {
+    for (const [index, file] of req.files.entries()) {
       const result = await cloudinary.uploader.upload(file.filepath, {
-        public_id: `image_${Utils.generateID()}`,
+        public_id: `${Utils.generateSlug(req.captions[index])}`,
         folder: "phozy",
       });
 

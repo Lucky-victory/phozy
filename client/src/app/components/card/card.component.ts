@@ -2,6 +2,7 @@ import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 
 @Component({
     selector: 'app-card',
@@ -11,10 +12,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
     imports: [CommonModule, IonicModule, RouterModule],
 })
 export class CardComponent implements OnInit {
-    @Input() photo!: any;
-    @Output() onLike: EventEmitter<any> = new EventEmitter<any>();
-    @Output() onDownload: EventEmitter<any> = new EventEmitter<any>();
-    @Output() onCollect: EventEmitter<any> = new EventEmitter<any>();
+    @Input() photo!: PHOTO_TO_VIEW;
+    @Output() onLike: EventEmitter<PHOTO_TO_VIEW> =
+        new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onDownload: EventEmitter<PHOTO_TO_VIEW> =
+        new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onCollect: EventEmitter<PHOTO_TO_VIEW> =
+        new EventEmitter<PHOTO_TO_VIEW>();
     isLiked: boolean;
     constructor(private router: Router) {}
 

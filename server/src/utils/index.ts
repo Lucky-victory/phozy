@@ -8,6 +8,7 @@ import omit from "just-omit";
 import pick from "just-pick";
 import merge from "just-merge";
 import values from "just-values";
+import slugify from "slugify";
 export const defaultProfileImage =
   "https://images.pexels.com/photos/3494648/pexels-photo-3494648.jpeg?auto=compress&cs=tinysrgb&w=640&h=854&dpr=2";
 
@@ -32,6 +33,19 @@ export class Utils extends MyUtils {
   };
   static values() {
     // return values();
+  }
+  static shortID(length = 8) {
+    return Math.random().toString(16).substring(2, length);
+  }
+  static generateSlug(caption?: string, prefix = "phozy_") {
+    if (Utils.isEmpty(caption)) return `${prefix}${Utils.generateID()}`;
+
+    return (
+      slugify(caption as string, {
+        strict: true,
+        lower: true,
+      }) + Utils.shortID()
+    );
   }
   /**
    * Generates a short username, if no name is provided

@@ -10,7 +10,8 @@
             </ion-button>
             <ion-button
                 class="card-btn"
-                title="like"
+                [ngClass]="{ liked: isLiked }"
+                title="{{ isLiked ? 'Unlike' : 'Like' }}"
                 (click)="likePhoto(photo)"
             >
                 <ion-icon
@@ -21,7 +22,7 @@
         </div>
     </div>
     <div class="card-image-wrapper" (click)="showPhotoModal(photo)">
-        <a [routerLink]="['/photo', photo.id]">
+        <a [routerLink]="['/photo', photo.id]" [state]="photo">
             <ion-img
                 [src]="photo.url"
                 [alt]="photo.caption"

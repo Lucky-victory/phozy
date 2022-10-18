@@ -1,7 +1,7 @@
 .card {
     overflow: hidden;
     position: relative;
-    --bg: rgba(var(--ion-color-light-rgb));
+    --bg: var(--ion-color-light-shade);
     --text-color: var(--ion-text-color);
     display: flex;
     flex-direction: column;
@@ -46,7 +46,9 @@
     color: var(--text-color);
     box-shadow: 0 3px 5px #0003;
     background: var(--bg);
-
+    &.liked {
+        color: #9d07d8;
+    }
     &::part(native) {
         background: inherit;
         color: inherit;

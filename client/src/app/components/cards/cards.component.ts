@@ -7,6 +7,7 @@ import { CardComponent } from '../card/card.component';
 
 import { NotifToastModule } from '../notif-toast/notif-toast.module';
 import { PhotoModalComponent } from '../photo-modal/photo-modal.component';
+import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 @Component({
     selector: 'app-cards',
     templateUrl: './cards.component.html',
@@ -22,10 +23,11 @@ import { PhotoModalComponent } from '../photo-modal/photo-modal.component';
     ],
 })
 export class CardsComponent implements OnInit {
-    @Input() photos = [];
+    @Input() photos:PHOTO_TO_VIEW[] = [];
     @Input() isLoggedIn: boolean;
-    @Output() onLike = new EventEmitter<[any, boolean]>();
-    @Output() onAddToAlbum = new EventEmitter();
+    @Output() onLike = new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW>();
     @Input() loaded!: boolean;
     isModalOpen: boolean;
     photoForModal: any;
@@ -47,7 +49,7 @@ export class CardsComponent implements OnInit {
             return;
         }
         photo.liked = photo.liked;
-        this.onLike.emit([photo, photo.liked]);
+        this.onLike.emit(photo);
     }
     addToAlbum(photo) {
         if (!this.isLoggedIn) {
@@ -55,7 +57,7 @@ export class CardsComponent implements OnInit {
             return;
         }
 
-        this.onAddToAlbum.emit(photo);
+        this.onCollect.emit(photo);
     }
     showPhotoModal(photo) {
         this.isModalOpen = true;
@@ -64,11 +66,8 @@ export class CardsComponent implements OnInit {
     modalClose(isOpen: boolean) {
         this.isModalOpen = isOpen;
     }
-    downloadPhoto(photo) {
-        const urlSegments = photo.url.split('.');
-        const ext = urlSegments[urlSegments.length - 1];
-
-        saveAs(photo.url, `phozy_${photo.id}.${ext}`);
+    downloadPhoto(photo: PHOTO_TO_VIEW) {
+        this.onDownload.emit(photo);
     }
     likePhoto(photo) {
         this.onLike.emit(photo);

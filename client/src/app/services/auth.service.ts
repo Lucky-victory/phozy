@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import { throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { IAuth, IAuthUser } from '../interfaces/auth-user.interface';
+import { IAuth, AUTH_USER } from '../interfaces/user.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -57,7 +57,7 @@ export class AuthService {
     }
     getUser() {
         const user = localStorage.getItem('phozy_user');
-        return JSON.parse(user) as IAuthUser;
+        return JSON.parse(user) as AUTH_USER;
     }
     private setSession(res) {
         const auth = res?.auth;

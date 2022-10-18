@@ -1,14 +1,16 @@
+import { UtilitiesService } from './../../services/utilities/utilities.service';
 import { Component, DoCheck, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, DoCheck {
-    photos!: any;
+    photos!: PHOTO_TO_VIEW[];
     isLoggedIn!: boolean;
     currentPage = 1;
     noMoreData: boolean;
@@ -17,19 +19,20 @@ export class HomePage implements OnInit, DoCheck {
     isLoaded: boolean = false;
     constructor(
         private apiService: ApiService,
+        private utilitiesService: UtilitiesService,
         private authService: AuthService,
         private router: Router
     ) {}
 
     ngOnInit() {
-        this.apiService.getGeneral(this.currentPage).subscribe((response) => {
+        this.apiService.getPhotos(this.currentPage).subscribe((response) => {
             this.isLoaded = true;
             this.photos = response.data;
         });
         this.isLoggedIn = this.authService.isLoggedIn();
     }
-    loadData() {
-        this.apiService.getGeneral(1).subscribe((response) => {
+    onRefresh() {
+        this.apiService.getPhotos(1).subscribe((response) => {
             this.isLoaded = true;
             this.photos = response.data;
         });
@@ -39,7 +42,7 @@ export class HomePage implements OnInit, DoCheck {
     }
     loadMore(event) {
         this.currentPage += 1;
-        this.apiService.getGeneral(this.currentPage).subscribe((response) => {
+        this.apiService.getPhotos(this.currentPage).subscribe((response) => {
             setTimeout(() => {
                 console.log(response);
 
@@ -54,38 +57,42 @@ export class HomePage implements OnInit, DoCheck {
         });
     }
     doRefresh(event) {
-        this.loadData();
+        this.onRefresh();
         setTimeout(() => {
             event.target.complete();
-        }, 2000);
+        }, 1000);
     }
-
-    likeOrUnlikePhoto(photo) {
-        console.log(photo);
-
+    addToCollection(photo: PHOTO_TO_VIEW) {}
+    downloadPhoto(photo: PHOTO_TO_VIEW) {
+        this.utilitiesService.downloadPhoto(photo);
+        this.utilitiesService.$downloadComplete.subscribe((isComplete) => {
+            if (isComplete) {
+                alert('Thanks for downloading');
+            }
+        });
+    }
+    likeOrUnlikePhoto(photo: PHOTO_TO_VIEW) {
         if (photo.liked) {
             this.apiService.unlikePhoto(photo.id).subscribe((response: any) => {
                 console.log(response, 'unlike');
                 const data = response.data;
-                this.photos = this.photos.map((photo) => {
-                    data.id === photo.id
-                        ? (photo.liked = data.liked)
-                        : photo.liked;
-                    return photo;
-                });
+                this.reflectLikeInData(data);
             });
         } else {
             this.apiService.likePhoto(photo.id).subscribe((response: any) => {
                 console.log(response, 'like');
                 const data = response.data;
-                this.photos = this.photos.map((photo) => {
-                    data.id === photo.id
-                        ? (photo.liked = data.liked)
-                        : photo.liked;
-                    return photo;
-                });
+                this.reflectLikeInData(data);
             });
         }
+    }
+    reflectLikeInData(newData: PHOTO_TO_VIEW) {
+        this.photos = this.photos.map((photo) => {
+            newData.id === photo.id
+                ? (photo.liked = newData.liked)
+                : photo.liked;
+            return photo;
+        });
     }
     logout() {
         this.authService.logout();
