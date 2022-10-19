@@ -100,7 +100,7 @@ export default class UsersController {
     try {
       let { password } = req.body;
       const { email, fullname } = req.body;
-      const shortId = Utils.shortID(6);
+      const shortId = Utils.shortID(7);
       const username = Utils.generateUsername(undefined, "", shortId);
 
       // check if user already exist

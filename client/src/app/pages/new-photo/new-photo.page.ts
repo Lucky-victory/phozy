@@ -40,7 +40,7 @@ export class NewPhotoPage implements OnInit {
     fetchUserAlbums() {
         const user = this.authService.getUser();
         this.apiService
-            .getUserAlbums(user?.username as string)
+            .getUserCollections(user?.username as string)
             .subscribe((res) => {
                 this.userAlbums = res.data as IAlbumResult[];
             });

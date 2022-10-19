@@ -22,7 +22,7 @@ export class UserProfilePage implements OnInit {
         this.apiService.getUserData(username).subscribe((res) => {
             this.userData = res.data as IUser;
         });
-        this.apiService.getUserAlbums(username).subscribe((res) => {
+        this.apiService.getUserCollections(username).subscribe((res) => {
             this.userAlbums = res.data;
         });
     }

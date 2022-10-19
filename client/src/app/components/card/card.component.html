@@ -22,7 +22,11 @@
         </div>
     </div>
     <div class="card-image-wrapper" (click)="showPhotoModal(photo)">
-        <a [routerLink]="['/photo', photo.id]" [state]="photo">
+        <a
+            [routerLink]="['/photo', photo.id]"
+            [state]="photo"
+            class="card-image-link"
+        >
             <ion-img
                 [src]="photo.url"
                 [alt]="photo.caption"

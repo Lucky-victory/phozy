@@ -18,7 +18,7 @@ export class ApiService {
     private retryCount: number = 3;
     private retryDelay: number = 3000;
     constructor(private http: HttpClient, private router: Router) {}
-    getUserAlbums(username: string) {
+    getUserCollections(username: string) {
         return this.http
             .get<IResponseResult>(
                 `${this.apiBaseUrl}/profile/${username}/albums`

@@ -60,12 +60,17 @@ export default class AlbumsController {
     try {
       const { page = 1, perPage = 10, fields } = req.query;
 
-      const { user } = req;
+      const { user } = req.auth;
       const offset =
         (parseInt(page as string) - 1) * parseInt(perPage as string);
       // get the fields specified in schema
       const fieldsInSchema = albumsModel.fields;
-      const getAttributes = Utils.getFields(fields as string, fieldsInSchema);
+      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, [
+        "created_at",
+        "title",
+        "description",
+        "user_id",
+      ]);
 
       const albums = await albumsModel.find<ALBUM_RESULT[]>({
         limit: perPage as number,

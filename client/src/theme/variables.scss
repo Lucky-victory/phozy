@@ -3,7 +3,7 @@
 
 /** Ionic CSS Variables **/
 :root {
-    --primary: #f05f11;
+    --primary: #13926e;
     /** primary **/
     --ion-color-primary: #3880ff;
     --ion-color-primary-rgb: 56, 128, 255;
@@ -154,6 +154,7 @@
    */
 
     .ios body {
+        --primary: #13926e;
         --ion-background-color: #000000;
         --ion-background-color-rgb: 0, 0, 0;
 
