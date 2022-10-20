@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-back-button slot="start"></ion-back-button>
-    <ion-title>Sign In</ion-title>
+ 
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
+  <!-- <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast> -->
 
 <div class="sign-in-form-container">
   <ion-card>
@@ -30,7 +30,7 @@
 
         <ion-item>
           <ion-label for="password" position="floating"> Password:</ion-label>
-          <ion-input
+          <ion-input border
          type="{{isText? 'text':'password'}}"
             formControlName="password"
             id="password"

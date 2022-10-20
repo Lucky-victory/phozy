@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { SignInPage } from '../sign-in/sign-in.page';
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
@@ -29,7 +30,7 @@ export class HomePage implements OnInit, DoCheck {
             this.isLoaded = true;
             this.photos = response.data;
         });
-        this.isLoggedIn = this.authService.isLoggedIn();
+        this.isLoggedIn = this.authService.isLoggedIn;
     }
     onRefresh() {
         this.apiService.getPhotos(1).subscribe((response) => {
@@ -71,7 +72,15 @@ export class HomePage implements OnInit, DoCheck {
             }
         });
     }
-    likeOrUnlikePhoto([photo,isLiked]:[PHOTO_TO_VIEW,boolean]) {
+    likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
+         if (!this.isLoggedIn) {
+            this.utilitiesService.showModal({
+                component: SignInPage, componentProps: {
+                    isInModal:true
+                }
+            });
+            return
+        }
         this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
             this.reflectLikeInData(response.data);
       })

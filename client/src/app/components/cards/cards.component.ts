@@ -29,9 +29,10 @@ export class CardsComponent implements OnInit {
     @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
     @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW>();
     @Input() loaded!: boolean;
+    
     isModalOpen: boolean;
     photoForModal: any;
-    isLiked: boolean;
+    isLiked!: boolean;
     infoMessage!: string;
     skeletons = new Array(10).map((_, i) => i);
     constructor(private router: Router) {}

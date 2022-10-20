@@ -12,6 +12,8 @@ import { AuthService } from '../../services/auth.service';
 import { FooterModule } from 'src/app/components/footer/footer.module';
 import { BannerComponent } from 'src/app/components/banner/banner.component';
 
+import { SignInPageModule } from '../sign-in/sign-in.module';
+
 @NgModule({
     imports: [
         CommonModule,
@@ -20,7 +22,7 @@ import { BannerComponent } from 'src/app/components/banner/banner.component';
         HomePageRoutingModule,
         CardsComponent,
         FooterModule,
-        BannerComponent,
+        BannerComponent,SignInPageModule
     ],
     declarations: [HomePage],
     providers: [ApiService, AuthService],

@@ -46,14 +46,18 @@ export class AuthService {
         return throwError(error || '');
     }
 
-    isLoggedIn() {
+   get isLoggedIn() {
+        console.log(
+            moment().isBefore(this.getExpiration())
+        );
+        
         return (
             moment().isBefore(this.getExpiration()) &&
             typeof this.getUser().username !== 'undefined'
         );
     }
     isLoggedOut() {
-        return !this.isLoggedIn();
+        return !this.isLoggedIn;
     }
     getUser() {
         const user = localStorage.getItem('phozy_user');

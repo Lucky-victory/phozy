@@ -3,6 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
     selector: 'app-card',
@@ -19,8 +20,8 @@ export class CardComponent implements OnInit {
         new EventEmitter<PHOTO_TO_VIEW>();
     @Output() onCollect =
         new EventEmitter<PHOTO_TO_VIEW>();
-    isLiked: boolean;
-    constructor(private router: Router) {}
+    @Input() isLiked: boolean;
+    constructor(private router: Router,private authService:AuthService) {}
 
     ngOnInit(photo = this.photo) {
         this.isLiked = photo.is_liked;
@@ -33,9 +34,10 @@ export class CardComponent implements OnInit {
     downloadPhoto(photo) {
         this.onDownload.emit(photo);
     }
-    likePhoto(photo:PHOTO_TO_VIEW) {
+    likePhoto(photo: PHOTO_TO_VIEW) {
+       
         this.onLike.emit([photo,this.isLiked]);
-        this.isLiked = !this.isLiked;
+        // this.isLiked = !this.isLiked;
     }
     showPhotoModal(photo) {
         // this.router.navigate(['/photo', photo.id],{

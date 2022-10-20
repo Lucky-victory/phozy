@@ -2,7 +2,9 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { ISignInForm } from 'src/app/interfaces/sign-in.interface';
+import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -17,8 +19,9 @@ export class SignInPage implements OnInit {
   errorMessage: string;
   infoMessage: string;
   isText: boolean;
+  isInModal!:boolean;
   signInForm:FormGroup<ISignInForm>
-  constructor(private authService:AuthService,private router:Router,private location:Location,private fb:FormBuilder) {
+  constructor(private authService:AuthService,public utilsService:UtilitiesService, private router:Router,private location:Location,private fb:FormBuilder,public modalCtrl:ModalController) {
     this.signInForm = this.fb.group({
       emailOrUsername: ['', [ Validators.required]],
 
@@ -34,9 +37,9 @@ export class SignInPage implements OnInit {
   
   ngOnInit() {
     // if the user is already logged in, redirect back to homepage
-    if (this.authService.isLoggedIn()) {
-      this.router.navigateByUrl('/')
-    }
+    // if (this.authService.isLoggedIn) {
+    //   this.router.navigateByUrl('/')
+    // }
   }
   signIn() {
      const email_or_username = this.signInForm.get('emailOrUsername').value;
@@ -47,11 +50,13 @@ export class SignInPage implements OnInit {
     this.authService.signIn(email_or_username, password).subscribe((res) => {
       this.result = res;
       this.isSending = false;
-      this.infoMessage = 'Sign in successful'
-      setTimeout(() => {
-        this.location.historyGo(-1);
-        
-      },2500)
+      this.infoMessage = 'Sign in successful';
+      this.utilsService.showToast({
+        message:this.infoMessage
+      })
+      if (this.isInModal) {
+        this.modalCtrl.dismiss();
+      }
     }, error => {
       this.isSending = false;
       this.errorResult = error;

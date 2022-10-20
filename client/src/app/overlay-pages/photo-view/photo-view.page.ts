@@ -10,7 +10,9 @@ import { Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { debounce, debounceTime } from 'rxjs/operators';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { SignInPage } from 'src/app/pages/sign-in/sign-in.page';
 import { ApiService } from 'src/app/services/api.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 
 @Component({
@@ -18,15 +20,16 @@ import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
     templateUrl: './photo-view.page.html',
     styleUrls: ['./photo-view.page.scss'],
 })
-export class PhotoViewPage implements OnInit, OnDestroy {
+export class PhotoViewPage implements  OnDestroy {
     @Input() photo: PHOTO_TO_VIEW;
     isDesktop: boolean;
     private tabletSize: number = 768;
     private resizeSub: Subscription;
     isLiked!: boolean;
     isLoaded!: boolean;
+    isLoggedIn!: boolean;
     constructor(
-        private router: Router,
+        private router: Router,private authService:AuthService,
         private apiService: ApiService,private utilitiesService:UtilitiesService,
         private activeRoute: ActivatedRoute,
         private platform: Platform
@@ -40,6 +43,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.isDesktop = this.platform.width() > this.tabletSize;
             });
+        this.isLoggedIn=this.authService.isLoggedIn
     }
 ionViewWillEnter(){
     console.log('view enter');
@@ -69,10 +73,21 @@ this.isLiked = this.photo?.is_liked;
     
 }
 
-    ngOnInit() {
-      
-    }
-    likeOrUnlikePhoto(photo:PHOTO_TO_VIEW) {
+    addToCollection(photo: PHOTO_TO_VIEW) {
+     
+ }
+    likeOrUnlikePhoto(photo: PHOTO_TO_VIEW) {
+        if (!this.isLoggedIn) {
+          
+            this.utilitiesService.showModal({
+                component:SignInPage, componentProps: {
+                    isInModal:true
+                }
+            });
+            
+            
+            return
+        }
         this.utilitiesService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((response) => {
            this.photo.is_liked=response.data.is_liked
        });
