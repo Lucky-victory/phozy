@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ApiService } from 'src/app/services/api.service';
+import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { INewAlbumForm } from '../../interfaces/new-album.interface';
 
 @Component({
@@ -16,7 +17,7 @@ export class NewAlbumPage {
     infoMessage: string;
     constructor(
         private formBuilder: FormBuilder,
-        private apiService: ApiService
+        private apiService: ApiService,private utilsService:UtilitiesService
     ) {
         this.newAlbumForm = this.formBuilder.group({
             privacy: [false],
@@ -35,7 +36,7 @@ export class NewAlbumPage {
     addNewAlbum(event: Event) {
         this.isSending = true;
         event.preventDefault();
-        const privacy = this.newAlbumForm.get('privacy').value;
+        const privacy = this.newAlbumForm.get('is_public').value;
         const title = this.newAlbumForm.get('title').value;
         const description = this.newAlbumForm.get('description').value;
         this.apiService
@@ -44,15 +45,22 @@ export class NewAlbumPage {
                 (res) => {
                     this.isSending = false;
                     this.infoMessage = 'Album successfully added';
+                    this.showToast()
                 },
                 (error) => {
                     this.isSending = false;
                     this.infoMessage = "An error occured couldn't create album";
+                    this.showToast()
                 }
             );
         setTimeout(() => {
             this.newAlbumForm.reset();
-            this.infoMessage = undefined;
+            this.infoMessage = '';
         }, 2000);
+    }
+      async showToast() {
+        await this.utilsService.showToast({
+            message:this.infoMessage
+        })
     }
 }

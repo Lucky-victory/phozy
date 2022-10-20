@@ -1,10 +1,4 @@
-<app-photo-modal
-    [isModalOpen]="isModalOpen"
-    (onModalClose)="modalClose($event)"
-    [photo]="photoForModal"
->
-</app-photo-modal>
-<app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
+
 <div class="cards-container">
     <ng-container *ngIf="loaded; else loading"> </ng-container>
     <app-card

@@ -63,7 +63,16 @@ export class HomePage implements OnInit, DoCheck {
             event.target.complete();
         }, 1000);
     }
-    addToCollection(photo: PHOTO_TO_VIEW) {}
+    addToCollection(photo: PHOTO_TO_VIEW) {
+         if (!this.isLoggedIn) {
+            this.utilitiesService.showModal({
+                component: SignInPage, componentProps: {
+                    isInModal:true
+                }
+            });
+            return
+        }
+    }
     downloadPhoto(photo: PHOTO_TO_VIEW) {
         this.utilitiesService.downloadPhoto(photo);
         this.utilitiesService.$downloadComplete.subscribe((isComplete) => {

@@ -5,6 +5,7 @@ import { IAlbumResult } from 'src/app/interfaces/albums.interface';
 import { PHOTO_FROM_CLIENT } from 'src/app/interfaces/photo.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 
 @Component({
     selector: 'app-new-photo',
@@ -23,7 +24,7 @@ export class NewPhotoPage implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private apiService: ApiService,
-        private authService: AuthService
+        private authService: AuthService,private utilsService:UtilitiesService
     ) {}
 
     ngOnInit() {
@@ -71,10 +72,12 @@ export class NewPhotoPage implements OnInit {
                 this.isSending = false;
                 this.photosToPreview = [];
                 this.infoMessage = 'Photos uploaded successfully';
+                this.showToast()
             },
             (error) => {
                 this.isSending = false;
                 this.infoMessage = 'Sorry, an error occurred please try again';
+                this.showToast()
             }
         );
     }
@@ -83,6 +86,7 @@ export class NewPhotoPage implements OnInit {
         const filesArray = Array.from(files);
         if (filesArray.length > this.maxPhotoCount) {
             this.infoMessage = `You have chosen more than ${this.maxPhotoCount} images`;
+            this.showToast();
             return;
         }
         if (files.length > 0) {
@@ -105,5 +109,10 @@ export class NewPhotoPage implements OnInit {
                 reader.readAsDataURL(file);
             }
         }
+    }
+    async showToast() {
+        await this.utilsService.showToast({
+            message:this.infoMessage
+        })
     }
 }

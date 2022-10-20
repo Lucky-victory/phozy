@@ -6,16 +6,15 @@ import { IonicModule } from '@ionic/angular';
 
 import { SignInPageRoutingModule } from './sign-in-routing.module';
 
-import { AuthService } from 'src/app/services/auth.service';;
 import { SignInPage } from './sign-in.page';
-import { NotifToastModule } from 'src/app/components/notif-toast/notif-toast.module';
+
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,ReactiveFormsModule,NotifToastModule,
+    IonicModule,ReactiveFormsModule,
     SignInPageRoutingModule,],
-  declarations: [SignInPage],providers:[AuthService]
+  declarations: [SignInPage],
 })
 export class SignInPageModule {}

@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/lucky-victory/phozy#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "fs-extra": "^10.1.0"
   },
   "devDependencies": {

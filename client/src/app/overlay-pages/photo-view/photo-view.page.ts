@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { debounce, debounceTime } from 'rxjs/operators';
+import { CollectionListComponent } from 'src/app/components/collection-list/collection-list.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { SignInPage } from 'src/app/pages/sign-in/sign-in.page';
 import { ApiService } from 'src/app/services/api.service';
@@ -30,7 +31,7 @@ export class PhotoViewPage implements  OnDestroy {
     isLoggedIn!: boolean;
     constructor(
         private router: Router,private authService:AuthService,
-        private apiService: ApiService,private utilitiesService:UtilitiesService,
+        private apiService: ApiService,private utilsService:UtilitiesService,
         private activeRoute: ActivatedRoute,
         private platform: Platform
     ) {
@@ -74,12 +75,24 @@ this.isLiked = this.photo?.is_liked;
 }
 
     addToCollection(photo: PHOTO_TO_VIEW) {
-     
+         if (!this.isLoggedIn) {
+            this.utilsService.showModal({
+                component: SignInPage, componentProps: {
+                    isInModal:true
+                }
+            });
+            return
+        }
+        this.utilsService.showModal({
+            component: CollectionListComponent, componentProps: {
+             photo:photo
+         }
+     })
  }
     likeOrUnlikePhoto(photo: PHOTO_TO_VIEW) {
         if (!this.isLoggedIn) {
           
-            this.utilitiesService.showModal({
+            this.utilsService.showModal({
                 component:SignInPage, componentProps: {
                     isInModal:true
                 }
@@ -88,7 +101,7 @@ this.isLiked = this.photo?.is_liked;
             
             return
         }
-        this.utilitiesService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((response) => {
+        this.utilsService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((response) => {
            this.photo.is_liked=response.data.is_liked
        });
        this.isLiked=!this.isLiked
@@ -97,6 +110,6 @@ this.isLiked = this.photo?.is_liked;
         this.resizeSub.unsubscribe();
     }
     downloadPhoto(photo:PHOTO_TO_VIEW) {
-        this.utilitiesService.downloadPhoto(photo)
+        this.utilsService.downloadPhoto(photo)
     }
 }

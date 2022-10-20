@@ -1,8 +1,9 @@
-import { Config } from "./interfaces/common";
 import dotenv from "dotenv";
+import { Config } from "./src/interfaces/common";
 
-import { MyUtils } from "my-node-ts-utils";
-dotenv.config();
+dotenv.config({
+  path:'../.env'
+});
 
 const {
   DB_HOST,

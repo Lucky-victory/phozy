@@ -1,14 +1,13 @@
-import { ALBUM_RESULT } from "./../interfaces/Albums";
-import config from "../config";
 import jwt from "jsonwebtoken";
+import config from "../../config";
+import { NEW_USER, USER_AUTH, USER_RESULT } from "../interfaces/Users";
 import { defaultProfileImage, Utils } from "../utils";
-import { IUser, NEW_USER, USER_AUTH, USER_RESULT } from "../interfaces/Users";
 
+import { compare as comparePassword, hash as hashPassword } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { hash as hashPassword, compare as comparePassword } from "bcrypt";
-import { usersModel } from "../models/Users";
 import ms from "ms";
 import { albumsModel } from "../models/Albums";
+import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
 const userCache = new CacheManager();
 

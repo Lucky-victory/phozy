@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { CollectionItemComponent } from '../collection-item/collection-item.component';
 
 @Component({
@@ -9,9 +10,12 @@ import { CollectionItemComponent } from '../collection-item/collection-item.comp
   styleUrls: ['./collection-list.component.scss'],standalone:true,imports:[CommonModule,IonicModule,CollectionItemComponent]
 })
 export class CollectionListComponent implements OnInit {
-
+  @Input() photo!: PHOTO_TO_VIEW;
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.photo);
+    
+  }
 
 }
