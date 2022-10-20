@@ -1,0 +1,12 @@
+import { Injectable } from '@angular/core';
+import { Actions, createEffect } from '@ngrx/effects';
+import { mergeMap } from 'rxjs/operators';
+
+
+
+@Injectable()
+export class AppEffects {
+
+
+  constructor(private actions$: Actions) {}
+}

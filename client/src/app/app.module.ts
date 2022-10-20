@@ -11,11 +11,19 @@ import { AuthInterceptorService } from './services/auth-interceptor/auth-interce
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { ApiService } from './services/api.service';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from '../environments/environment';
+import { EffectsModule } from '@ngrx/effects';
+import { AppEffects } from './app.effects';
+import { PhotoEffects } from './photo.effects';
+import { photoReducer } from './photo.reducer';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,HttpClientModule,ReactiveFormsModule],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {provide:HTTP_INTERCEPTORS,useClass: AuthInterceptorService ,multi:true},AuthService,ApiService],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,HttpClientModule,ReactiveFormsModule, StoreModule.forRoot(reducers, { metaReducers, }), !environment.production ? StoreDevtoolsModule.instrument() : [], EffectsModule.forRoot([AppEffects,PhotoEffects])],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {provide:HTTP_INTERCEPTORS,useClass: AuthInterceptorService ,multi:true},],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

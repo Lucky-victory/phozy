@@ -16,10 +16,10 @@ import { USER_RESULT } from '../interfaces/user.interface';
     providedIn: 'root',
 })
 export class ApiService {
-    private apiBaseUrl: string = environment.apiBaseUrl;
-    private retryCount: number = 3;
-    private retryDelay: number = 3000;
-    constructor(private http: HttpClient, private router: Router) {}
+    protected apiBaseUrl: string = environment.apiBaseUrl;
+    protected retryCount: number = 3;
+    protected retryDelay: number = 3000;
+    constructor(protected http: HttpClient) {}
     getUserCollections(username: string) {
         return this.http
             .get<QUERY_RESPONSE>(
@@ -37,7 +37,7 @@ export class ApiService {
                 catchError(this.errorHandler)
             ) ;
     }
-    private errorHandler(error: HttpErrorResponse) {
+    protected errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
     }
     uploadPhotos(photos: PHOTO_FROM_CLIENT[]) {

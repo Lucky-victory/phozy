@@ -13,6 +13,8 @@ import { FooterModule } from 'src/app/components/footer/footer.module';
 import { BannerComponent } from 'src/app/components/banner/banner.component';
 
 import { SignInPageModule } from '../sign-in/sign-in.module';
+import { EffectsModule } from '@ngrx/effects';
+import { PhotoEffects } from '../../photo.effects';
 
 @NgModule({
     imports: [
@@ -22,7 +24,7 @@ import { SignInPageModule } from '../sign-in/sign-in.module';
         HomePageRoutingModule,
         CardsComponent,
         FooterModule,
-        BannerComponent,SignInPageModule
+        BannerComponent,SignInPageModule, EffectsModule.forFeature([PhotoEffects])
     ],
     declarations: [HomePage],
     providers: [ApiService, AuthService],
