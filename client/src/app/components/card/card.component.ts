@@ -13,17 +13,17 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 })
 export class CardComponent implements OnInit {
     @Input() photo!: PHOTO_TO_VIEW;
-    @Output() onLike: EventEmitter<PHOTO_TO_VIEW> =
+    @Output() onLike =
+        new EventEmitter<[PHOTO_TO_VIEW,boolean]>();
+    @Output() onDownload=
         new EventEmitter<PHOTO_TO_VIEW>();
-    @Output() onDownload: EventEmitter<PHOTO_TO_VIEW> =
-        new EventEmitter<PHOTO_TO_VIEW>();
-    @Output() onCollect: EventEmitter<PHOTO_TO_VIEW> =
+    @Output() onCollect =
         new EventEmitter<PHOTO_TO_VIEW>();
     isLiked: boolean;
     constructor(private router: Router) {}
 
     ngOnInit(photo = this.photo) {
-        this.isLiked = photo.liked;
+        this.isLiked = photo.is_liked;
     }
 
     collectPhoto(photo) {
@@ -33,9 +33,9 @@ export class CardComponent implements OnInit {
     downloadPhoto(photo) {
         this.onDownload.emit(photo);
     }
-    likePhoto(photo) {
+    likePhoto(photo:PHOTO_TO_VIEW) {
+        this.onLike.emit([photo,this.isLiked]);
         this.isLiked = !this.isLiked;
-        this.onLike.emit(photo);
     }
     showPhotoModal(photo) {
         // this.router.navigate(['/photo', photo.id],{

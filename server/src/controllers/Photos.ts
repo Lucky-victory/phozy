@@ -9,6 +9,8 @@ import { usersModel } from "../models/Users";
 import { USER_RESULT } from "../interfaces/Users";
 import CacheManager from "../utils/cache-manager";
 const photoCache = new CacheManager();
+
+
 export default class PhotosController {
   static async getAll(req: Request, res: Response) {
     try {
@@ -18,21 +20,21 @@ export default class PhotosController {
         sort = "desc",
         orderby = "created_at",
       } = req.query;
-      console.log(req.auth, "auth");
-
+     
+      const { auth } = req;
       const { fields } = req.query;
       perPage = +perPage;
       page = +page;
       const offset = (page - 1) * perPage;
       if (!(sort === "desc" || sort === "asc")) sort = "desc";
       // check if th result was in cache
-      const cachedData = photoCache.get<PHOTO_RESULT>("photos_" + page);
-      if (cachedData) {
-        res
-          .status(200)
-          .json({ message: "photos retrieved from cache", data: cachedData });
-        return;
-      }
+      // const cachedData = photoCache.get<PHOTO_RESULT>("photos_" + page);
+      // if (cachedData) {
+      //   res
+      //     .status(200)
+      //     .json({ message: "photos retrieved from cache", data: cachedData });
+      //   return;
+      // }
       // get the total records and use it restrict the offset, this is crucial.
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,21 +45,12 @@ export default class PhotosController {
         res.status(200).json({ message: "No more Photos", data: [] });
         return;
       }
-      const defaultFields = [
-        "id",
-        "created_at",
-        "url",
-        "user_id",
-        "caption",
-        "tags",
-        "views",
-        "likes",
-      ];
+     
       const fieldsInSchema = albumsModel.fields;
       const getAttributes = Utils.getFields(
         fields as string,
         fieldsInSchema,
-        defaultFields
+        DEFAULT_FIELDS
       );
       if (!fieldsInSchema.includes(orderby as string)) orderby = "created_at";
 
@@ -81,12 +74,12 @@ export default class PhotosController {
         innerProp: "id",
         outerProp: "user_id",
       }) as (USER_RESULT & PHOTO_RESULT)[];
-      data = data.map((item) => {
-        const liked = item.likes?.users?.includes(item.user_id);
+      data = data.map((photo) => {
+        const is_liked = photo.likes?.users?.includes(auth?.user?.id);
 
         return {
-          ...item,
-          liked,
+          ...photo,
+          is_liked,
         };
       });
       // remove user_id property since the user object now has the ID
@@ -107,23 +100,13 @@ export default class PhotosController {
       const { id } = req.params;
       const { fields } = req.query;
       const { auth } = req;
-      console.log(auth);
-
-      const defaultFields = [
-        "id",
-        "created_at",
-        "url",
-        "user_id",
-        "caption",
-        "tags",
-        "views",
-        "likes",
-      ];
+    
+     
       const fieldsInSchema = albumsModel.fields;
       const getAttributes = Utils.getFields(
         fields as string,
         fieldsInSchema,
-        defaultFields
+        DEFAULT_FIELDS
       );
 
       let photo = await (
@@ -149,6 +132,7 @@ export default class PhotosController {
       ).data;
 
       photo = PhotosController.checkLike(photo, auth?.user?.id);
+console.log(photo,'getone');
 
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
@@ -182,7 +166,7 @@ export default class PhotosController {
   static async addNewPhotos(req: Request, res: Response) {
     try {
       const { photo_urls, auth } = req;
-      console.log(auth, "auth at new");
+    
 
       const newPhotos: NEW_PHOTO[] = photo_urls.map((photo) => {
         return {
@@ -391,9 +375,19 @@ export default class PhotosController {
    * @returns
    */
   private static checkLike(photo: PHOTO_RESULT, userId: string) {
-    photo.liked = photo.likes?.users?.includes(userId);
+    photo.is_liked = photo.likes?.users?.includes(userId);
     console.log(photo);
 
     return photo;
   }
 }
+export  const DEFAULT_FIELDS = [
+        "id",
+        "created_at",
+        "url",
+        "user_id",
+        "caption",
+        "tags",
+        "views",
+        "likes",
+      ];

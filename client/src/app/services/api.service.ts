@@ -4,11 +4,13 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, delay, retry, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { IResponseResult } from '../interfaces/common';
+
 import {
     PHOTO_FROM_CLIENT,
     PHOTO_TO_VIEW,
+    QUERY_RESPONSE,
 } from '../interfaces/photo.interface';
+import { USER_RESULT } from '../interfaces/user.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -20,7 +22,7 @@ export class ApiService {
     constructor(private http: HttpClient, private router: Router) {}
     getUserCollections(username: string) {
         return this.http
-            .get<IResponseResult>(
+            .get<QUERY_RESPONSE>(
                 `${this.apiBaseUrl}/profile/${username}/albums`
             )
             .pipe(catchError(this.errorHandler));
@@ -28,12 +30,12 @@ export class ApiService {
 
     getPhotos(page: number = 1, perPage = 10) {
         return this.http
-            .get(`${this.apiBaseUrl}/photos`, { params: { page, perPage } })
+            .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(`${this.apiBaseUrl}/photos`, { params: { page, perPage } })
             .pipe(
                 retry(this.retryCount),
                 delay(this.retryDelay),
                 catchError(this.errorHandler)
-            ) as any;
+            ) ;
     }
     private errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
@@ -83,7 +85,7 @@ export class ApiService {
     }
     likePhoto(photoId: string) {
         return this.http
-            .post(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
+            .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
             .pipe(catchError(this.errorHandler));
     }
     getPhoto(photoId: string) {
@@ -98,13 +100,13 @@ export class ApiService {
 
     unlikePhoto(photoId: string) {
         return this.http
-            .post(`${this.apiBaseUrl}/photos/${photoId}/unlike`, {})
+            .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/unlike`, {})
             .pipe(catchError(this.errorHandler));
     }
 
     getUserData(username: string) {
         return this.http
-            .get<IResponseResult>(`${this.apiBaseUrl}/profile/${username}`)
+            .get<QUERY_RESPONSE<USER_RESULT>>(`${this.apiBaseUrl}/profile/${username}`)
             .pipe(catchError(this.errorHandler));
     }
 }

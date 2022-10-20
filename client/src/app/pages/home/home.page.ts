@@ -71,26 +71,16 @@ export class HomePage implements OnInit, DoCheck {
             }
         });
     }
-    likeOrUnlikePhoto(photo: PHOTO_TO_VIEW) {
-        if (photo.liked) {
-            this.apiService.unlikePhoto(photo.id).subscribe((response: any) => {
-                console.log(response, 'unlike');
-                const data = response.data;
-                this.reflectLikeInData(data);
-            });
-        } else {
-            this.apiService.likePhoto(photo.id).subscribe((response: any) => {
-                console.log(response, 'like');
-                const data = response.data;
-                this.reflectLikeInData(data);
-            });
-        }
+    likeOrUnlikePhoto([photo,isLiked]:[PHOTO_TO_VIEW,boolean]) {
+        this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
+            this.reflectLikeInData(response.data);
+      })
     }
     reflectLikeInData(newData: PHOTO_TO_VIEW) {
         this.photos = this.photos.map((photo) => {
             newData.id === photo.id
-                ? (photo.liked = newData.liked)
-                : photo.liked;
+                ? (photo.is_liked = newData.is_liked)
+                : photo.is_liked;
             return photo;
         });
     }

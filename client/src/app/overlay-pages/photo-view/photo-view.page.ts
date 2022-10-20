@@ -11,13 +11,14 @@ import { Subscription } from 'rxjs';
 import { debounce, debounceTime } from 'rxjs/operators';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { ApiService } from 'src/app/services/api.service';
+import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 
 @Component({
     selector: 'app-photo-view',
     templateUrl: './photo-view.page.html',
     styleUrls: ['./photo-view.page.scss'],
 })
-export class PhotoViewPage implements OnInit, OnDestroy, AfterViewInit {
+export class PhotoViewPage implements OnInit, OnDestroy {
     @Input() photo: PHOTO_TO_VIEW;
     isDesktop: boolean;
     private tabletSize: number = 768;
@@ -26,7 +27,7 @@ export class PhotoViewPage implements OnInit, OnDestroy, AfterViewInit {
     isLoaded!: boolean;
     constructor(
         private router: Router,
-        private apiService: ApiService,
+        private apiService: ApiService,private utilitiesService:UtilitiesService,
         private activeRoute: ActivatedRoute,
         private platform: Platform
     ) {
@@ -40,34 +41,9 @@ export class PhotoViewPage implements OnInit, OnDestroy, AfterViewInit {
                 this.isDesktop = this.platform.width() > this.tabletSize;
             });
     }
-
-    ngOnInit() {
-        this.isLiked = this.photo?.liked;
-        /**
-         * if the photo object is not in the state, then query the database for it
-         */
-        // if (!this.photo) {
-        //     let id;
-        //     this.activeRoute.paramMap.subscribe((params) => {
-        //         id = params.get('id');
-        //     });
-        //     this.apiService.getPhoto(id).subscribe(
-        //         (response: any) => {
-        //             this.photo = response.data;
-        //             console.log(response);
-
-        //             this.isLoaded = true;
-        //         },
-        //         (error) => {
-        //             if (error.status === 404) {
-        //                 this.router.navigate(['not-found']);
-        //             }
-        //         }
-        //     );
-        // }
-    }
-    ngAfterViewInit(): void {
-        this.isLiked = this.photo?.liked;
+ionViewWillEnter(){
+    console.log('view enter');
+     this.isLiked = this.photo?.is_liked;
         /**
          * if the photo object is not in the state, then query the database for it
          */
@@ -80,7 +56,7 @@ export class PhotoViewPage implements OnInit, OnDestroy, AfterViewInit {
                 (response: any) => {
                     this.photo = response.data;
                     console.log(response);
-
+this.isLiked = this.photo?.is_liked;
                     this.isLoaded = true;
                 },
                 (error) => {
@@ -90,8 +66,22 @@ export class PhotoViewPage implements OnInit, OnDestroy, AfterViewInit {
                 }
             );
         }
+    
+}
+
+    ngOnInit() {
+      
     }
+    likeOrUnlikePhoto(photo:PHOTO_TO_VIEW) {
+        this.utilitiesService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((response) => {
+           this.photo.is_liked=response.data.is_liked
+       });
+       this.isLiked=!this.isLiked
+   }
     ngOnDestroy(): void {
         this.resizeSub.unsubscribe();
+    }
+    downloadPhoto(photo:PHOTO_TO_VIEW) {
+        this.utilitiesService.downloadPhoto(photo)
     }
 }

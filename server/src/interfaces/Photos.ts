@@ -10,11 +10,11 @@ export interface IPhoto {
   views?: number;
   created_at: number;
   updated_at?: number;
-  liked?: boolean;
+  is_liked?: boolean;
 }
 export type PHOTO_TO_VIEW = Pick<
   IPhoto,
-  "caption" | "created_at" | "id" | "liked" | "likes" | "tags" | "url" | "views"
+  "caption" | "created_at" | "id" | "is_liked" | "likes" | "tags" | "url" | "views"
 > & {
   user: USER_RESULT;
 };

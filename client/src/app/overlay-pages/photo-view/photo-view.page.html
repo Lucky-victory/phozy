@@ -12,7 +12,7 @@
         <ng-container *ngIf="isLoaded;else loading ">
             <div class="photo-view-wrapper">
                 <div class="photo-view-top">
-                    <div class="flex ai-center photo-owner">
+                    <div class="flex ai-center photo-owner ion-hide-sm-down" >
                         <ion-avatar class="photo-owner-avatar">
                             <img
                                 [src]="photo?.user?.profile_image"
@@ -28,7 +28,7 @@
                     <div class="btns-wrapper">
                         <ion-buttons slot="end">
                             <ion-button
-                                [disabled]="!isLoaded"
+                              
                                 class="btn"
                                 title="Add to collection"
                             >
@@ -36,12 +36,12 @@
                                     slot="{{isDesktop ?'start':''}}"
                                     name="bookmarks-outline"
                                 ></ion-icon>
-                                <span [ngClass]="{'ion-hide':!isDesktop}">
+                                <span class="ion-hide-md-down">
                                     {{'Collect'}}
                                 </span>
                             </ion-button>
                             <ion-button
-                                [disabled]="!isLoaded"
+                                (click)="likeOrUnlikePhoto(photo)"
                                 [ngClass]="{liked:isLiked}"
                                 class="btn"
                                 title="{{isLiked ?'Unlike':'Like'}}"
@@ -50,12 +50,12 @@
                                     slot="{{isDesktop ? 'start':''}}"
                                     name="{{isLiked ? 'heart':'heart-outline'}}"
                                 ></ion-icon>
-                                <span [ngClass]="{'ion-hide':!isDesktop}">
+                                <span class="ion-hide-sm-down">
                                     {{isLiked?'Unlike':'Like'}}
                                 </span>
                             </ion-button>
-                            <ion-button
-                                [disabled]="!isLoaded"
+                            <ion-button (click)="downloadPhoto(photo)"
+                        
                                 class="btn download-btn"
                                 title="Download"
                             >
@@ -63,7 +63,7 @@
                                     slot="{{isDesktop ? 'start':''}}"
                                     name="arrow-down-outline"
                                 ></ion-icon>
-                                <span [ngClass]="{'ion-hide':!isDesktop}">
+                                <span >
                                     Download
                                 </span>
                             </ion-button>

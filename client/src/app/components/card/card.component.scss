@@ -5,15 +5,17 @@
     --text-color: var(--ion-text-color);
     display: flex;
     flex-direction: column;
-    max-height: 400px;
-    min-height: 350px;
+    max-height: 500px;
+    min-height: 450px;
+    max-width: 450px;
     background-color: var(--ion-color-light-tint);
     .card-image-link {
         display: flex;
         width: 100%;
+        height: 100%;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
+        // align-items: center;
         flex: 1;
         position: relative;
         &::before {
@@ -47,7 +49,7 @@
     position: relative;
     width: 100%;
     padding: 5px;
-    // align-items: center;
+  
     display: flex;
 }
 .card-btns-wrapper {
@@ -121,13 +123,14 @@ ion-icon.like-icon,
 ion-icon.add-to-album-icon {
 }
 
-@media all and (prefers-color-scheme: dark) {
-}
-@media screen and (max-width: 727px) {
+
+@media screen and (max-width: 767px) {
     .card {
         grid-column: unset !important;
         border-bottom: 1px solid var(--ion-color-light-shade);
         grid-row: unset;
+        min-height: 400px;
+        max-height: 450px;
     }
     .card-meta {
         background: transparent;
@@ -143,7 +146,7 @@ ion-icon.add-to-album-icon {
     }
 }
 
-@media screen and (min-width: 728px) {
+@media screen and (min-width: 768px) {
     .card:hover {
         .card-bottom {
             transform: translateY(0);
@@ -159,13 +162,13 @@ ion-icon.add-to-album-icon {
         transform: translateY(100px);
         // background-color: var(--ion-color-light);
     }
-    .card-image-wrapper {
-        &:hover {
+    .card:hover{
+       
             .card-image-link {
                 &::before {
                     opacity: 0.3;
                 }
             }
-        }
+        
     }
 }

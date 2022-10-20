@@ -1,4 +1,4 @@
-import { checkIfAuthenticated } from "./../middlewares/Auth";
+import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "./../middlewares/Auth";
 import { Router } from "express";
 const router = Router();
 import ImageUploader from "../utils/Image-uploader";
@@ -6,8 +6,8 @@ import PhotosController from "../controllers/Photos";
 import asyncHandler from "express-async-handler";
 
 router
-  .get("/", PhotosController.getAll)
-  .get("/:id", PhotosController.getOne)
+  .get("/",checkIfAuthenticatedOptional,  PhotosController.getAll)
+  .get("/:id",checkIfAuthenticatedOptional, PhotosController.getOne)
   .use(checkIfAuthenticated)
   .post(
     "/",

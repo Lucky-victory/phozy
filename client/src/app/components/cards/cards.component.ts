@@ -25,7 +25,7 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 export class CardsComponent implements OnInit {
     @Input() photos:PHOTO_TO_VIEW[] = [];
     @Input() isLoggedIn: boolean;
-    @Output() onLike = new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onLike = new EventEmitter<[PHOTO_TO_VIEW,boolean]>();
     @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
     @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW>();
     @Input() loaded!: boolean;
@@ -69,8 +69,8 @@ export class CardsComponent implements OnInit {
     downloadPhoto(photo: PHOTO_TO_VIEW) {
         this.onDownload.emit(photo);
     }
-    likePhoto(photo) {
-        this.onLike.emit(photo);
+    likePhoto([photo,isLiked]:[PHOTO_TO_VIEW,boolean]) {
+        this.onLike.emit([photo,isLiked]);
     }
     collectPhoto(photo) {}
 }

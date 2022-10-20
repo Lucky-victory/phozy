@@ -7,14 +7,14 @@
 
     grid-auto-flow: dense;
 
-    grid-gap: 12px;
+    grid-gap: 14px;
 }
 
-@media screen and (max-width: 727px) {
+@media screen and (max-width: 767px) {
     .cards-container {
-        grid-template-columns: repeat(auto-fill, minmax(230px, auto));
+        grid-template-columns: repeat(auto-fill, minmax(250px, auto));
 
         grid-template-rows: minmax(auto, auto);
-        grid-gap: 8px;
+        grid-gap: 12px;
     }
 }

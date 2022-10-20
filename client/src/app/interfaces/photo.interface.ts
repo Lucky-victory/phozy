@@ -10,14 +10,14 @@ export interface IPhoto {
     views?: number;
     created_at: number;
     updated_at?: number;
-    liked?: boolean;
+    is_liked?: boolean;
 }
 export type PHOTO_TO_VIEW = Pick<
     IPhoto,
     | 'caption'
     | 'created_at'
     | 'id'
-    | 'liked'
+    | 'is_liked'
     | 'likes'
     | 'tags'
     | 'url'
@@ -32,3 +32,8 @@ export type PHOTO_FROM_CLIENT = {
     caption?: string;
     tags?: string;
 };
+
+export type QUERY_RESPONSE<T=any> = {
+    message: string,
+    data:T
+}
