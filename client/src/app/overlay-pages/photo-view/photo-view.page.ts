@@ -14,6 +14,7 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { SignInPage } from 'src/app/pages/sign-in/sign-in.page';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { PhotoService } from 'src/app/services/photo/photo.service';
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 
 @Component({
@@ -32,7 +33,7 @@ export class PhotoViewPage implements  OnDestroy {
     constructor(
         private router: Router,private authService:AuthService,
         private apiService: ApiService,private utilsService:UtilitiesService,
-        private activeRoute: ActivatedRoute,
+        private activeRoute: ActivatedRoute,private photoService:PhotoService,
         private platform: Platform
     ) {
         this.isDesktop = this.platform.width() > this.tabletSize;
@@ -57,7 +58,7 @@ ionViewWillEnter(){
             this.activeRoute.paramMap.subscribe((params) => {
                 id = params.get('id');
             });
-            this.apiService.getPhoto(id).subscribe(
+            this.photoService.getPhoto(id).subscribe(
                 (response: any) => {
                     this.photo = response.data;
                     console.log(response);
@@ -101,8 +102,8 @@ this.isLiked = this.photo?.is_liked;
             
             return
         }
-        this.utilsService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((response) => {
-           this.photo.is_liked=response.data.is_liked
+        this.utilsService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((data) => {
+           this.photo.is_liked=data.is_liked
        });
        this.isLiked=!this.isLiked
    }

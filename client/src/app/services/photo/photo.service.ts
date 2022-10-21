@@ -21,5 +21,25 @@ export class PhotoService extends ApiService{
               map((response)=>response.data),
               catchError(this.errorHandler),
             ) ;
+     }
+   likePhoto(photoId: string) {
+        return this.http
+            .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
+            .pipe(map((response)=>response.data),catchError(this.errorHandler));
+    }
+    getPhoto(photoId: string) {
+        return this.http
+            .get(`${this.apiBaseUrl}/photos/${photoId}`)
+            .pipe(
+                retry(this.retryCount),
+                delay(this.retryDelay),
+                catchError(this.errorHandler)
+            );
+    }
+
+    unlikePhoto(photoId: string) {
+        return this.http
+            .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/unlike`, {})
+            .pipe(map((response)=>response.data),catchError(this.errorHandler));
     }
 }

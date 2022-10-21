@@ -83,26 +83,7 @@ export class ApiService {
     addToCollection(photo: PHOTO_TO_VIEW) {
         this.http.post(`${this.apiBaseUrl}/albums`, {});
     }
-    likePhoto(photoId: string) {
-        return this.http
-            .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
-            .pipe(catchError(this.errorHandler));
-    }
-    getPhoto(photoId: string) {
-        return this.http
-            .get(`${this.apiBaseUrl}/photos/${photoId}`)
-            .pipe(
-                retry(this.retryCount),
-                delay(this.retryDelay),
-                catchError(this.errorHandler)
-            );
-    }
-
-    unlikePhoto(photoId: string) {
-        return this.http
-            .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/unlike`, {})
-            .pipe(catchError(this.errorHandler));
-    }
+   
 
     getUserData(username: string) {
         return this.http

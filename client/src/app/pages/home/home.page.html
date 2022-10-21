@@ -32,10 +32,10 @@
     ></app-cards>
     <ion-item
         lines="none"
-        [ngStyle]="{marginBottom:'1.5rem',textAlign:'center'}"
+       
         *ngIf="noMoreData"
     >
-        <span *ngIf="noMoreData">You have reached the end.</span>
+        <div class="ion-text-center">You have reached the end.</div>
     </ion-item>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">

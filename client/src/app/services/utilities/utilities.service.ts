@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver';
 import { BehaviorSubject } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { PHOTO_TO_VIEW } from '../../interfaces/photo.interface';
-import { ApiService } from '../api.service';
+import {  PhotoService } from '../photo/photo.service';
 @Injectable({
     providedIn: 'root',
 })
@@ -12,7 +12,7 @@ export class UtilitiesService {
     private downloadComplete = new BehaviorSubject<boolean>(false);
     $downloadComplete = this.downloadComplete.asObservable().pipe(delay(2500));
 
-    constructor(private apiService:ApiService,private modalCtrl:ModalController,private toastCtrl:ToastController) {}
+    constructor(private photoService:PhotoService,private modalCtrl:ModalController,private toastCtrl:ToastController) {}
 
     downloadPhoto(photo: PHOTO_TO_VIEW) {
         const urlSegments = photo.url.split('.');
@@ -23,10 +23,10 @@ export class UtilitiesService {
     }
      likeOrUnlikePhoto([photo,isLiked]:[PHOTO_TO_VIEW,boolean]) {
         if (isLiked) {
-            return this.apiService.unlikePhoto(photo.id);
+            return this.photoService.unlikePhoto(photo.id);
         } 
             
-         return this.apiService.likePhoto(photo.id)
+         return this.photoService.likePhoto(photo.id)
      }
     
     async showModal(options: ModalOptions) {

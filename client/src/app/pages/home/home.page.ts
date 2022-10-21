@@ -1,16 +1,16 @@
-import { UtilitiesService } from './../../services/utilities/utilities.service';
-import { Component, DoCheck, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { delay, map, tap } from 'rxjs/operators';
+import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { AppState } from 'src/app/state/app.state';
+import { likePhoto, loadPhotos, unlikePhoto } from 'src/app/state/photo/photo.actions';
+import { selectAllPhotos } from 'src/app/state/photo/photo.selectors';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { SignInPage } from '../sign-in/sign-in.page';
-import { delay, map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { likePhoto, loadPhotos } from 'src/app/state/photo/photo.actions';
-import { selectAllPhotos } from 'src/app/state/photo/photo.selectors';
-import { AppState } from 'src/app/state/app.state';
+import { UtilitiesService } from './../../services/utilities/utilities.service';
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
@@ -80,20 +80,27 @@ export class HomePage implements OnInit{
             }
         });
     }
-    likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
-         if (!this.isLoggedIn) {
-            this.utilitiesService.showModal({
-                component: SignInPage, componentProps: {
-                    isInModal:true
-                }
-            });
-            return
-         }
-        this.store.dispatch(likePhoto({id:photo.id}))
-    //     this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
-    //         // this.reflectLikeInData(response.data);
-    //   })
-    }
+    // likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
+    //      if (!this.isLoggedIn) {
+    //         this.utilitiesService.showModal({
+    //             component: SignInPage, componentProps: {
+    //                 isInModal:true
+    //             }
+    //         });
+    //         return
+    //      }
+    //     this.store.dispatch(likePhoto({id:photo.id}))
+    // //     this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
+    // //         // this.reflectLikeInData(response.data);
+    // //   })
+    // }
+    likeOrUnlikePhoto([photo,isLiked]:[PHOTO_TO_VIEW,boolean]) {
+        if (isLiked) {
+            return this.store.dispatch(unlikePhoto({ id: photo.id }))
+        } 
+            
+        return this.store.dispatch(likePhoto({ id: photo.id }))
+     }
     reflectLikeInData(newData: PHOTO_TO_VIEW) {
         this.photos$ = this.photos$.pipe(map((photos) => {
             photos.map((photo) => {
