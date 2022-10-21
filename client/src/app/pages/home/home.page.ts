@@ -5,13 +5,19 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { SignInPage } from '../sign-in/sign-in.page';
+import { delay, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { loadPhotos } from 'src/app/state/photo/photo.actions';
+import { selectAllPhotos } from 'src/app/state/photo/photo.selectors';
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit, DoCheck {
-    photos!: PHOTO_TO_VIEW[];
+export class HomePage implements OnInit{
+    // photos$!: Observable<PHOTO_TO_VIEW[]>;
+    photos$:Observable<PHOTO_TO_VIEW[]>
     isLoggedIn!: boolean;
     currentPage = 1;
     noMoreData: boolean;
@@ -22,40 +28,32 @@ export class HomePage implements OnInit, DoCheck {
         private apiService: ApiService,
         private utilitiesService: UtilitiesService,
         private authService: AuthService,
-        private router: Router
+        private router: Router, private store: Store
     ) {}
 
     ngOnInit() {
-        this.apiService.getPhotos(this.currentPage).subscribe((response) => {
-            this.isLoaded = true;
-            this.photos = response.data;
-        });
+        // this.photos$=this.apiService.getPhotos(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
+        this.store.dispatch(loadPhotos());
+        this.photos$=this.store.select(selectAllPhotos)
         this.isLoggedIn = this.authService.isLoggedIn;
     }
     onRefresh() {
-        this.apiService.getPhotos(1).subscribe((response) => {
-            this.isLoaded = true;
-            this.photos = response.data;
-        });
+        this.isLoaded = false;
+           this.photos$=this.apiService.getPhotos(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
     }
-    ngDoCheck(): void {
-        // this.isLoggedIn = this.authService.isLoggedIn();
-    }
+   
     loadMore(event) {
         this.currentPage += 1;
-        this.apiService.getPhotos(this.currentPage).subscribe((response) => {
-            setTimeout(() => {
-                console.log(response);
+        this.apiService.getPhotos(this.currentPage).pipe(delay(500),tap((response) => {
+            console.log(response);
 
-                event.target.complete();
-                if (!response.data?.length) {
-                    this.noMoreData = true;
-                    event.target.disabled = true;
-                }
-
-                this.photos.push(...response.data);
-            }, 500);
-        });
+            event.target.complete();
+            if (!response.data?.length) {
+                this.noMoreData = true;
+                event.target.disabled = true;
+            }
+            return response
+        })).subscribe()
     }
     doRefresh(event) {
         this.onRefresh();
@@ -95,12 +93,16 @@ export class HomePage implements OnInit, DoCheck {
       })
     }
     reflectLikeInData(newData: PHOTO_TO_VIEW) {
-        this.photos = this.photos.map((photo) => {
-            newData.id === photo.id
+        this.photos$ = this.photos$.pipe(map((photos) => {
+            photos.map((photo) => {
+                
+                newData.id === photo.id
                 ? (photo.is_liked = newData.is_liked)
                 : photo.is_liked;
-            return photo;
-        });
+                return photo;
+            })
+            return photos
+        }));
     }
     logout() {
         this.authService.logout();

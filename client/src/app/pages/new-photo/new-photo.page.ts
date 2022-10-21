@@ -1,6 +1,7 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IAlbumResult } from 'src/app/interfaces/albums.interface';
+import { ALBUM_RESULT } from 'src/app/interfaces/albums.interface';
+
 
 import { PHOTO_FROM_CLIENT } from 'src/app/interfaces/photo.interface';
 import { ApiService } from 'src/app/services/api.service';
@@ -16,7 +17,7 @@ export class NewPhotoPage implements OnInit {
     isSending: boolean = false;
     photosToPreview: PHOTO_FROM_CLIENT[] = [];
     photosToUpload: Partial<PHOTO_FROM_CLIENT[]> = [];
-    userAlbums: IAlbumResult[] = [];
+    userAlbums: ALBUM_RESULT[] = [];
     maxPhotoCount = 10;
 
     infoMessage!: string;
@@ -43,7 +44,7 @@ export class NewPhotoPage implements OnInit {
         this.apiService
             .getUserCollections(user?.username as string)
             .subscribe((res) => {
-                this.userAlbums = res.data as IAlbumResult[];
+                this.userAlbums = res.data as ALBUM_RESULT[];
             });
     }
     ionViewDidEnter(): void {

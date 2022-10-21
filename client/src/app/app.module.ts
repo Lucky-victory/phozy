@@ -4,21 +4,18 @@ import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from './services/auth.service';
-import { ApiService } from './services/api.service';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
-import { EffectsModule } from '@ngrx/effects';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 import { AppEffects } from './app.effects';
-import { PhotoEffects } from './photo.effects';
-import { photoReducer } from './photo.reducer';
+import { metaReducers, reducers } from './reducers';
+import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service';
+import { PhotoEffects } from './state/photo/photo.effects';
 
 @NgModule({
   declarations: [AppComponent],

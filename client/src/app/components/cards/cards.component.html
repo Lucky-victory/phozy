@@ -3,7 +3,7 @@
     <ng-container *ngIf="loaded; else loading"> </ng-container>
     <app-card
         [photo]="photo"
-        *ngFor="let photo of photos"
+        *ngFor="let photo of photos$|async"
         (onLike)="likePhoto($event)"
         (onCollect)="collectPhoto($event)"
         (onDownload)="downloadPhoto($event)"

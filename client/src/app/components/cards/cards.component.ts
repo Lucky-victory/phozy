@@ -7,6 +7,7 @@ import { CardComponent } from '../card/card.component';
 
 
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { Observable } from 'rxjs';
 @Component({
     selector: 'app-cards',
     templateUrl: './cards.component.html',
@@ -21,7 +22,7 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
     ],
 })
 export class CardsComponent implements OnInit {
-    @Input() photos:PHOTO_TO_VIEW[] = [];
+    @Input() photos$!:Observable<PHOTO_TO_VIEW[]> ;
     @Input() isLoggedIn: boolean;
     @Output() onLike = new EventEmitter<[PHOTO_TO_VIEW,boolean]>();
     @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();

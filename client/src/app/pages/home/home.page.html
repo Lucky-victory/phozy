@@ -19,7 +19,7 @@
     <app-banner [loaded]="isLoaded"></app-banner>
 
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-        <ion-refresher-content></ion-refresher-content>
+        <ion-refresher-content pullingText="Pull down to refresh"></ion-refresher-content>
     </ion-refresher>
 
     <app-cards
@@ -27,7 +27,7 @@
         (onCollect)="addToCollection($event)"
         (onDownload)="downloadPhoto($event)"
         [loaded]="isLoaded"
-        [photos]="photos"
+        [photos$]="photos$"
         [isLoggedIn]="isLoggedIn"
     ></app-cards>
     <ion-item
