@@ -24,7 +24,7 @@ import { SignInPageModule } from '../sign-in/sign-in.module';
         HomePageRoutingModule,
         CardsComponent,
         FooterModule,
-        BannerComponent,SignInPageModule, EffectsModule.forFeature([PhotoEffects])
+        BannerComponent,SignInPageModule, 
     ],
     declarations: [HomePage],
     providers: [ApiService, AuthService],

@@ -8,8 +8,9 @@ import { SignInPage } from '../sign-in/sign-in.page';
 import { delay, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { loadPhotos } from 'src/app/state/photo/photo.actions';
+import { likePhoto, loadPhotos } from 'src/app/state/photo/photo.actions';
 import { selectAllPhotos } from 'src/app/state/photo/photo.selectors';
+import { AppState } from 'src/app/state/app.state';
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
@@ -21,20 +22,20 @@ export class HomePage implements OnInit{
     isLoggedIn!: boolean;
     currentPage = 1;
     noMoreData: boolean;
-    isLoading: boolean = true;
+    // isLoading: boolean = true;
     footerInfo: string;
     isLoaded: boolean = false;
     constructor(
         private apiService: ApiService,
         private utilitiesService: UtilitiesService,
         private authService: AuthService,
-        private router: Router, private store: Store
+        private router: Router, private store: Store<AppState>
     ) {}
 
     ngOnInit() {
         // this.photos$=this.apiService.getPhotos(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
         this.store.dispatch(loadPhotos());
-        this.photos$=this.store.select(selectAllPhotos)
+        this.photos$ = this.store.select(selectAllPhotos).pipe(tap(()=>this.isLoaded=true));
         this.isLoggedIn = this.authService.isLoggedIn;
     }
     onRefresh() {
@@ -87,10 +88,11 @@ export class HomePage implements OnInit{
                 }
             });
             return
-        }
-        this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
-            this.reflectLikeInData(response.data);
-      })
+         }
+        this.store.dispatch(likePhoto({id:photo.id}))
+    //     this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
+    //         // this.reflectLikeInData(response.data);
+    //   })
     }
     reflectLikeInData(newData: PHOTO_TO_VIEW) {
         this.photos$ = this.photos$.pipe(map((photos) => {

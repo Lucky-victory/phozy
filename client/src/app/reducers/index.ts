@@ -14,7 +14,7 @@ export interface State {
 }
 
 export const reducers: ActionReducerMap<State> = {
-photoReducer
+photos:photoReducer
 };
 
 

@@ -18,7 +18,6 @@ export const photosFailure = createAction(
   '[Photo] Photo  Failure',
   props<{ error: any }>()
 );
-export const photosLoaded = createAction(
-  '[Photos API] Photos Loaded Success',
-  props<{ photos:PHOTO_TO_VIEW[]}>()
+export const photosLoadSuccess = createAction(
+  '[Photos] Photos Success',props<{photos:PHOTO_TO_VIEW[]}>()
 );
