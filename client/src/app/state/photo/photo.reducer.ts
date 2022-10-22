@@ -28,6 +28,7 @@ export const photoReducer = createReducer(
       return photo
     })
   })),
+  on(collectPhoto,(state,action)=>({...state})),
   on(photosLoadSuccess,(state,{photos})=>({...state,photos:photos})),
   on(collectPhoto, (state) => state)
 );

@@ -1,13 +1,13 @@
 import { Utils } from "./../utils/index";
 
 import { Request, Response } from "express";
-import { photosModel } from "../models/Photos";
-import { IPhoto, NEW_PHOTO, PHOTO_RESULT, PHOTO_TO_VIEW } from "./../interfaces/Photos";
-import { albumsModel } from "../models/Albums";
 import { Order } from "harpee";
-import { usersModel } from "../models/Users";
 import { USER_RESULT } from "../interfaces/Users";
+import { albumsModel } from "../models/Albums";
+import { photosModel } from "../models/Photos";
+import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
+import { IPhoto, NEW_PHOTO, PHOTO_RESULT, PHOTO_TO_VIEW } from "./../interfaces/Photos";
 const photoCache = new CacheManager();
 
 
@@ -21,7 +21,8 @@ export default class PhotosController {
         orderby = "created_at",
       } = req.query;
      
-      const { auth } = req;
+      const authUser = Utils.getAuthenticatedUser(req);
+      
       const { fields } = req.query;
       perPage = +perPage;
       page = +page;
@@ -75,7 +76,7 @@ export default class PhotosController {
         outerProp: "user_id",
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
-        const is_liked = photo.likes?.users?.includes(auth?.user?.id);
+        const is_liked = photo.likes?.users?.includes(authUser?.id);
 
         return {
           ...photo,
@@ -124,7 +125,7 @@ export default class PhotosController {
        *  */
       const photoOwnerId = photo?.user_id as string;
       // query users table with it
-      const user = await PhotosController.getPhotoOwner(photoOwnerId);
+      const user = await PhotosController.getOwner(photoOwnerId);
 
       photo = PhotosController.checkLike(photo, authUser?.id);
       
@@ -194,7 +195,7 @@ export default class PhotosController {
    * @param res
    * @returns
    */
-  static async deletePhoto(req: Request, res: Response) {
+  static async delete(req: Request, res: Response) {
     try {
       const  authUser  = Utils.getAuthenticatedUser(req);
       const { id } = req.params;
@@ -231,7 +232,7 @@ export default class PhotosController {
    * @param res
    * @returns
    */
-  static async updatePhoto(req: Request, res: Response) {
+  static async update(req: Request, res: Response) {
     try {
      const  authUser  = Utils.getAuthenticatedUser(req);
       const { id } = req.params;
@@ -276,7 +277,7 @@ export default class PhotosController {
    * @param res
    * @returns
    */
-  static async likePhoto(req: Request, res: Response) {
+  static async like(req: Request, res: Response) {
     try {
  
       const { id } = req.params;
@@ -306,7 +307,7 @@ export default class PhotosController {
       });
       // Remove unwanted props
       let photo = Utils.pick(updatedData.data as IPhoto, DEFAULT_PHOTO_FIELDS) as PHOTO_RESULT;
-      const user = await PhotosController.getPhotoOwner(photo.user_id) as USER_RESULT;
+      const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
       photo= PhotosController.checkLike(
          photo,
          authUserId
@@ -334,7 +335,7 @@ export default class PhotosController {
    * @param res
    * @returns
    */
-  static async unlikePhoto(req: Request, res: Response) {
+  static async unlike(req: Request, res: Response) {
     try {
       const { id } = req.params;
     
@@ -363,7 +364,7 @@ export default class PhotosController {
       });
       // Remove unwanted props
       let photo = Utils.pick(updatedData.data as IPhoto, DEFAULT_PHOTO_FIELDS) as PHOTO_RESULT;
-      const user = await PhotosController.getPhotoOwner(photo.user_id) as USER_RESULT;
+      const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
       photo= PhotosController.checkLike(
          photo,
          authUserId
@@ -385,7 +386,7 @@ export default class PhotosController {
   /**
    * Get the photo owner from users model
    */
-  private static async getPhotoOwner(userId:string,columns=[
+  private static async getOwner(userId:string,columns=[
           "username",
           "fullname",
           "profile_image",

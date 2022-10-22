@@ -10,14 +10,15 @@ export const unlikePhoto = createAction(
 
 export const collectPhoto = createAction(
   '[Cards Component] Collect Photo',
-  props<{ id: PHOTO_TO_VIEW ['id']}>()
+  props<{albumId:string, photoId: PHOTO_TO_VIEW ['id']}>()
 );
 export const loadPhotos = createAction(
   '[Photos] Load Photos',
  
 );
+
 export const photoLikeOrUnlikeSuccess=createAction('[Cards Component] Like Or Unlike Success',props<{photo:PHOTO_TO_VIEW}>())
-export const photosFailure = createAction(
+export const photosLoadFailure = createAction(
   '[Photo] Photo  Failure',
   props<{ error: any }>()
 );

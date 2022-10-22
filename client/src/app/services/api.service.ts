@@ -80,8 +80,8 @@ export class ApiService {
             })
             .pipe(catchError(this.errorHandler));
     }
-    addToCollection(photo: PHOTO_TO_VIEW) {
-        this.http.post(`${this.apiBaseUrl}/albums`, {});
+    addToCollection(albumId:string,photoId:string) {
+        return this.http.put(`${this.apiBaseUrl}/albums/${albumId}`, {photo_id:photoId});
     }
    
 

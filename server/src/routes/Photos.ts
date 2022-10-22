@@ -1,9 +1,9 @@
-import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "./../middlewares/Auth";
 import { Router } from "express";
-const router = Router();
-import ImageUploader from "../utils/Image-uploader";
-import PhotosController from "../controllers/Photos";
 import asyncHandler from "express-async-handler";
+import PhotosController from "../controllers/Photos";
+import ImageUploader from "../utils/Image-uploader";
+import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "./../middlewares/Auth";
+const router = Router();
 
 router
   .get("/",checkIfAuthenticatedOptional,  PhotosController.getAll)
@@ -15,8 +15,8 @@ router
     asyncHandler(ImageUploader.uploadToCloudinary),
     asyncHandler(PhotosController.addNewPhotos)
   )
-  .put("/:id", PhotosController.updatePhoto)
-  .post("/:id/like", PhotosController.likePhoto)
-  .post("/:id/unlike", PhotosController.unlikePhoto)
-  .delete("/:id", asyncHandler(PhotosController.deletePhoto));
+  .put("/:id", PhotosController.update)
+  .post("/:id/like", PhotosController.like)
+  .post("/:id/unlike", PhotosController.unlike)
+  .delete("/:id", asyncHandler(PhotosController.delete));
 export default router;

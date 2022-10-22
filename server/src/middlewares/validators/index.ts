@@ -51,8 +51,8 @@ export default class Validators {
         .isEmpty()
         .withMessage("title is required!")
         .isString()
-        .isLength({ min: 3, max: 20 })
-        .withMessage("title must be within 3 to 20 character!"),
+        .isLength({ min: 2, max: 20 })
+        .withMessage("title must be within 2 to 20 character!"),
     ];
   }
   static validationResult(req: Request, res: Response, next: NextFunction) {

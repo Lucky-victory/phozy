@@ -1,14 +1,16 @@
+import { Request, Response } from "express";
+import { ALBUM_RESULT, IAlbum } from "../interfaces/Albums";
 import { PHOTO_RESULT } from "./../interfaces/Photos";
 import { USER_RESULT } from "./../interfaces/Users";
 import { Utils } from "./../utils/index";
-import { IAlbum, ALBUM_RESULT, NEW_ALBUM } from "../interfaces/Albums";
-import { Request, Response } from "express";
 
 import { albumsModel } from "../models/Albums";
-import { usersModel } from "../models/Users";
 import { photosModel } from "../models/Photos";
+import { usersModel } from "../models/Users";
 
+import { Order } from "harpee";
 import CacheManager from "../utils/cache-manager";
+import { DEFAULT_PHOTO_FIELDS } from "./Photos";
 
 const albumCache = new CacheManager();
 
@@ -21,21 +23,22 @@ export default class AlbumsController {
    * @param res
    * @returns
    */
-  static async createNewAlbum(req: Request, res: Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
-      const { auth } = req;
-
-      const album: NEW_ALBUM = {
-        ...req.body,
-        user_id: auth?.user?.id,
+    
+      const authUser = Utils.getAuthenticatedUser(req);
+      // this will remove any property not specified in Schema fields 
+      const bodyData = Utils.pick(req.body, albumsModel.fields);
+      const album= {
+        ...bodyData,
+        user_id: authUser.id,
       };
 
-      // get the insert id
+      // get the inserted id
       const result = await (await albumsModel.create(album)).data;
       // query with the insert id
       const insertedAlbum = await albumsModel.findOne<ALBUM_RESULT>(
-        { id: result?.inserted_hashes[0] as string },
-        ["id", "description", "title", "created_at", "user_id", "is_public"]
+        { id: result?.inserted_hashes[0] as string },DEFAULT_ALBUM_FIELDS
       );
       const data = insertedAlbum?.data;
 
@@ -56,33 +59,47 @@ export default class AlbumsController {
    * @param req
    * @param res
    */
-  static async getAlbums(req: Request, res: Response) {
+  static async getAll(req: Request, res: Response) {
     try {
-      const { page = 1, perPage = 10, fields } = req.query;
-
-      const { user } = req.auth;
-      const offset =
-        (parseInt(page as string) - 1) * parseInt(perPage as string);
+   
+ let {
+        page = 1,
+        perPage = 10,
+        sort = "desc",
+        orderby = "created_at",
+      } = req.query;
+     
+      const { fields } = req.query;
+      perPage = +perPage;
+      page = +page;
+      const offset = (page - 1) * perPage;
+       if (!(sort === "desc" || sort === "asc")) sort = "desc";
+      const user = Utils.getAuthenticatedUser(req);
+     
       // get the fields specified in schema
       const fieldsInSchema = albumsModel.fields;
-      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, [
-        "created_at",
-        "title",
-        "description",
-        "user_id",
-      ]);
+      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, DEFAULT_ALBUM_FIELDS);
+       if (!fieldsInSchema.includes(orderby as string)) orderby = "created_at";
 
+      const recordCountResult = await albumsModel.describeModel<any>();
+      const recordCount = recordCountResult.data.record_count;
+
+      if (recordCount - offset <= 0 || offset > recordCount) {
+        res.status(200).json({ message: "No more Albums", data: [] });
+        return;
+      }
+     
       const albums = await albumsModel.find<ALBUM_RESULT[]>({
         limit: perPage as number,
         offset,
-        getAttributes,
+        getAttributes,order:sort as Order,orderby:[orderby as string],
         where: `is_public=${Utils.isEmpty(user)}`,
       });
 
       res.status(200).json({
         message: "albums retrieved",
         data: albums,
-        total: albums?.data?.length,
+     
       });
     } catch (error) {
       res.status(500).json({
@@ -97,16 +114,16 @@ export default class AlbumsController {
    * @param res
    * @returns
    */
-  static async getAlbumById(req: Request, res: Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { auth } = req;
-      const albumId = id;
-      const { maxPhoto = 10, page = 1, fields } = req.query;
-      const offset = ((page as number) - 1) * (maxPhoto as number);
+      const  authUser=Utils.getAuthenticatedUser(req);
+     
+      const { photoPerPage = 10, page = 1, fields } = req.query;
+      const offset = ((page as number) - 1) * (photoPerPage as number);
       // get the fields specified in schema
       const fieldsInSchema = albumsModel.fields;
-      const getAttributes = Utils.getFields(fields as string, fieldsInSchema);
+      const getAttributes = Utils.getFields(fields as string, fieldsInSchema,DEFAULT_ALBUM_FIELDS);
 
       const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
       if (cachedData) {
@@ -118,42 +135,43 @@ export default class AlbumsController {
         return;
       }
 
-      const album = await albumsModel.findOne<ALBUM_RESULT>(
+      const response = await albumsModel.findOne<ALBUM_RESULT>(
         {
           id,
         },
         getAttributes
       );
 
-      if (Utils.isEmpty(album?.data)) {
+      if (Utils.isEmpty(response?.data)) {
         res.status(404).json({
-          message: `Album with '${id}' was not found`,
+          message: `Album with '${id}' does not exist`,
         });
         return;
       }
       const hasAccess = Utils.isAuthorized(
-        album?.data as ALBUM_RESULT,
-        auth?.user
+        response?.data as ALBUM_RESULT,
+        authUser
       );
       // if the album is private and the current user isn't the owner of the resource
-      if (!album?.data?.is_public && !hasAccess) {
+      if (!response?.data?.is_public && !hasAccess) {
         res.status(401).json({
-          message: "Unauthorized, don't have access to this resource",
+          message: "Unauthorized, you don't have access to this resource",
         });
         return;
       }
 
       // get the user that owns the albums
       const user = await usersModel.findOne<USER_RESULT>({
-        id: album?.data?.user_id as string,
+        id: response?.data?.user_id as string,
       });
       // get photos under the albums
       const photos = await photosModel.find<PHOTO_RESULT[]>({
-        limit: maxPhoto as number,
+        limit: photoPerPage as number,
         offset,
+       getAttributes: DEFAULT_PHOTO_FIELDS
       });
       const data = {
-        ...album.data,
+        ...response.data,
         user: user?.data,
         photos: photos?.data,
       };
@@ -257,3 +275,5 @@ export default class AlbumsController {
     }
   }
 }
+
+export const DEFAULT_ALBUM_FIELDS = ["id", "description", "title", "created_at", "user_id", "is_public", "photos"];
