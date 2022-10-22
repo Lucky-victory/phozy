@@ -2,7 +2,7 @@ import { Utils } from "./../utils/index";
 
 import { Request, Response } from "express";
 import { photosModel } from "../models/Photos";
-import { IPhoto, NEW_PHOTO, PHOTO_RESULT } from "./../interfaces/Photos";
+import { IPhoto, NEW_PHOTO, PHOTO_RESULT, PHOTO_TO_VIEW } from "./../interfaces/Photos";
 import { albumsModel } from "../models/Albums";
 import { Order } from "harpee";
 import { usersModel } from "../models/Users";
@@ -50,7 +50,7 @@ export default class PhotosController {
       const getAttributes = Utils.getFields(
         fields as string,
         fieldsInSchema,
-        DEFAULT_FIELDS
+        DEFAULT_PHOTO_FIELDS
       );
       if (!fieldsInSchema.includes(orderby as string)) orderby = "created_at";
 
@@ -99,14 +99,14 @@ export default class PhotosController {
     try {
       const { id } = req.params;
       const { fields } = req.query;
-      const { auth } = req;
+      const authUser = Utils.getAuthenticatedUser(req);
     
      
       const fieldsInSchema = albumsModel.fields;
       const getAttributes = Utils.getFields(
         fields as string,
         fieldsInSchema,
-        DEFAULT_FIELDS
+        DEFAULT_PHOTO_FIELDS
       );
 
       let photo = await (
@@ -119,20 +119,15 @@ export default class PhotosController {
           .json({ message: `photo with id '${id}' does no exist` });
         return;
       }
-      // get the user IDs
-      const userId = photo?.user_id as string;
+      /**
+       the photo owner ID
+       *  */
+      const photoOwnerId = photo?.user_id as string;
       // query users table with it
-      const user = await (
-        await usersModel.findOne<USER_RESULT>({ id: userId }, [
-          "username",
-          "fullname",
-          "profile_image",
-          "id",
-        ])
-      ).data;
+      const user = await PhotosController.getPhotoOwner(photoOwnerId);
 
-      photo = PhotosController.checkLike(photo, auth?.user?.id);
-console.log(photo,'getone');
+      photo = PhotosController.checkLike(photo, authUser?.id);
+      
 
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
@@ -165,15 +160,15 @@ console.log(photo,'getone');
    */
   static async addNewPhotos(req: Request, res: Response) {
     try {
-      const { photo_urls, auth } = req;
-    
+      const { photo_urls,  } = req;
+      const authUser = Utils.getAuthenticatedUser(req);
 
       const newPhotos: NEW_PHOTO[] = photo_urls.map((photo) => {
         return {
           url: photo.url,
           caption: photo.caption,
           tags: Utils.stringToObjectArray(photo.tags),
-          user_id: auth?.user?.id,
+          user_id: authUser?.id,
         };
       });
 
@@ -201,7 +196,7 @@ console.log(photo,'getone');
    */
   static async deletePhoto(req: Request, res: Response) {
     try {
-      const { auth } = req;
+      const  authUser  = Utils.getAuthenticatedUser(req);
       const { id } = req.params;
 
       const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
@@ -211,7 +206,7 @@ console.log(photo,'getone');
           .json({ message: `photo with id '${id}' does no exist` });
         return;
       }
-      const hasAccess = Utils.isAuthorized(photo.data, auth.user);
+      const hasAccess = Utils.isAuthorized(photo.data, authUser);
       if (!hasAccess) {
         res.status(401).json({
           message: "Unauthorized, you don't have access to this resource",
@@ -238,7 +233,7 @@ console.log(photo,'getone');
    */
   static async updatePhoto(req: Request, res: Response) {
     try {
-      const { auth } = req;
+     const  authUser  = Utils.getAuthenticatedUser(req);
       const { id } = req.params;
 
       const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
@@ -248,18 +243,22 @@ console.log(photo,'getone');
           .json({ message: `photo with id '${id}' does no exist` });
         return;
       }
-      const hasAccess = Utils.isAuthorized(photo.data, auth.user);
+      const hasAccess = Utils.isAuthorized(photo.data, authUser);
       if (!hasAccess) {
         res.status(401).json({
           message: "Unauthorized, you don't have access to this resource",
         });
         return;
       }
-      const photoToUpdate = {
-        ...req.body,
-        id,
-      };
-      await photosModel.update([photoToUpdate]);
+      // By default, harperDB can create new columns on update,
+      // this will pick only the specified keys in Schema fields
+      // and prevent any new/unknown column from being created.
+      const bodyData = Utils.pick(req.body, photosModel.fields);
+
+      const dataToUpdate = {
+  ...bodyData,id
+}
+      await photosModel.update([dataToUpdate]);
       res.status(200).json({
         message: "photo updated successfully",
       });
@@ -279,36 +278,45 @@ console.log(photo,'getone');
    */
   static async likePhoto(req: Request, res: Response) {
     try {
-      const { auth } = req;
+ 
       const { id } = req.params;
-      const userId = auth?.user?.id;
-      const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
+      /**
+       * ID of the  authenticated user
+       */
+      const authUserId =Utils.getAuthenticatedUser(req)?.id
+      const response = await photosModel.findOne<PHOTO_RESULT>({ id }, DEFAULT_PHOTO_FIELDS);
 
-      if (!photo.data) {
+      if (!response.data) {
         res
           .status(404)
-          .json({ message: `photo with id '${id}' does no exist` });
+          .json({ message: `photo with id '${id}' does not exist` });
         return;
       }
 
-      const updatedData = await photosModel.updateNested<PHOTO_RESULT>({
+      const updatedData = await photosModel.updateNested<IPhoto>({
         id,
         path: ".likes",
         value: (data: IPhoto) => {
-          if (data?.likes?.users?.includes(userId)) return data.likes;
+          if (data?.likes?.users?.includes(authUserId)) return data.likes;
           data.likes.count += 1;
-          data.likes.users.push(userId);
+          data.likes.users.push(authUserId);
 
           return data.likes;
         },
       });
-      const data = PhotosController.checkLike(
-        updatedData.data as PHOTO_RESULT,
-        userId
-      );
+      // Remove unwanted props
+      let photo = Utils.pick(updatedData.data as IPhoto, DEFAULT_PHOTO_FIELDS) as PHOTO_RESULT;
+      const user = await PhotosController.getPhotoOwner(photo.user_id) as USER_RESULT;
+      photo= PhotosController.checkLike(
+         photo,
+         authUserId
+      ); 
+      //merge the photo object with the user object
+      let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
+      photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;;
       res.status(200).json({
         message: "photo liked successfully",
-        data,
+        data:photoToView,
       });
     } catch (error) {
       console.log(error);
@@ -328,11 +336,11 @@ console.log(photo,'getone');
    */
   static async unlikePhoto(req: Request, res: Response) {
     try {
-      const { auth } = req;
       const { id } = req.params;
-      const userId = auth?.user?.id;
-      const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
-      if (!photo.data) {
+    
+      const authUserId = Utils.getAuthenticatedUser(req)?.id;
+      const response = await photosModel.findOne<PHOTO_RESULT>({ id });
+      if (!response.data) {
         res
           .status(404)
           .json({ message: `photo with id '${id}' does no exist` });
@@ -343,23 +351,29 @@ console.log(photo,'getone');
         id,
         path: ".likes",
         value: (data: IPhoto) => {
-          if (!data?.likes?.users?.includes(userId)) return data.likes;
+          if (!data?.likes?.users?.includes(authUserId)) return data.likes;
           data.likes.count -= 1;
 
-          // reset to 0 incase of it mistakenly goes below 0, e.g -1
+          // reset to 0 incase it mistakenly goes below 0, e.g -1
           if (data.likes.count < 0) data.likes.count = 0;
-          data.likes.users = data.likes.users.filter((user) => user !== userId);
+          data.likes.users = data.likes.users.filter((userId) => userId !== authUserId);
 
           return data.likes;
         },
       });
-      const data = PhotosController.checkLike(
-        updatedData.data as PHOTO_RESULT,
-        userId
-      );
+      // Remove unwanted props
+      let photo = Utils.pick(updatedData.data as IPhoto, DEFAULT_PHOTO_FIELDS) as PHOTO_RESULT;
+      const user = await PhotosController.getPhotoOwner(photo.user_id) as USER_RESULT;
+      photo= PhotosController.checkLike(
+         photo,
+         authUserId
+      ); 
+      //merge the photo object with the user object
+      let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
+      photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;;
       res.status(200).json({
         message: "photo unliked successfully",
-        data,
+        data:photoToView,
       });
     } catch (error) {
       res.status(500).json({
@@ -369,6 +383,27 @@ console.log(photo,'getone');
     }
   }
   /**
+   * Get the photo owner from users model
+   */
+  private static async getPhotoOwner(userId:string,columns=[
+          "username",
+          "fullname",
+          "profile_image",
+          "id"
+        ]){
+try{
+ const response=
+        await usersModel.findOne<USER_RESULT>({ id: userId }, 
+          columns
+      );
+  const user = response.data;
+  return user;
+}
+catch(_){
+
+}
+  }
+  /**
    * checks if a user has liked a photo and adds a 'liked' property to the photo object
    * @param photo
    * @param userId
@@ -376,12 +411,11 @@ console.log(photo,'getone');
    */
   private static checkLike(photo: PHOTO_RESULT, userId: string) {
     photo.is_liked = photo.likes?.users?.includes(userId);
-    console.log(photo);
 
     return photo;
   }
 }
-export  const DEFAULT_FIELDS = [
+export  const DEFAULT_PHOTO_FIELDS = [
         "id",
         "created_at",
         "url",

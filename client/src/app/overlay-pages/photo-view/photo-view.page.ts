@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { debounce, debounceTime } from 'rxjs/operators';
 import { CollectionListComponent } from 'src/app/components/collection-list/collection-list.component';
@@ -16,6 +17,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PhotoService } from 'src/app/services/photo/photo.service';
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
+import { AppState } from 'src/app/state/app.state';
+import { likePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
 
 @Component({
     selector: 'app-photo-view',
@@ -34,7 +37,7 @@ export class PhotoViewPage implements  OnDestroy {
         private router: Router,private authService:AuthService,
         private apiService: ApiService,private utilsService:UtilitiesService,
         private activeRoute: ActivatedRoute,private photoService:PhotoService,
-        private platform: Platform
+        private platform: Platform,private store:Store<AppState>
     ) {
         this.isDesktop = this.platform.width() > this.tabletSize;
         this.photo = this.router.getCurrentNavigation().extras
@@ -51,7 +54,7 @@ ionViewWillEnter(){
     console.log('view enter');
      this.isLiked = this.photo?.is_liked;
         /**
-         * if the photo object is not in the state, then query the database for it
+         * if the photo object is not in router state,e.g when the url is shared,  then query the database for it,
          */
         if (!this.photo) {
             let id;
@@ -102,9 +105,14 @@ this.isLiked = this.photo?.is_liked;
             
             return
         }
-        this.utilsService.likeOrUnlikePhoto([photo, this.isLiked]).subscribe((data) => {
-           this.photo.is_liked=data.is_liked
-       });
+        if (this.isLiked) {
+            this.store.dispatch(unlikePhoto({id:photo.id}))
+            
+        }
+        else {
+            
+            this.store.dispatch(likePhoto({id:photo.id}))
+        }
        this.isLiked=!this.isLiked
    }
     ngOnDestroy(): void {

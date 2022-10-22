@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { PHOTO_TO_VIEW } from '../../interfaces/photo.interface';
-import { collectPhoto, likePhoto, loadPhotos, photosLoadSuccess } from './photo.actions';
+import { collectPhoto, likePhoto,unlikePhoto, loadPhotos, photosLoadSuccess, photoLikeOrUnlikeSuccess } from './photo.actions';
 
 
 export const photoFeatureKey = 'photo';
@@ -15,15 +15,16 @@ photos:[]
 
 export const photoReducer = createReducer(
   initialState,on(loadPhotos,(state)=>({...state})),
-  on(likePhoto, (state, {id },) => ({
-    ...state, photos: state.photos.map((photo) => {
-      if (photo.id === id) photo.is_liked = !photo.is_liked;
-      return photo
-    })
+  on(likePhoto, (state, action) => ({
+    ...state,
   })),
-  on(unlikePhoto, (state, {id },) => ({
-    ...state, photos: state.photos.map((photo) => {
-      if (photo.id === id) photo.is_liked = !photo.is_liked;
+  on(unlikePhoto, (state, action) => ({
+    ...state,
+  })),
+  on(photoLikeOrUnlikeSuccess, (state, { photo:newPhoto }) => ({
+    ...state,
+    photos: state.photos.map((photo) => {
+      if (photo.id === newPhoto.id) return newPhoto;
       return photo
     })
   })),

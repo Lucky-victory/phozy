@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { AuthService } from 'src/app/services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-card',
@@ -13,7 +14,7 @@ import { AuthService } from 'src/app/services/auth.service';
     imports: [CommonModule, IonicModule, RouterModule],
 })
 export class CardComponent implements OnInit {
-    @Input() photo!: PHOTO_TO_VIEW;
+    @Input() photo!:PHOTO_TO_VIEW;
     @Output() onLike =
         new EventEmitter<[PHOTO_TO_VIEW,boolean]>();
     @Output() onDownload=
@@ -27,11 +28,11 @@ export class CardComponent implements OnInit {
         this.isLiked = photo.is_liked;
     }
 
-    collectPhoto(photo) {
+    collectPhoto(photo:PHOTO_TO_VIEW) {
         this.onCollect.emit(photo);
     }
 
-    downloadPhoto(photo) {
+    downloadPhoto(photo:PHOTO_TO_VIEW) {
         this.onDownload.emit(photo);
     }
     likePhoto(photo: PHOTO_TO_VIEW) {

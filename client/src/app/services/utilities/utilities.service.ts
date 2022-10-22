@@ -31,7 +31,7 @@ export class UtilitiesService {
     
     async showModal(options: ModalOptions) {
         const defOpts = {
-            initialBreakpoint:0.75,breakpoints:[0,0.75,1]
+            initialBreakpoint:1,breakpoints:[0,0.75,1]
         }
        const opts=Object.assign({},options,defOpts)
         const modal = await this.modalCtrl.create(opts);

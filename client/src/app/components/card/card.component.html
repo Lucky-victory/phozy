@@ -1,11 +1,13 @@
-<div class="card">
-    <div class="card-top flex jc-end">
+
+
+    <div class="card">
+        <div class="card-top flex jc-end">
         <div class="card-btns-wrapper flex">
             <ion-button class="card-btn" title="Add to collection">
                 <ion-icon
-                    slot="icon-only"
-                    name="bookmarks-outline"
-                    (click)="collectPhoto(photo)"
+                slot="icon-only"
+                name="bookmarks-outline"
+                (click)="collectPhoto(photo)"
                 ></ion-icon>
             </ion-button>
             <ion-button
@@ -14,8 +16,8 @@
                 title="{{ isLiked ? 'Unlike' : 'Like' }}"
                 (click)="likePhoto(photo)"
             >
-                <ion-icon
-                    slot="icon-only"
+            <ion-icon
+            slot="icon-only"
                     [name]="isLiked ? 'heart' : 'heart-outline'"
                 ></ion-icon>
             </ion-button>
@@ -26,7 +28,7 @@
             [routerLink]="['/photo', photo.id]"
             [state]="photo"
             class="card-image-link"
-        >
+            >
             <ion-img
                 [src]="photo.url"
                 [alt]="photo.caption"
@@ -40,7 +42,7 @@
             <div class="card-meta-inner">
                 <div class="card-meta__info">
                     <a
-                        [routerLink]="['/profile', photo.user?.username]"
+                    [routerLink]="['/profile', photo.user?.username]"
                         fill="clear"
                         class="card-meta__info"
                     >
@@ -53,17 +55,17 @@
                                     '/profile',
                                     photo.user?.username
                                 ]"
-                            ></ion-img>
+                                ></ion-img>
                         </ion-avatar>
                         {{ photo.user?.fullname }}</a
                     >
                 </div>
             </div>
-
+            
             <ion-button
-                (click)="downloadPhoto(photo)"
-                class="card-btn download-btn"
-                title="download"
+            (click)="downloadPhoto(photo)"
+            class="card-btn download-btn"
+            title="download"
             >
                 <ion-icon slot="icon-only" name="arrow-down"></ion-icon>
             </ion-button>

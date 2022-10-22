@@ -9,6 +9,7 @@ import pick from "just-pick";
 import merge from "just-merge";
 import values from "just-values";
 import slugify from "slugify";
+import { Request } from "express";
 export const defaultProfileImage =
   "https://images.pexels.com/photos/3494648/pexels-photo-3494648.jpeg?auto=compress&cs=tinysrgb&w=640&h=854&dpr=2";
 
@@ -46,6 +47,9 @@ export class Utils extends MyUtils {
         lower: true,
       }) + Utils.shortID()
     );
+  }
+  static getAuthenticatedUser(req:Request) {
+    return req.auth.user
   }
   /**
    * Generates a short username, if no name is provided

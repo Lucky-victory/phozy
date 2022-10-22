@@ -16,7 +16,7 @@ export const loadPhotos = createAction(
   '[Photos] Load Photos',
  
 );
-
+export const photoLikeOrUnlikeSuccess=createAction('[Cards Component] Like Or Unlike Success',props<{photo:PHOTO_TO_VIEW}>())
 export const photosFailure = createAction(
   '[Photo] Photo  Failure',
   props<{ error: any }>()
