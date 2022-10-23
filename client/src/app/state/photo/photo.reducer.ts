@@ -24,8 +24,8 @@ export const photoReducer = createReducer(
   on(photoLikeOrUnlikeSuccess, (state, { photo:newPhoto }) => ({
     ...state,
     photos: state.photos.map((photo) => {
-      if (photo.id === newPhoto.id) return newPhoto;
-      return photo
+      if (photo.id !== newPhoto.id) return photo;
+      return newPhoto
     })
   })),
   on(collectPhoto,(state,action)=>({...state})),

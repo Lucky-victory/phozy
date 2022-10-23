@@ -90,20 +90,21 @@ export default class AlbumsController {
       }
      
       const albums = await albumsModel.find<ALBUM_RESULT[]>({
-        limit: perPage as number,
-        offset,
-        getAttributes,order:sort as Order,orderby:[orderby as string],
-        where: `is_public=${Utils.isEmpty(user)}`,
+       
+        getAttributes,
+      
       });
 
       res.status(200).json({
         message: "albums retrieved",
-        data: albums,
+        data: albums.data,
      
       });
     } catch (error) {
+      console.log(error);
+      
       res.status(500).json({
-        message: "An error occurred",
+        message: "An error occurred",error
       });
     }
   }
@@ -111,7 +112,7 @@ export default class AlbumsController {
    * @desc Retrieves an album by id
    * @route GET /api/albums/:album_id
    * @param req
-   * @param res
+   * @param res 
    * @returns
    */
   static async getById(req: Request, res: Response): Promise<void> {
@@ -125,15 +126,15 @@ export default class AlbumsController {
       const fieldsInSchema = albumsModel.fields;
       const getAttributes = Utils.getFields(fields as string, fieldsInSchema,DEFAULT_ALBUM_FIELDS);
 
-      const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
-      if (cachedData) {
-        res.status(200).json({
-          message: "album recieved from cache",
-          data: cachedData,
-        });
+      // const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
+      // if (cachedData) {
+      //   res.status(200).json({
+      //     message: "album recieved from cache",
+      //     data: cachedData,
+      //   });
 
-        return;
-      }
+      //   return;
+      // }
 
       const response = await albumsModel.findOne<ALBUM_RESULT>(
         {
@@ -141,19 +142,19 @@ export default class AlbumsController {
         },
         getAttributes
       );
-
-      if (Utils.isEmpty(response?.data)) {
+      const album = response.data;
+      if (!album) {
         res.status(404).json({
           message: `Album with '${id}' does not exist`,
         });
         return;
       }
       const hasAccess = Utils.isAuthorized(
-        response?.data as ALBUM_RESULT,
+        album,
         authUser
       );
       // if the album is private and the current user isn't the owner of the resource
-      if (!response?.data?.is_public && !hasAccess) {
+      if (!album.is_public && !hasAccess) {
         res.status(401).json({
           message: "Unauthorized, you don't have access to this resource",
         });
@@ -162,13 +163,12 @@ export default class AlbumsController {
 
       // get the user that owns the albums
       const user = await usersModel.findOne<USER_RESULT>({
-        id: response?.data?.user_id as string,
+        id: album.user_id as string,
       });
       // get photos under the albums
-      const photos = await photosModel.find<PHOTO_RESULT[]>({
-        limit: photoPerPage as number,
-        offset,
-       getAttributes: DEFAULT_PHOTO_FIELDS
+      const photos = await photosModel.findById<PHOTO_RESULT[]>({
+        id:album.photos as string[],
+       getAttributes: DEFAULT_PHOTO_FIELDS,
       });
       const data = {
         ...response.data,
@@ -188,31 +188,33 @@ export default class AlbumsController {
     }
   }
 
-  static async updateAlbum(req: Request, res: Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const { album_id } = req.params;
-      const { auth } = req;
-      const userId = auth?.user?.id;
 
-      const albumId = album_id;
-      // an album record to be updated
-      const albumToUpdate: IAlbum = {
+       const authUser = Utils.getAuthenticatedUser(req);
+      // this will remove any property not specified in Schema fields 
+      const bodyData = Utils.pick(req.body, albumsModel.fields);
+
+      const albumToUpdate= {
+        ...bodyData,
         updated_at: Utils.currentTime.getTime(),
-        id: albumId,
-        ...req.body,
+        id: album_id,
+   
       };
 
-      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: albumId });
+
+      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
       if (!album?.data) {
         res.status(404).json({
-          message: `Album with '${album_id}' was not found`,
+          message: `Album with '${album_id}' does not exist`,
         });
         return;
       }
-      const hasAccess = Utils.isAuthorized(album.data, auth?.user);
+      const hasAccess = Utils.isAuthorized(album.data, authUser);
       if (!hasAccess) {
         res.status(401).json({
-          message: "Unauthorized, don't have access to this resource",
+          message: "Unauthorized, you don't have access to this resource",
         });
         return;
       }
@@ -229,7 +231,49 @@ export default class AlbumsController {
       });
     }
   }
-  static async deleteAlbum(req: Request, res: Response): Promise<void> {
+  static async addPhoto(req: Request, res: Response): Promise<void> {
+    try {
+      const { album_id } = req.params;
+      const { photo_id } = req.body;
+       const authUser = Utils.getAuthenticatedUser(req);
+     
+
+
+      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
+      if (!album?.data) {
+        res.status(404).json({
+          message: `Album with '${album_id}' does not exist`,
+        });
+        return;
+      }
+      const hasAccess = Utils.isAuthorized(album.data, authUser);
+      if (!hasAccess) {
+        res.status(401).json({
+          message: "Unauthorized, you don't have access to this resource",
+        });
+        return;
+      }
+
+   const data=   await albumsModel.updateNested<IAlbum>({
+        id: album_id, path: '.photos', value: (data: IAlbum) => {
+          data.updated_at = Utils.currentTime.getTime();
+            data.photos.push(photo_id);
+          return data.photos;
+        }
+      });
+console.log(data);
+
+      res.status(200).json({
+        message: "photo added to album successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "An error occcurred could't add photo to album",
+        error,
+      });
+    }
+  }
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const { album_id } = req.params;
       const { auth } = req;

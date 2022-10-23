@@ -23,7 +23,8 @@ router
     Validators.validationResult,
     asyncHandler(AlbumsController.create)
   )
-  .put("/:album_id", asyncHandler(AlbumsController.updateAlbum))
-  .delete("/:album_id", asyncHandler(AlbumsController.deleteAlbum));
+  .put("/:album_id", asyncHandler(AlbumsController.update))
+  .put("/:album_id/photo", asyncHandler(AlbumsController.addPhoto))
+  .delete("/:album_id", asyncHandler(AlbumsController.delete));
 
 export default router;

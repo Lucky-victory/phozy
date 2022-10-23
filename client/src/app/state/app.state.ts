@@ -1,4 +1,4 @@
-import { AlbumsState } from "./album/album.state";
+import { AlbumsState } from "./album/album.reducer";
 import { PhotosState } from "./photo/photo.reducer";
 
 export interface AppState{

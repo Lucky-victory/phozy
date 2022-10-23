@@ -9,7 +9,7 @@ const albumsSchema = new Schema({
   fields: {
     user_id: HType.string().required(),
     title: HType.string().required(),
-    description: HType.string(),
+    description: HType.string().allow(''),
     is_public: HType.bool().default(true),
     created_at: HType.date().default(Utils.currentTime.getTime()),
     updated_at: HType.ref("created_at"),

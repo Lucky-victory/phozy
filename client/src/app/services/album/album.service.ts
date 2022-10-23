@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, delay, retry,map } from 'rxjs/operators';
-import { ALBUM_RESULT } from 'src/app/interfaces/albums.interface';
+import { catchError, delay, map, retry } from 'rxjs/operators';
+import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
 import { QUERY_RESPONSE } from 'src/app/interfaces/photo.interface';
 import { ApiService } from '../api.service';
 

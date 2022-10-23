@@ -1,3 +1,5 @@
+import { PHOTO_RESULT, } from "./photo.interface";
+
 export interface IAlbum {
   id: string;
   title: string;
@@ -6,12 +8,13 @@ export interface IAlbum {
   is_public?: boolean;
   created_at: number;
   updated_at?: number;
+  photos:PHOTO_RESULT[]
 }
 export type NEW_ALBUM = Pick<
   IAlbum,
-  "description" | "title" | "is_public" | "user_id"
+  "description" | "title" | "is_public"
 >;
-export type ALBUM_RESULT = Pick<
+export type ALBUM_RESULT = Omit<
   IAlbum,
-  "id" | "description" | "created_at" | "title" | "is_public" | "user_id"
+ "updated_at"
 >;

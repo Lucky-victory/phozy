@@ -1,6 +1,6 @@
-import { Component, DoCheck, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ALBUM_RESULT } from 'src/app/interfaces/albums.interface';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
 
 
 import { PHOTO_FROM_CLIENT } from 'src/app/interfaces/photo.interface';

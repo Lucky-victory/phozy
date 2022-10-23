@@ -12,16 +12,14 @@ export interface IPhoto {
     updated_at?: number;
     is_liked?: boolean;
 }
-export type PHOTO_TO_VIEW = Pick<
+export type PHOTO_RESULT = Omit<
     IPhoto,
-    | 'caption'
-    | 'created_at'
-    | 'id'
-    | 'is_liked'
-    | 'likes'
-    | 'tags'
-    | 'url'
-    | 'views'
+    "updated_at"|"user_id"
+  
+>
+export type PHOTO_TO_VIEW = Omit<
+    IPhoto,
+    "updated_at"|"user_id"
 > & {
     user: USER_RESULT;
 };
