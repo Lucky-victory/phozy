@@ -251,10 +251,8 @@ export default class AlbumsController {
     try {
       const { album_id } = req.params;
       const { photo_id } = req.body;
-       const authUser = Utils.getAuthenticatedUser(req);
-     
-
-
+      const authUser = Utils.getAuthenticatedUser(req);
+    
       const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
       if (!album?.data) {
         res.status(404).json({
@@ -270,16 +268,19 @@ export default class AlbumsController {
         return;
       }
 
-   const data=   await albumsModel.updateNested<IAlbum>({
-        id: album_id, path: '.photos', value: (data: IAlbum) => {
-       data.updated_at = Utils.currentTime.getTime();
-       if(!data.photos.includes(photo_id)) data.photos.push(photo_id);
+      const response = await albumsModel.updateNested<ALBUM_RESULT>({
+        id: album_id, path: '.photos', getAttributes: DEFAULT_ALBUM_FIELDS, value: (data: IAlbum) => {
+          data.updated_at = Utils.currentTime.getTime();
+          if (!data.photos.includes(photo_id)) data.photos.push(photo_id);
           return data.photos;
         }
       });
 
-
-      res.status(200).json({
+      const albumToView = response.data as ALBUM_RESULT;
+      const photosInAlbum = await photosModel.findById<PHOTO_RESULT[]>({ id: albumToView?.photos as string[], getAttributes: DEFAULT_PHOTO_FIELDS });
+      albumToView.photos = photosInAlbum.data as PHOTO_RESULT[];
+      
+      res.status(200).json({data:albumToView,
         message: "photo added to album successfully",
       });
     } catch (error) {

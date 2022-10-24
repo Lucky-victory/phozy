@@ -72,6 +72,10 @@
     &.liked {
         color: var(--primary);
     }
+    &.download-btn{
+        background-color: var(--primary);
+        color:#fff;
+    }
     &::part(native) {
         background: inherit;
         color: inherit;
@@ -101,6 +105,9 @@ ion-avatar.card-meta__avatar {
     font-weight: 500!important;
     text-decoration: none;
     color: inherit;
+    --ion-item-background:transparent;
+    --padding-start:0;
+    
     text-transform: capitalize;
 }
 
@@ -165,7 +172,7 @@ ion-avatar.card-meta__avatar {
        
             .card-image-link {
                 &::before {
-                    opacity: 0.2;
+                    opacity: 0.3;
                 }
             }
         

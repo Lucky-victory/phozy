@@ -29,6 +29,7 @@
 
 *{
     font-family: 'Poppins', sans-serif;
+    
 }
 .flex {
     display: flex;
@@ -50,4 +51,7 @@
 }
 .jc-start {
     justify-content: flex-start;
+}
+.flex-wrap{
+    flex-wrap: wrap;
 }

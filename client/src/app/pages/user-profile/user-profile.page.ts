@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { IUser } from 'src/app/interfaces/user.interface';
-import { IResponseResult } from 'src/app/interfaces/common';
+import { ActivatedRoute } from '@angular/router';
+import { SegmentCustomEvent } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -10,6 +9,7 @@ import { ApiService } from 'src/app/services/api.service';
     styleUrls: ['./user-profile.page.scss'],
 })
 export class UserProfilePage implements OnInit {
+    active: boolean;
     userData: any;
     userAlbums: any;
     constructor(
@@ -19,11 +19,16 @@ export class UserProfilePage implements OnInit {
 
     ngOnInit() {
         const username = this.activeRoute.snapshot.paramMap.get('username');
-        this.apiService.getUserData(username).subscribe((res) => {
-            this.userData = res.data as IUser;
+        this.apiService.getUserByUsername$(username).subscribe((res) => {
+            this.userData = res.data 
         });
-        this.apiService.getUserCollections(username).subscribe((res) => {
-            this.userAlbums = res.data;
-        });
+        // this.apiService.getUserCollections(username).subscribe((res) => {
+        //     this.userAlbums = res.data;
+        // });
+    }
+    segmentChanged(event:Event) {
+        const ev = event as SegmentCustomEvent;
+        console.log(ev.detail.value);
+        
     }
 }

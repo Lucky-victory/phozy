@@ -170,8 +170,8 @@ export default class UsersController {
   static async getUserByUsername(req: Request, res: Response) {
     try {
       const { username } = req.params;
-      const user = (await usersModel.findOne)<USER_RESULT>({ username });
-      if (!user) {
+      const user = await usersModel.findOne<USER_RESULT>({ username });
+      if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
         });
@@ -179,7 +179,7 @@ export default class UsersController {
       }
       res.status(200).json({
         message: "user info retrieved",
-        data: user,
+        data: user.data,
       });
     } catch (error) {
       res.status(500).json({

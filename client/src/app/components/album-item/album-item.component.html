@@ -1,5 +1,7 @@
-<ion-card button class="card" (click)="selectAlbum(album,photo)" style="max-width: 400px;">
-  <ion-img [src]="album.photos[0]?.url"></ion-img>
-<ion-card-title>{{album.title}}</ion-card-title>
-    
+<ion-card button class="album-card" (click)="selectAlbum(album,photo)" >
+  <ion-img [src]="album.photos[album.photos.length-1]?.url"></ion-img>
+
+    <ion-card-content>
+      {{album.title}}
+    </ion-card-content>
   </ion-card>

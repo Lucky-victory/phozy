@@ -50,7 +50,7 @@ export class Utils extends MyUtils {
     );
   }
   static getAuthenticatedUser(req:Request) {
-    return req.auth.user
+    return req.auth?.user
   }
   /**
    * Generates a short username, if no name is provided

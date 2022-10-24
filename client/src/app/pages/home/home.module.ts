@@ -12,9 +12,9 @@ import { FooterModule } from 'src/app/components/footer/footer.module';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
-import { EffectsModule } from '@ngrx/effects';
-import { PhotoEffects } from '../../state/photo/photo.effects';
+
 import { SignInPageModule } from '../sign-in/sign-in.module';
+import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 
 @NgModule({
     imports: [
@@ -22,7 +22,7 @@ import { SignInPageModule } from '../sign-in/sign-in.module';
         FormsModule,
         IonicModule,
         HomePageRoutingModule,
-        CardsComponent,
+        CardsComponent,AlbumListComponent,
         FooterModule,
         BannerComponent,SignInPageModule, 
     ],

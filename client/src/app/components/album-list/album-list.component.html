@@ -1,13 +1,17 @@
 <div class="container">
 
-  <ion-item lines="none">
-    <ion-label position="floating">Collection Title</ion-label>
-    <ion-input autofocus="" ></ion-input>
-  </ion-item>
-<ng-container *ngIf="albums$|async as albums">
-  <div class="flex">
-
-    <app-album-item *ngFor="let album of albums" [album]="album" [photo]="photo" (onAlbumSelect)="selectAlbum($event)"></app-album-item>
+ 
+<ng-container >
+  <div class="flex flex-wrap" >
+  <ion-card button class="flex ai-center jc-center album-card">
+<ion-button fill="clear">
+  <ion-icon slot="icon-only" name="add" ></ion-icon>
+ 
+</ion-button>
+<ion-card-subtitle>Create New Album</ion-card-subtitle>
+  
+  </ion-card>
+    <app-album-item *ngFor="let album of albums$|async" [album]="album" [photo]="photo" (onAlbumSelect)="selectAlbum($event)"></app-album-item>
   </div>
   </ng-container>
 </div>

@@ -8,14 +8,7 @@ export const unlikePhoto = createAction(
   '[Cards Component] UnLike Photo', props<{ id: PHOTO_TO_VIEW['id'] }>()
 );
 
-export const collectPhoto = createAction(
-  '[Cards Component] Collect Photo',
-  props<{albumId:string, photoId: PHOTO_TO_VIEW ['id']}>()
-);
-export const collectPhotoSuccess = createAction(
-  '[Cards Component] Collect Photo Success',
-  
-);
+
 export const loadPhotos = createAction(
   '[Photos] Load Photos',
  

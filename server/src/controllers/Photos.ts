@@ -76,12 +76,9 @@ export default class PhotosController {
         outerProp: "user_id",
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
-        const is_liked = photo.likes?.users?.includes(authUser?.id);
-        photo.tags = Utils.objectToStringArray(photo.tags as object[]);
-        return {
-          ...photo,
-          is_liked,
-        };
+        photo = PhotosController.checkLike(photo, authUser?.id);
+        photo = PhotosController.convertPhotoTags(photo);
+        return photo;
       });
       // remove user_id property since the user object now has the ID
       data = Utils.omit(data, ["user_id"]) as (USER_RESULT & PHOTO_RESULT)[];
@@ -129,7 +126,7 @@ export default class PhotosController {
 
       photo = PhotosController.checkLike(photo, authUser?.id);
       
-
+      photo= PhotosController.convertPhotoTags(photo);
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
@@ -315,6 +312,7 @@ export default class PhotosController {
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
       photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;;
+    photoToView = PhotosController.convertPhotoTags(photoToView);
       res.status(200).json({
         message: "photo liked successfully",
         data:photoToView,
@@ -371,7 +369,9 @@ export default class PhotosController {
       ); 
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
-      photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;;
+      photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;
+      photoToView = PhotosController.convertPhotoTags(photoToView);
+      
       res.status(200).json({
         message: "photo unliked successfully",
         data:photoToView,
@@ -410,9 +410,13 @@ catch(_){
    * @param userId
    * @returns
    */
-  private static checkLike(photo: PHOTO_RESULT, userId: string) {
+  private static checkLike<T extends PHOTO_RESULT>(photo:T, userId: string) {
     photo.is_liked = photo.likes?.users?.includes(userId);
 
+    return photo;
+  }
+  private static convertPhotoTags<T extends PHOTO_RESULT|PHOTO_TO_VIEW>(photo: T) {
+    photo.tags = Utils.objectToStringArray(photo.tags as object[]);
     return photo;
   }
 }

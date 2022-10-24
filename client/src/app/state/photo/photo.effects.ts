@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { map, switchMap,} from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { PhotoService } from '../../services/photo/photo.service';
 import { AppState } from '../app.state';
-import { collectPhoto, collectPhotoSuccess, likePhoto, loadPhotos, photoLikeOrUnlikeSuccess, photosLoadSuccess, unlikePhoto } from './photo.actions';
+import { likePhoto, loadPhotos, photoLikeOrUnlikeSuccess, photosLoadSuccess, unlikePhoto } from './photo.actions';
 
 
 
@@ -19,7 +19,7 @@ export class PhotoEffects {
   unlikePhoto$=createEffect(()=>this.actions$.pipe(ofType(unlikePhoto),switchMap(({id})=>{
     return this.photoService.unlikePhoto(id).pipe(map((photo) => photoLikeOrUnlikeSuccess({photo})));
   })))
-  collectPhoto$ = createEffect(() => this.actions$.pipe(ofType(collectPhoto), switchMap(({ photoId, albumId }) => this.photoService.addToCollection(albumId, photoId).pipe(map(album=>collectPhotoSuccess())))));
+
   
   constructor(private actions$: Actions,private photoService:PhotoService,private store:Store<AppState>) {}
 }

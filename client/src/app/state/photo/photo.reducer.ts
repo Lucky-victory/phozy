@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { PHOTO_TO_VIEW } from '../../interfaces/photo.interface';
-import { collectPhoto, likePhoto,unlikePhoto, loadPhotos, photosLoadSuccess, photoLikeOrUnlikeSuccess, collectPhotoSuccess } from './photo.actions';
+import { likePhoto,unlikePhoto, loadPhotos, photosLoadSuccess, photoLikeOrUnlikeSuccess, } from './photo.actions';
 
 
 export const photoFeatureKey = 'photo';
@@ -28,8 +28,7 @@ export const photoReducer = createReducer(
       return newPhoto
     })
   })),
-  on(collectPhoto,(state,action)=>({...state})),
-  on(collectPhotoSuccess,(state,action)=>({...state})),
+ 
   on(photosLoadSuccess,(state,{photos})=>({...state,photos:photos})),
-  on(collectPhoto, (state) => state)
+ 
 );

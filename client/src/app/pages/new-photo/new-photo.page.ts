@@ -42,7 +42,7 @@ export class NewPhotoPage implements OnInit {
     fetchUserAlbums() {
         const user = this.authService.getUser();
         this.apiService
-            .getUserCollections(user?.username as string)
+            .getUserAlbums$(user?.username as string)
             .subscribe((res) => {
                 this.userAlbums = res.data as ALBUM_RESULT[];
             });
@@ -68,7 +68,7 @@ export class NewPhotoPage implements OnInit {
             return accum;
         }, [] as PHOTO_FROM_CLIENT[]);
 
-        this.apiService.uploadPhotos(this.photosToUpload).subscribe(
+        this.apiService.uploadPhotos$(this.photosToUpload).subscribe(
             (res) => {
                 this.isSending = false;
                 this.photosToPreview = [];

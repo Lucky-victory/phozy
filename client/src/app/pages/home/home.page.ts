@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { delay, map, tap } from 'rxjs/operators';
+import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { loadAlbums } from 'src/app/state/album/album.actions';
+import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState } from 'src/app/state/app.state';
 import { likePhoto, loadPhotos, unlikePhoto } from 'src/app/state/photo/photo.actions';
 import { selectAllPhotos } from 'src/app/state/photo/photo.selectors';
@@ -27,8 +31,8 @@ export class HomePage implements OnInit{
     isLoaded: boolean = false;
     constructor(
         private apiService: ApiService,
-        private utilitiesService: UtilitiesService,
-        private authService: AuthService,
+        private utilsService: UtilitiesService,
+        private authService: AuthService,private navCtrl:NavController,
         private router: Router, private store: Store<AppState>
     ) {}
 
@@ -63,37 +67,33 @@ export class HomePage implements OnInit{
         }, 1000);
     }
     addToCollection(photo: PHOTO_TO_VIEW) {
+      
          if (!this.isLoggedIn) {
-            this.utilitiesService.showModal({
+            this.utilsService.showModal({
                 component: SignInPage, componentProps: {
                     isInModal:true
                 }
             });
             return
-        }
+         }
+        
+         this.store.dispatch(loadAlbums());
+        const albums$ = this.store.select(selectAllAlbums);
+        this.utilsService.showModal({
+            component: AlbumListComponent, componentProps: {
+             photo:photo,albums$
+         }
+     })
     }
     downloadPhoto(photo: PHOTO_TO_VIEW) {
-        this.utilitiesService.downloadPhoto(photo);
-        this.utilitiesService.$downloadComplete.subscribe((isComplete) => {
+        this.utilsService.downloadPhoto(photo);
+        this.utilsService.$downloadComplete.subscribe((isComplete) => {
             if (isComplete) {
                 alert('Thanks for downloading');
             }
         });
     }
-    // likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
-    //      if (!this.isLoggedIn) {
-    //         this.utilitiesService.showModal({
-    //             component: SignInPage, componentProps: {
-    //                 isInModal:true
-    //             }
-    //         });
-    //         return
-    //      }
-    //     this.store.dispatch(likePhoto({id:photo.id}))
-    // //     this.utilitiesService.likeOrUnlikePhoto([photo, isLiked]).subscribe((response) => {
-    // //         // this.reflectLikeInData(response.data);
-    // //   })
-    // }
+
     likeOrUnlikePhoto([photo,isLiked]:[PHOTO_TO_VIEW,boolean]) {
         if (isLiked) {
             return this.store.dispatch(unlikePhoto({ id: photo.id }))
@@ -101,20 +101,9 @@ export class HomePage implements OnInit{
             
         return this.store.dispatch(likePhoto({ id: photo.id }))
      }
-    reflectLikeInData(newData: PHOTO_TO_VIEW) {
-        this.photos$ = this.photos$.pipe(map((photos) => {
-            photos.map((photo) => {
-                
-                newData.id === photo.id
-                ? (photo.is_liked = newData.is_liked)
-                : photo.is_liked;
-                return photo;
-            })
-            return photos
-        }));
-    }
+   
     logout() {
         this.authService.logout();
-        this.router.navigateByUrl('/');
+        this.navCtrl.navigateForward('/')
     }
 }

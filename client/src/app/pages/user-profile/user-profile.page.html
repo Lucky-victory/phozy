@@ -14,24 +14,15 @@
     </div>
   </ion-card-header>
   <ion-card-content>
-    <ion-grid [ngStyle]="{maxWidth:'700px',margin:'auto'}">
-      <ion-row>
-        <ion-col>
+    <ion-segment value="gallery" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="gallery" >
+        <ion-label>Gallery</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="albums" >
+        <ion-label>Albums</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-          <ion-button fill="outline" color="{{active?'primary':'medium'}}">Albums</ion-button>
-          <ion-list>
-            <ion-item *ngFor="let album of userAlbums">
-              <ion-label>{{album.title}}</ion-label>
-            </ion-item>
-          </ion-list>
-        </ion-col>
-        <ion-col>
-
-          <ion-button fill="outline" color="{{active?'primary':'medium'}}">Photos</ion-button>
-        </ion-col>
-      
-      </ion-row>
-    </ion-grid>
   </ion-card-content>
 </ion-card>
 </ion-content>
