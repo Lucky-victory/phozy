@@ -11,6 +11,7 @@ import { CollectionItemComponent } from '../collection-item/collection-item.comp
 })
 export class CollectionListComponent implements OnInit {
   @Input() photo!: PHOTO_TO_VIEW;
+  @Input() album
   constructor() { }
 
   ngOnInit() {

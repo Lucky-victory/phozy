@@ -9,7 +9,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import { debounce, debounceTime } from 'rxjs/operators';
+import { debounce, debounceTime, switchMap } from 'rxjs/operators';
+import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { CollectionListComponent } from 'src/app/components/collection-list/collection-list.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { SignInPage } from 'src/app/pages/sign-in/sign-in.page';
@@ -17,6 +18,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PhotoService } from 'src/app/services/photo/photo.service';
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
+import { loadAlbums } from 'src/app/state/album/album.actions';
+import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState } from 'src/app/state/app.state';
 import { likePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
 
@@ -58,7 +61,7 @@ ionViewWillEnter(){
          */
         if (!this.photo) {
             let id;
-            this.activeRoute.paramMap.subscribe((params) => {
+             this.activeRoute.paramMap.subscribe((params) => {
                 id = params.get('id');
             });
             this.photoService.getPhoto(id).subscribe(
@@ -86,14 +89,18 @@ this.isLiked = this.photo?.is_liked;
                 }
             });
             return
-        }
+         }
+        this.store.dispatch(loadAlbums());
+        const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
-            component: CollectionListComponent, componentProps: {
-             photo:photo
+            component: AlbumListComponent, componentProps: {
+             photo:photo,albums$
          }
      })
  }
     likeOrUnlikePhoto(photo: PHOTO_TO_VIEW) {
+        console.log(photo);
+        
         if (!this.isLoggedIn) {
           
             this.utilsService.showModal({

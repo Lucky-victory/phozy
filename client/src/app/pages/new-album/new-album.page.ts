@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ALBUM_RESULT, NEW_ALBUM } from 'src/app/interfaces/album.interface';
 
-import { ApiService } from 'src/app/services/api.service';
+
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { createAlbum, loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';

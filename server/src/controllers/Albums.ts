@@ -89,15 +89,25 @@ export default class AlbumsController {
         return;
       }
      
-      const albums = await albumsModel.find<ALBUM_RESULT[]>({
+      const result = await albumsModel.find<ALBUM_RESULT[]>({
        
         getAttributes,
       
       });
-
+      let albums = result.data as ALBUM_RESULT[];
+      // get photos in albums
+     albums= await Promise.all(albums.map(async (album) => {
+        const photosResult = await photosModel.findById<PHOTO_RESULT[]>({
+          getAttributes: DEFAULT_PHOTO_FIELDS, id: album.photos as string[]})
+          album.photos=photosResult.data as PHOTO_RESULT[]
+          return album
+      }))
+   
+   
+      
       res.status(200).json({
         message: "albums retrieved",
-        data: albums.data,
+        data: albums,
      
       });
     } catch (error) {
@@ -118,13 +128,13 @@ export default class AlbumsController {
   static async getById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const  authUser=Utils.getAuthenticatedUser(req);
+      const authUser = Utils.getAuthenticatedUser(req);
      
       const { photoPerPage = 10, page = 1, fields } = req.query;
       const offset = ((page as number) - 1) * (photoPerPage as number);
       // get the fields specified in schema
       const fieldsInSchema = albumsModel.fields;
-      const getAttributes = Utils.getFields(fields as string, fieldsInSchema,DEFAULT_ALBUM_FIELDS);
+      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, DEFAULT_ALBUM_FIELDS);
 
       // const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
       // if (cachedData) {
@@ -167,14 +177,20 @@ export default class AlbumsController {
       });
       // get photos under the albums
       const photos = await photosModel.findById<PHOTO_RESULT[]>({
-        id:album.photos as string[],
-       getAttributes: DEFAULT_PHOTO_FIELDS,
+        id: album.photos as string[],
+        getAttributes: DEFAULT_PHOTO_FIELDS,
       });
-      const data = {
-        ...response.data,
-        user: user?.data,
-        photos: photos?.data,
-      };
+      console.log(photos);
+      
+      const data = Object.assign({ ...response.data },
+        {
+          user: user?.data,
+          photos: photos?.data,
+        });
+      console.log('======');
+      
+      console.log(data,'album data');
+      
       albumCache.set("album" + id, data);
       res.status(201).json({
         message: "album retrieved",
@@ -256,12 +272,12 @@ export default class AlbumsController {
 
    const data=   await albumsModel.updateNested<IAlbum>({
         id: album_id, path: '.photos', value: (data: IAlbum) => {
-          data.updated_at = Utils.currentTime.getTime();
-            data.photos.push(photo_id);
+       data.updated_at = Utils.currentTime.getTime();
+       if(!data.photos.includes(photo_id)) data.photos.push(photo_id);
           return data.photos;
         }
       });
-console.log(data);
+
 
       res.status(200).json({
         message: "photo added to album successfully",
