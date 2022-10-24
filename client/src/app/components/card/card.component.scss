@@ -22,7 +22,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background:linear-gradient(180deg,var(--ion-color-light),transparent 50%,var(--ion-color-light));
+            background:linear-gradient(180deg,#1f1f1f,transparent 80%,#1f1f1f);
             opacity: 0;
         }
     }
@@ -96,7 +96,9 @@ ion-avatar.card-meta__avatar {
     display: flex;
     align-items: center;
     flex: 1 0 auto;
-    font-weight: 500;
+    color:var(--text-color)!important;
+    letter-spacing: 1px;
+    font-weight: 500!important;
     text-decoration: none;
     color: inherit;
     text-transform: capitalize;
@@ -119,15 +121,12 @@ ion-avatar.card-meta__avatar {
     z-index: 3;
 }
 
-ion-icon.like-icon,
-ion-icon.add-to-album-icon {
-}
 
 
 @media screen and (max-width: 767px) {
     .card {
         grid-column: unset !important;
-        border-bottom: 1px solid var(--ion-color-light-shade);
+     
         grid-row: unset;
         min-height: 400px;
         max-height: 450px;
@@ -166,7 +165,7 @@ ion-icon.add-to-album-icon {
        
             .card-image-link {
                 &::before {
-                    opacity: 0.3;
+                    opacity: 0.2;
                 }
             }
         

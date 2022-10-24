@@ -77,7 +77,7 @@ export default class PhotosController {
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
         const is_liked = photo.likes?.users?.includes(authUser?.id);
-
+        photo.tags = Utils.objectToStringArray(photo.tags as object[]);
         return {
           ...photo,
           is_liked,

@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button></ion-back-button>
         </ion-buttons>
-        <ion-title>photo-view</ion-title>
+       
     </ion-toolbar>
 </ion-header>
 
@@ -72,6 +72,12 @@
                 </div>
                 <div class="photo-wrapper">
                     <ion-img [src]="photo?.url" class="photo"></ion-img>
+                </div>
+                <div class="photo-tags-container" *ngIf="photo.tags?.length">
+                    Tags: 
+                    <ion-chip  color="secondary" outline="true" *ngFor="let tag of photo.tags">
+                        <ion-label>{{tag}}</ion-label>
+                    </ion-chip>
                 </div>
             </div>
         </ng-container>

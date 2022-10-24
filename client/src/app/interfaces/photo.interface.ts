@@ -6,7 +6,7 @@ export interface IPhoto {
     user_id: string;
     caption?: string;
     likes: { users: string[]; count: number };
-    tags: string[] | { [key: string]: string }[];
+    tags: string[] ;
     views?: number;
     created_at: number;
     updated_at?: number;

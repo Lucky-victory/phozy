@@ -10,6 +10,7 @@ import merge from "just-merge";
 import values from "just-values";
 import slugify from "slugify";
 import { Request } from "express";
+import { reduce } from "just-reduce-object";
 export const defaultProfileImage =
   "https://images.pexels.com/photos/3494648/pexels-photo-3494648.jpeg?auto=compress&cs=tinysrgb&w=640&h=854&dpr=2";
 
@@ -84,6 +85,14 @@ export class Utils extends MyUtils {
     });
 
     return textToObject;
+  }
+  static objectToStringArray<T extends object>(arr:T[],prop='title') {
+   return arr.reduce((accum,val) => {
+     for (const key in val) {
+       if (key === prop) accum.push(val[key]);
+     }
+     return accum
+    },[] as T[Extract<keyof T, string>][])
   }
   static isEmpty(val: any) {
     return isEmpty(val);
