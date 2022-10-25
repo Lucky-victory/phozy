@@ -5,8 +5,9 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { collectPhoto } from 'src/app/state/album/album.actions';
 import { AppState } from 'src/app/state/app.state';
-import { collectPhoto } from 'src/app/state/photo/photo.actions';
+// import { collectPhoto } from 'src/app/state/photo/photo.actions';
 import { AlbumItemComponent } from '../album-item/album-item.component';
 
 @Component({

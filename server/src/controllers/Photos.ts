@@ -77,7 +77,7 @@ export default class PhotosController {
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
         photo = PhotosController.checkLike(photo, authUser?.id);
-        photo = PhotosController.convertPhotoTags(photo);
+
         return photo;
       });
       // remove user_id property since the user object now has the ID
@@ -126,7 +126,7 @@ export default class PhotosController {
 
       photo = PhotosController.checkLike(photo, authUser?.id);
       
-      photo= PhotosController.convertPhotoTags(photo);
+      // photo= PhotosController.convertPhotoTags(photo);
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
@@ -312,7 +312,7 @@ export default class PhotosController {
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
       photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;;
-    photoToView = PhotosController.convertPhotoTags(photoToView);
+    
       res.status(200).json({
         message: "photo liked successfully",
         data:photoToView,
@@ -370,7 +370,7 @@ export default class PhotosController {
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
       photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;
-      photoToView = PhotosController.convertPhotoTags(photoToView);
+     
       
       res.status(200).json({
         message: "photo unliked successfully",
@@ -415,10 +415,7 @@ catch(_){
 
     return photo;
   }
-  private static convertPhotoTags<T extends PHOTO_RESULT|PHOTO_TO_VIEW>(photo: T) {
-    photo.tags = Utils.objectToStringArray(photo.tags as object[]);
-    return photo;
-  }
+ 
 }
 export  const DEFAULT_PHOTO_FIELDS = [
         "id",
@@ -426,7 +423,7 @@ export  const DEFAULT_PHOTO_FIELDS = [
         "url",
         "user_id",
         "caption",
-        "tags",
+        "search_json(\'[title]\',tags) as tags",
         "views",
         "likes",
       ];

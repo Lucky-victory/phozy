@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { delay, map, tap } from 'rxjs/operators';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { PhotoService } from 'src/app/services/photo/photo.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState } from 'src/app/state/app.state';
@@ -30,7 +31,7 @@ export class HomePage implements OnInit{
     footerInfo: string;
     isLoaded: boolean = false;
     constructor(
-        private apiService: ApiService,
+        private apiService: ApiService,private photoService:PhotoService,
         private utilsService: UtilitiesService,
         private authService: AuthService,private navCtrl:NavController,
         private router: Router, private store: Store<AppState>
@@ -44,20 +45,20 @@ export class HomePage implements OnInit{
     }
     onRefresh() {
         this.isLoaded = false;
-           this.photos$=this.apiService.getPhotos(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
+        //    this.photos$=this.photoService.getAll$(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
     }
    
     loadMore(event) {
         this.currentPage += 1;
-        this.apiService.getPhotos(this.currentPage).pipe(delay(500),tap((response) => {
+        this.photoService.getAll$(this.currentPage).pipe(delay(500),tap((response) => {
             console.log(response);
 
-            event.target.complete();
-            if (!response.data?.length) {
-                this.noMoreData = true;
-                event.target.disabled = true;
-            }
-            return response
+            // event.target.complete();
+            // if (!response.data?.length) {
+            //     this.noMoreData = true;
+            //     event.target.disabled = true;
+            // }
+            // return response
         })).subscribe()
     }
     doRefresh(event) {

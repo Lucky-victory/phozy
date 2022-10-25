@@ -90,7 +90,7 @@ export default class AlbumsController {
       }
      
       const result = await albumsModel.find<ALBUM_RESULT[]>({
-       
+       where:`${Utils.isEmpty(user) ? 'is_public=true':''}`,
         getAttributes,
       
       });
