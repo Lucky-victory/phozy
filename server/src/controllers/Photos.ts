@@ -1,7 +1,7 @@
 import { Utils } from "./../utils/index";
 
 import { Request, Response } from "express";
-import { Order } from "harpee";
+import { harpee, Order } from "harpee";
 import { USER_RESULT } from "../interfaces/Users";
 import { albumsModel } from "../models/Albums";
 import { photosModel } from "../models/Photos";
@@ -83,7 +83,9 @@ export default class PhotosController {
       // remove user_id property since the user object now has the ID
       data = Utils.omit(data, ["user_id"]) as (USER_RESULT & PHOTO_RESULT)[];
       photoCache.set(`photos_${page}`, data, 1000);
-      res.status(200).json({ message: "photos retrieved", data });
+      const cachedData=photoCache.get(`photos_${page}`);
+      
+      res.status(200).json({ message: "photos retrieved", data:cachedData });
     } catch (error) {
       console.log(error);
 
@@ -291,7 +293,7 @@ export default class PhotosController {
         return;
       }
 
-      const updatedData = await photosModel.updateNested<IPhoto>({
+      const updatedPhoto = await photosModel.updateNested<IPhoto>({
         id,
         path: ".likes",
         value: (data: IPhoto) => {
@@ -301,9 +303,10 @@ export default class PhotosController {
 
           return data.likes;
         },
+         queryFields:DEFAULT_PHOTO_FIELDS
       });
-      // Remove unwanted props
-      let photo = Utils.pick(updatedData.data as IPhoto, DEFAULT_PHOTO_FIELDS) as PHOTO_RESULT;
+  
+      let photo =updatedPhoto.data as PHOTO_RESULT;
       const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
       photo= PhotosController.checkLike(
          photo,
@@ -346,7 +349,7 @@ export default class PhotosController {
         return;
       }
 
-      const updatedData = await photosModel.updateNested<PHOTO_RESULT>({
+      const updatedPhoto = await photosModel.updateNested<PHOTO_RESULT>({
         id,
         path: ".likes",
         value: (data: IPhoto) => {
@@ -359,9 +362,9 @@ export default class PhotosController {
 
           return data.likes;
         },
+        queryFields:DEFAULT_PHOTO_FIELDS
       });
-      // Remove unwanted props
-      let photo = Utils.pick(updatedData.data as IPhoto, DEFAULT_PHOTO_FIELDS) as PHOTO_RESULT;
+      let photo = updatedPhoto.data as PHOTO_RESULT;
       const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
       photo= PhotosController.checkLike(
          photo,
@@ -379,6 +382,25 @@ export default class PhotosController {
     } catch (error) {
       res.status(500).json({
         message: "An error occcured",
+        error,
+      });
+    }
+  }
+  static async search(req:Request,res:Response) {
+    try {
+      let { q } = req.query;
+      q = Utils.lower(q as string);
+      const sqlQueryBuilder = new harpee.Sqler();
+      const { query } = sqlQueryBuilder.select(DEFAULT_PHOTO_FIELDS).from('phozy', 'photos').where('caption').like(q).or(`search_json(\'$[title in "${q}"]\',tags)`);
+      const response = await photosModel.query<PHOTO_RESULT[]>(query);
+
+      res.status(200).json({
+        message: 'search results recieved', data: response.data
+      });
+    }
+    catch (error) {
+      res.status(500).json({
+        message: "An error occcured couldn't search photos",
         error,
       });
     }

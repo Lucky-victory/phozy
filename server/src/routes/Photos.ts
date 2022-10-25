@@ -7,6 +7,7 @@ const router = Router();
 
 router
   .get("/",checkIfAuthenticatedOptional,  PhotosController.getAll)
+  .get("/search",checkIfAuthenticatedOptional,  PhotosController.search)
   .get("/:id",checkIfAuthenticatedOptional, PhotosController.getOne)
   .use(checkIfAuthenticated)
   .post(

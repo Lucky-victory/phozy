@@ -15,8 +15,8 @@ import { USER_RESULT } from '../interfaces/user.interface';
 })
 export class ApiService {
     protected apiBaseUrl: string = environment.apiBaseUrl;
-    protected retryCount: number = 3;
-    protected retryDelay: number = 3000;
+    protected retryCount: number = 2;
+    protected retryDelay: number = 5000;
     constructor(protected http: HttpClient) { }
     getUserAlbums$(username: string) {
         return this.http

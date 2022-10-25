@@ -4,7 +4,7 @@ export interface AUTH_TOKEN {
 }
 export type AUTH_USER = Pick<IUser, 'id' | 'fullname' | 'username'>;
 export interface IAuth {
-    user: AUTH_USER;
+    user:USER_RESULT;
     auth: AUTH_TOKEN;
 }
 

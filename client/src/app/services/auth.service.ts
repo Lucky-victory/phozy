@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
-import { throwError } from 'rxjs';
+import { throwError, timer } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { IAuth, AUTH_USER } from '../interfaces/user.interface';
@@ -30,7 +30,7 @@ export class AuthService {
 
     signUp({ fullname, email, password }) {
         return this.http
-            .post(
+            .post<IAuth>(
                 `${this.apiBaseUrl}/sign-up`,
                 { fullname, email, password },
                 {
@@ -52,9 +52,13 @@ export class AuthService {
         );
         
         return (
-            moment().isBefore(this.getExpiration()) &&
-            typeof this.getUser().username !== 'undefined'
+            moment().isBefore(this.getExpiration())
         );
+   }
+    autoLogout(time:number) {
+       return timer(time).subscribe(() => {
+            this.logout()
+        });
     }
     isLoggedOut() {
         return !this.isLoggedIn;
@@ -63,15 +67,17 @@ export class AuthService {
         const user = localStorage.getItem('phozy_user');
         return JSON.parse(user) as AUTH_USER;
     }
-    private setSession(res) {
+    private setSession(res:IAuth) {
+        const currentTime = new Date().getTime();
         const auth = res?.auth;
-        const expiresAt = moment().add(auth?.expiresIn, 'second');
+        const expiresAt = currentTime+auth?.expiresIn
         localStorage.setItem('phozy_token', auth?.token);
         localStorage.setItem('phozy_user', JSON.stringify(res?.user));
         localStorage.setItem(
             'phozy_token_expiration',
-            JSON.stringify(expiresAt.valueOf())
+            JSON.stringify(expiresAt)
         );
+        this.autoLogout(expiresAt)
     }
     logout() {
         localStorage.removeItem('phozy_token');

@@ -24,12 +24,11 @@ export const photoReducer = createReducer(
   on(unlikePhoto, (state, action) => ({
     ...state,
   })),
-  on(photoLikeOrUnlikeSuccess, (state, { photo:newPhoto }) => ({
+  on(photoLikeOrUnlikeSuccess, (state, { photo:updatedPhoto }) => ({
     ...state,status:'complete',
-    photos: state.photos.map((photo) => {
-      if (photo.id !== newPhoto.id) return photo;
-      return newPhoto
-    })
+    photos: [...state.photos.map((photo) => {
+      return (photo.id === updatedPhoto.id) ? updatedPhoto : photo;
+    })]
   })),
  
   on(photosLoadSuccess,(state,{photos})=>({...state,photos:photos,status:'complete'})),
