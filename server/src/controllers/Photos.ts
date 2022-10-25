@@ -28,15 +28,15 @@ export default class PhotosController {
       page = +page;
       const offset = (page - 1) * perPage;
       if (!(sort === "desc" || sort === "asc")) sort = "desc";
-      // check if th result was in cache
-      // const cachedData = photoCache.get<PHOTO_RESULT>("photos_" + page);
-      // if (cachedData) {
-      //   res
-      //     .status(200)
-      //     .json({ message: "photos retrieved from cache", data: cachedData });
-      //   return;
-      // }
-      // get the total records and use it restrict the offset, this is crucial.
+      // check if the result was in cache
+      const cachedData = photoCache.get<PHOTO_RESULT>(`photos_${ page }`);
+      if (cachedData) {
+        res
+          .status(200)
+          .json({ message: "photos retrieved from cache", data: cachedData });
+        return;
+      }
+      // get the total records and use it restrict the offset.
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const recordCountResult = await photosModel.describeModel<any>();
@@ -83,9 +83,9 @@ export default class PhotosController {
       // remove user_id property since the user object now has the ID
       data = Utils.omit(data, ["user_id"]) as (USER_RESULT & PHOTO_RESULT)[];
       photoCache.set(`photos_${page}`, data, 1000);
-      const cachedData=photoCache.get(`photos_${page}`);
+     
       
-      res.status(200).json({ message: "photos retrieved", data:cachedData });
+      res.status(200).json({ message: "photos retrieved", data});
     } catch (error) {
       console.log(error);
 

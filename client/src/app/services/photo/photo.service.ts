@@ -27,12 +27,13 @@ export class PhotoService extends ApiService{
             .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}/like`, {})
             .pipe(map((response)=>response.data),catchError(this.errorHandler));
     }
-    getPhoto(photoId: string) {
+    getPhoto$(photoId: string) {
         return this.http
-            .get(`${this.apiBaseUrl}/photos/${photoId}`)
+            .get<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}`)
             .pipe(
                 retry(this.retryCount),
-                delay(this.retryDelay),
+              delay(this.retryDelay),
+                map((response)=>response.data),
                 catchError(this.errorHandler)
             );
     }

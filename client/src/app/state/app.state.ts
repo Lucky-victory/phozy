@@ -7,4 +7,4 @@ export interface AppState{
     albums: AlbumsState,
     user:UserState
 }
-export type STATE_STATUS = 'pending' | 'loading' | 'complete' | 'error';
+export type STATE_STATUS = 'pending' | 'complete' | 'error';

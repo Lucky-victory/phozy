@@ -10,8 +10,8 @@ import { PhotoService } from 'src/app/services/photo/photo.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState, STATE_STATUS } from 'src/app/state/app.state';
-import { likePhoto, loadPhotos, unlikePhoto } from 'src/app/state/photo/photo.actions';
-import { selectAllPhotos, selectPhotosStatus } from 'src/app/state/photo/photo.selectors';
+import { likePhoto, loadPaginatedPhotos, loadPhotos, unlikePhoto } from 'src/app/state/photo/photo.actions';
+import { selectAllPhotos,selectPhotosState,selectPhotosStatus, } from 'src/app/state/photo/photo.selectors';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SignInPage } from '../sign-in/sign-in.page';
@@ -55,16 +55,16 @@ export class HomePage implements OnInit{
    
     loadMore(event) {
         this.currentPage += 1;
-        this.photoService.getAll$(this.currentPage).pipe(delay(500),tap((response) => {
-            console.log(response);
-
-            // event.target.complete();
-            // if (!response.data?.length) {
-            //     this.noMoreData = true;
-            //     event.target.disabled = true;
-            // }
-            // return response
-        })).subscribe()
+        this.store.dispatch(loadPaginatedPhotos({ page: this.currentPage }));
+   
+        this.store.select(selectPhotosState).subscribe((state) => {
+         if (state.status === 'complete') event.target.complete();
+            if (state.is_at_end) {
+                this.noMoreData = true;
+                event.target.disabled = true;
+            }
+        })
+       
     }
     doRefresh(event) {
         this.onRefresh();

@@ -8,8 +8,8 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
-import { debounce, debounceTime, switchMap } from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
+import { debounce, debounceTime, map, mergeMap, switchMap } from 'rxjs/operators';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { CollectionListComponent } from 'src/app/components/collection-list/collection-list.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
@@ -21,7 +21,8 @@ import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState } from 'src/app/state/app.state';
-import { likePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
+import { likePhoto, loadOnePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
+import { selectOnePhoto } from 'src/app/state/photo/photo.selectors';
 
 @Component({
     selector: 'app-photo-view',
@@ -36,6 +37,7 @@ export class PhotoViewPage implements  OnDestroy {
     isLiked!: boolean;
     isLoaded!: boolean;
     isLoggedIn!: boolean;
+    likesCount: number = 0;
     constructor(
         private router: Router,private authService:AuthService,
         private apiService: ApiService,private utilsService:UtilitiesService,
@@ -55,28 +57,24 @@ export class PhotoViewPage implements  OnDestroy {
     }
 ionViewWillEnter(){
     console.log('view enter');
-     this.isLiked = this.photo?.is_liked;
+    this.isLiked = this.photo?.is_liked;
+    this.likesCount=this.photo?.likes?.count
         /**
          * if the photo object is not in router state,e.g when the url is shared,  then query the database for it,
          */
         if (!this.photo) {
-            let id;
-             this.activeRoute.paramMap.subscribe((params) => {
-                id = params.get('id');
-            });
-            this.photoService.getPhoto(id).subscribe(
-                (response: any) => {
-                    this.photo = response.data;
-                    console.log(response);
-this.isLiked = this.photo?.is_liked;
-                    this.isLoaded = true;
-                },
-                (error) => {
-                    if (error.status === 404) {
-                        this.router.navigate(['not-found']);
-                    }
-                }
-            );
+       
+            this.activeRoute.paramMap.pipe(switchMap((params) => of(this.store.dispatch(loadOnePhoto({ id: params.get('id') }))))).subscribe(() => {
+                this.store.select(selectOnePhoto)
+                // this.photo = photo;     
+                //         console.log(photo,'one photo ');
+                        
+                // this.isLiked = this.photo?.is_liked;
+                // this.likesCount = this.photo.likes.count;
+
+                // this.isLoaded = true;
+            })
+
         }
     
 }
@@ -113,11 +111,12 @@ this.isLiked = this.photo?.is_liked;
             return
         }
         if (this.isLiked) {
+            this.likesCount -= 1;
             this.store.dispatch(unlikePhoto({id:photo.id}))
             
         }
         else {
-            
+            this.likesCount += 1;
             this.store.dispatch(likePhoto({id:photo.id}))
         }
        this.isLiked=!this.isLiked

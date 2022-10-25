@@ -52,7 +52,7 @@
                                 ></ion-icon>
                                 <span class="ion-hide-sm-down">
                                     {{isLiked?'Unlike':'Like'}}
-                                    <ion-note>{{photo.likes.count}}</ion-note>
+                                    <ion-note>{{likesCount}}</ion-note>
                                 </span>
                             </ion-button>
                             <ion-button (click)="downloadPhoto(photo)"
