@@ -9,9 +9,9 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { PhotoService } from 'src/app/services/photo/photo.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
-import { AppState } from 'src/app/state/app.state';
+import { AppState, STATE_STATUS } from 'src/app/state/app.state';
 import { likePhoto, loadPhotos, unlikePhoto } from 'src/app/state/photo/photo.actions';
-import { selectAllPhotos } from 'src/app/state/photo/photo.selectors';
+import { selectAllPhotos, selectPhotosStatus } from 'src/app/state/photo/photo.selectors';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SignInPage } from '../sign-in/sign-in.page';
@@ -30,6 +30,7 @@ export class HomePage implements OnInit{
     // isLoading: boolean = true;
     footerInfo: string;
     isLoaded: boolean = false;
+    isLoading$!: Observable<STATE_STATUS>;
     constructor(
         private apiService: ApiService,private photoService:PhotoService,
         private utilsService: UtilitiesService,
@@ -40,7 +41,11 @@ export class HomePage implements OnInit{
     ngOnInit() {
         // this.photos$=this.apiService.getPhotos(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
         this.store.dispatch(loadPhotos());
-        this.photos$ = this.store.select(selectAllPhotos).pipe(tap(()=>this.isLoaded=true));
+        this.photos$ = this.store.select(selectAllPhotos);
+        this.isLoading$ = this.store.select(selectPhotosStatus).pipe(map(status => status));
+       this.isLoading$.subscribe((status) => {
+            this.isLoaded=status==='complete'
+        })
         this.isLoggedIn = this.authService.isLoggedIn;
     }
     onRefresh() {

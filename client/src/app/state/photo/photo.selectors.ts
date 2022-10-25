@@ -4,5 +4,8 @@ import { PhotosState } from './photo.reducer';
 
 export const selectPhotos = (state: AppState) => state.photos;
 export const selectAllPhotos = createSelector(
-    selectPhotos,(state:PhotosState)=>state.photos
-)
+    selectPhotos, (state: PhotosState) => state.photos
+);
+export const selectPhotosStatus = createSelector(
+    selectPhotos, (state: PhotosState) => state.status
+);
