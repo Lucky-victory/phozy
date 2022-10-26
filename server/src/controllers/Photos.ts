@@ -62,8 +62,10 @@ export default class PhotosController {
         orderby: [orderby as string],
         order: sort as Order,
       });
+      console.log(photos.data);
+      
       // get the user IDs
-      const userIds = photos.data?.map((photo) => photo.user_id) as string[];
+      const userIds = photos.data?.map((photo) => photo?.user_id) as string[];
       // query users table with it
       const users = await usersModel.findById<USER_RESULT>({
         id: userIds,
@@ -77,7 +79,9 @@ export default class PhotosController {
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
         photo = PhotosController.checkLike(photo, authUser?.id);
-
+ photo= PhotosController.convertTags(
+         photo,  
+      ); 
         return photo;
       });
       // remove user_id property since the user object now has the ID
@@ -109,10 +113,8 @@ export default class PhotosController {
         DEFAULT_PHOTO_FIELDS
       );
 
-      let photo = await (
-        await photosModel.findOne<PHOTO_RESULT>({ id }, getAttributes)
-      ).data;
-
+      const response = await photosModel.findOne<PHOTO_RESULT>({ id }, getAttributes);
+      let photo=response.data
       if (!photo) {
         res
           .status(404)
@@ -303,7 +305,7 @@ export default class PhotosController {
 
           return data.likes;
         },
-         queryFields:DEFAULT_PHOTO_FIELDS
+         getAttributes:DEFAULT_PHOTO_FIELDS
       });
   
       let photo =updatedPhoto.data as PHOTO_RESULT;
@@ -311,6 +313,10 @@ export default class PhotosController {
       photo= PhotosController.checkLike(
          photo,
          authUserId
+      ); 
+       photo= PhotosController.convertTags(
+         photo,
+         
       ); 
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
@@ -362,13 +368,17 @@ export default class PhotosController {
 
           return data.likes;
         },
-        queryFields:DEFAULT_PHOTO_FIELDS
+        getAttributes:DEFAULT_PHOTO_FIELDS
       });
       let photo = updatedPhoto.data as PHOTO_RESULT;
       const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
       photo= PhotosController.checkLike(
          photo,
          authUserId
+      ); 
+      photo= PhotosController.convertTags(
+         photo,
+         
       ); 
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
@@ -391,7 +401,7 @@ export default class PhotosController {
       let { q } = req.query;
       q = Utils.lower(q as string);
       const sqlQueryBuilder = new harpee.Sqler();
-      const { query } = sqlQueryBuilder.select(DEFAULT_PHOTO_FIELDS).from('phozy', 'photos').where('caption').like(q).or(`search_json(\'$[title in "${q}"]\',tags)`);
+      const { query } = sqlQueryBuilder.select(DEFAULT_PHOTO_FIELDS).from('phozy', 'photos').where('caption').like(q).or(`search_json('\'$[title in "${q}"]\'',tags)`);
       const response = await photosModel.query<PHOTO_RESULT[]>(query);
 
       res.status(200).json({
@@ -437,7 +447,10 @@ catch(_){
 
     return photo;
   }
- 
+  private static convertTags<T extends PHOTO_RESULT|PHOTO_TO_VIEW>(photo:T) {
+    photo.tags = Utils.objectToStringArray(photo.tags as object[]);
+    return photo;
+ }
 }
 export  const DEFAULT_PHOTO_FIELDS = [
         "id",
@@ -445,7 +458,7 @@ export  const DEFAULT_PHOTO_FIELDS = [
         "url",
         "user_id",
         "caption",
-        "search_json(\'[title]\',tags) as tags",
+        "tags",
         "views",
         "likes",
       ];

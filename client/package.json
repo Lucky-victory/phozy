@@ -29,6 +29,7 @@
     "@ionic/angular": "^6.1.9",
     "@ngrx/effects": "^14.3.2",
     "@ngrx/entity": "^14.3.2",
+    "@ngrx/router-store": "^14.3.2",
     "@ngrx/store": "^14.3.2",
     "@ngrx/store-devtools": "^14.3.2",
     "file-saver": "^2.0.5",

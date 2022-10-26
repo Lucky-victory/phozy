@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { of, Subscription } from 'rxjs';
-import { debounce, debounceTime, map, mergeMap, switchMap } from 'rxjs/operators';
+import { debounce, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { CollectionListComponent } from 'src/app/components/collection-list/collection-list.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
@@ -29,7 +29,7 @@ import { selectOnePhoto } from 'src/app/state/photo/photo.selectors';
     templateUrl: './photo-view.page.html',
     styleUrls: ['./photo-view.page.scss'],
 })
-export class PhotoViewPage implements  OnDestroy {
+export class PhotoViewPage implements OnInit, OnDestroy {
     @Input() photo: PHOTO_TO_VIEW;
     isDesktop: boolean;
     private tabletSize: number = 768;
@@ -40,7 +40,7 @@ export class PhotoViewPage implements  OnDestroy {
     likesCount: number = 0;
     constructor(
         private router: Router,private authService:AuthService,
-        private apiService: ApiService,private utilsService:UtilitiesService,
+       private utilsService:UtilitiesService,
         private activeRoute: ActivatedRoute,private photoService:PhotoService,
         private platform: Platform,private store:Store<AppState>
     ) {
@@ -55,8 +55,8 @@ export class PhotoViewPage implements  OnDestroy {
             });
         this.isLoggedIn=this.authService.isLoggedIn
     }
-ionViewWillEnter(){
-    console.log('view enter');
+ngOnInit(){
+    
     this.isLiked = this.photo?.is_liked;
     this.likesCount=this.photo?.likes?.count
         /**
@@ -64,16 +64,15 @@ ionViewWillEnter(){
          */
         if (!this.photo) {
        
-            this.activeRoute.paramMap.pipe(switchMap((params) => of(this.store.dispatch(loadOnePhoto({ id: params.get('id') }))))).subscribe(() => {
-                this.store.select(selectOnePhoto)
-                // this.photo = photo;     
-                //         console.log(photo,'one photo ');
-                        
-                // this.isLiked = this.photo?.is_liked;
-                // this.likesCount = this.photo.likes.count;
-
-                // this.isLoaded = true;
-            })
+            this.activeRoute.paramMap.subscribe((params) => {
+                const id = params.get('id');
+                this.photoService.getPhoto$(id).subscribe((photo) => {
+                    this.photo = photo;
+                    this.isLiked = photo?.is_liked;
+                    this.likesCount = photo?.likes?.count;
+                    this.isLoaded = true;
+               })
+               })
 
         }
     

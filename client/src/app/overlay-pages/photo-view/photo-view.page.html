@@ -76,7 +76,7 @@
                 </div>
                 <div class="photo-tags-container" *ngIf="photo.tags?.length">
                     Tags: 
-                    <ion-chip  color="secondary" outline="true" *ngFor="let tag of photo.tags">
+                    <ion-chip  color="secondary" outline="true" *ngFor="let tag of photo?.tags">
                         <ion-label>{{tag}}</ion-label>
                     </ion-chip>
                 </div>

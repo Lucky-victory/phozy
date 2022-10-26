@@ -31,8 +31,6 @@ export class PhotoService extends ApiService{
         return this.http
             .get<QUERY_RESPONSE<PHOTO_TO_VIEW>>(`${this.apiBaseUrl}/photos/${photoId}`)
             .pipe(
-                retry(this.retryCount),
-              delay(this.retryDelay),
                 map((response)=>response.data),
                 catchError(this.errorHandler)
             );

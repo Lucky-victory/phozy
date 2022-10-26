@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { throwError, timer } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { IAuth, AUTH_USER } from '../interfaces/user.interface';
 
@@ -24,7 +24,7 @@ export class AuthService {
                     },
                 }
             )
-            .pipe(tap((res) => this.setSession(res)))
+            .pipe(tap((res) => this.setSession(res)),map((result)=>({user:result.user,auth:result.auth})))
             .pipe(catchError(this.errorHandler));
     }
 
@@ -39,7 +39,7 @@ export class AuthService {
                     },
                 }
             )
-            .pipe(tap((res) => this.setSession(res)))
+            .pipe(tap((res) => this.setSession(res)),map((result)=>({user:result.user,auth:result.auth})))
             .pipe(catchError(this.errorHandler));
     }
     errorHandler(error: HttpErrorResponse) {

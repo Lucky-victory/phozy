@@ -1,21 +1,21 @@
-import { Action, createReducer, on, } from '@ngrx/store';
-import { USER_RESULT } from 'src/app/interfaces/user.interface';
+import { createReducer, on } from '@ngrx/store';
+import { AUTH_TOKEN, USER_RESULT } from 'src/app/interfaces/user.interface';
 import { STATE_STATUS } from '../app.state';
-import { userAuthsFailure, userAuthsSuccess, userLogout, userSignIn, userSignUp } from './auth.actions';
+import { userAuthFailure, userAuthSuccess, userLogout, userSignIn, userSignUp } from './auth.actions';
 
 
 export const authFeatureKey = 'auth';
 
 export interface UserState {
-user:USER_RESULT,status:STATE_STATUS
+user?:USER_RESULT,status:STATE_STATUS,auth?:AUTH_TOKEN
 }
 
 export const initialState: UserState = {
-user:{fullname:'',id:'',profile_image:'',username:''},
- status:'pending'
+user:undefined,
+ status:'pending',auth:undefined
 };
 
-export const reducer = createReducer(
+export const authReducer = createReducer(
   initialState,
-  on(userLogout, (state) => ({ ...state })), on(userSignIn, (state) => ({ ...state })), on(userSignUp, (state) => ({ ...state })), on(userAuthsSuccess, (state, { user }) => ({ ...state, status: 'complete', user: user })),on(userAuthsFailure, (state, ) => ({ ...state, status: 'error',}))
+  on(userLogout, (state) => ({ ...state })), on(userSignIn, (state) => ({ ...state,status:'pending' })), on(userSignUp, (state) => ({ ...state })), on(userAuthSuccess, (state, { user,auth }) => ({ ...state, status: 'complete', user: user,auth })),on(userAuthFailure, (state, ) => ({ ...state, status: 'error',}))
   );

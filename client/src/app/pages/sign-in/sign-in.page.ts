@@ -3,8 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+import { Store } from '@ngrx/store';
 import { ISignInForm } from 'src/app/interfaces/sign-in.interface';
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
+import { AppState } from 'src/app/state/app.state';
+import { userSignIn } from 'src/app/state/auth/auth.actions';
+import { selectUserState } from 'src/app/state/auth/auth.selectors';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -21,7 +25,7 @@ export class SignInPage implements OnInit {
   isText: boolean;
   isInModal!:boolean;
   signInForm:FormGroup<ISignInForm>
-  constructor(private authService:AuthService,public utilsService:UtilitiesService, private router:Router,private location:Location,private fb:FormBuilder,public modalCtrl:ModalController) {
+  constructor(private store:Store<AppState>,private authService:AuthService,public utilsService:UtilitiesService, private router:Router,private location:Location,private fb:FormBuilder,public modalCtrl:ModalController) {
     this.signInForm = this.fb.group({
       emailOrUsername: ['', [ Validators.required]],
 
@@ -47,7 +51,8 @@ export class SignInPage implements OnInit {
 
     this.errorResult = null;
     this.isSending = true;
-    this.authService.signIn(email_or_username, password).subscribe((res) => {
+    this.store.dispatch(userSignIn({ email_or_username, password }));
+    this.store.select(selectUserState).subscribe((res) => {
       this.result = res;
       this.isSending = false;
       this.infoMessage = 'Sign in successful';
