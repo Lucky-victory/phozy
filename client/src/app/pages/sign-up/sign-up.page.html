@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content>
-  <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
+
 
 <div class="signup-form-container">
   <ion-card>
@@ -71,9 +71,9 @@
         <ion-button
           type="submit"
           expand="block"
-        
+        class="btn primary-btn"
       [disabled]="!signUpForm.valid || isSending" 
-          ><ion-spinner name="bubbles" *ngIf="isSending"></ion-spinner> Sign Up</ion-button
+          ><ion-spinner name="bubbles" [ngClass]="{ 'ion-hide': !isSending }"></ion-spinner> Sign Up</ion-button
         >
       </form>
     </ion-card-content>

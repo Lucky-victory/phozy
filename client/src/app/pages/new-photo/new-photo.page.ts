@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
 
-
 import { PHOTO_FROM_CLIENT } from 'src/app/interfaces/photo.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -25,7 +24,8 @@ export class NewPhotoPage implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private apiService: ApiService,
-        private authService: AuthService,private utilsService:UtilitiesService
+        private authService: AuthService,
+        private utilsService: UtilitiesService
     ) {}
 
     ngOnInit() {
@@ -40,7 +40,7 @@ export class NewPhotoPage implements OnInit {
         );
     }
     fetchUserAlbums() {
-        const user = this.authService.getUser();
+        const user = this.authService.User;
         this.apiService
             .getUserAlbums$(user?.username as string)
             .subscribe((res) => {
@@ -73,12 +73,12 @@ export class NewPhotoPage implements OnInit {
                 this.isSending = false;
                 this.photosToPreview = [];
                 this.infoMessage = 'Photos uploaded successfully';
-                this.showToast()
+                this.showToast();
             },
             (error) => {
                 this.isSending = false;
                 this.infoMessage = 'Sorry, an error occurred please try again';
-                this.showToast()
+                this.showToast();
             }
         );
     }
@@ -113,7 +113,7 @@ export class NewPhotoPage implements OnInit {
     }
     async showToast() {
         await this.utilsService.showToast({
-            message:this.infoMessage
-        })
+            message: this.infoMessage,
+        });
     }
 }

@@ -1,5 +1,5 @@
 import { Location, CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     FormsModule,
     FormBuilder,
@@ -8,15 +8,19 @@ import {
     Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ModalController, IonicModule } from '@ionic/angular';
+import { ModalController, IonicModule, NavController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ISignInForm } from 'src/app/interfaces/sign-in.interface';
 import { USER_RESULT } from 'src/app/interfaces/user.interface';
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { AppState } from 'src/app/state/app.state';
 import { userSignIn } from 'src/app/state/auth/auth.actions';
-import { selectUser, selectUserState } from 'src/app/state/auth/auth.selectors';
+import {
+    selectAuthStatus,
+    selectUser,
+    selectUserState,
+} from 'src/app/state/auth/auth.selectors';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -32,7 +36,7 @@ import { AuthService } from '../../services/auth.service';
         IonicModule,
     ],
 })
-export class SignInFormComponent implements OnInit {
+export class SignInFormComponent implements OnInit, OnDestroy {
     result: any;
     errorResult: any;
     isSending: boolean;
@@ -41,12 +45,12 @@ export class SignInFormComponent implements OnInit {
     isText: boolean;
     isInModal!: boolean;
     signInForm: FormGroup<ISignInForm>;
-    user$: Observable<USER_RESULT>;
+    statusSub!: Subscription;
     constructor(
         private store: Store<AppState>,
 
         public utilsService: UtilitiesService,
-        private router: Router,
+        private navCtrl: NavController,
         private location: Location,
         private fb: FormBuilder,
         public modalCtrl: ModalController
@@ -58,26 +62,37 @@ export class SignInFormComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
-        this.user$ = this.store.select(selectUser);
-        this.user$.subscribe((user) => {
-            console.log(user, 'user');
-        });
-        // if the user is already logged in, redirect back to homepage
-        // if (this.authService.isLoggedIn) {
-        //   this.router.navigateByUrl('/')
-        // }
-    }
-    signIn() {
+    ngOnInit() {}
+    async signIn() {
         const email_or_username = this.signInForm.get('emailOrUsername').value;
         const password = this.signInForm.get('password').value;
-        console.log('sign in triggered');
+        console.log('signing in');
 
         this.errorResult = null;
         this.isSending = true;
         this.store.dispatch(userSignIn({ email_or_username, password }));
+        this.statusSub = this.store
+            .select(selectAuthStatus)
+            .subscribe(async (status) => {
+                this.isSending = status !== 'complete';
+                if (status === 'complete') {
+                    this.infoMessage = 'Sign in successful';
+                    await this.utilsService.showToast({
+                        message: this.infoMessage,
+                    });
+                    await this.navCtrl.navigateForward('/');
+                    this.signInForm.reset();
+                    if (this.isInModal) {
+                        this.modalCtrl.dismiss();
+                    }
+                }
+            });
     }
     passwordToText() {
         this.isText = !this.isText;
+    }
+
+    ngOnDestroy(): void {
+        this.statusSub.unsubscribe();
     }
 }

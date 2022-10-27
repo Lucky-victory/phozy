@@ -11,7 +11,15 @@ export const selectUser = createSelector(
     selectState,
     (state: UserState) => state.user
 );
-export const selectUserStateStatus = createSelector(
+export const selectAuthStatus = createSelector(
     selectState,
     (state: UserState) => state.status
+);
+export const selectIsLoggedIn = createSelector(
+    selectState,
+    (state: UserState) => state.is_logged_in
+);
+export const selectAuthTokenExpiration = createSelector(
+    selectState,
+    (state: UserState) => state.token_expiration
 );

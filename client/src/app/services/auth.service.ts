@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { throwError, timer } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { STORAGE_KEYS } from '../interfaces/common';
 import { QUERY_RESPONSE } from '../interfaces/photo.interface';
 import { IAuth, AUTH_USER } from '../interfaces/user.interface';
 
@@ -23,6 +24,7 @@ export class AuthService {
             .pipe(
                 map((response) => response.data),
                 tap((result) => this.setSession(result)),
+
                 catchError(this.errorHandler)
             );
     }
@@ -37,54 +39,51 @@ export class AuthService {
             .pipe(
                 map((response) => response.data),
                 tap((result) => this.setSession(result)),
+
                 catchError(this.errorHandler)
             );
     }
-    errorHandler(error: HttpErrorResponse) {
+    private errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
     }
-
-    get isLoggedIn() {
-        console.log(moment().isBefore(this.getExpiration()));
-
-        return moment().isBefore(this.getExpiration());
-    }
-    autoLogout(time: number) {
-        return timer(time).subscribe(() => {
-            console.log('auto logout triggered');
-
-            // this.logout()
-        });
-    }
-    isLoggedOut() {
-        return !this.isLoggedIn;
-    }
-    getUser() {
-        const user = localStorage.getItem('phozy_user');
+    get User() {
+        const user = localStorage.getItem(STORAGE_KEYS.USER);
         return JSON.parse(user) as AUTH_USER;
     }
-     setSession(res: IAuth) {
+    setSession(res: IAuth) {
         const currentTime = new Date().getTime();
         const auth = res?.auth;
         const expiresAt = currentTime + auth?.expiresIn;
-        localStorage.setItem('phozy_token', auth?.token);
-        localStorage.setItem('phozy_user', JSON.stringify(res?.user));
         localStorage.setItem(
-            'phozy_token_expiration',
+            STORAGE_KEYS.TOKEN_EXPIRATION_TIME,
             JSON.stringify(expiresAt)
         );
-        // this.autoLogout(expiresAt);
+        localStorage.setItem(
+            STORAGE_KEYS.TOKEN_EXPIRATION,
+            JSON.stringify(auth.expiresIn)
+        );
+        localStorage.setItem(STORAGE_KEYS.TOKEN, auth?.token);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(res?.user));
     }
     logout() {
-        localStorage.removeItem('phozy_token');
-        localStorage.removeItem('phozy_token_expiration');
-        localStorage.removeItem('phozy_user');
+        console.log('logged out');
+
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.TOKEN_EXPIRATION);
+        localStorage.removeItem(STORAGE_KEYS.TOKEN_EXPIRATION_TIME);
+        localStorage.removeItem(STORAGE_KEYS.USER);
     }
-    getToken() {
-        return localStorage.getItem('phozy_token');
+    get token() {
+        return localStorage.getItem(STORAGE_KEYS.TOKEN);
     }
-    getExpiration() {
-        const expiration = localStorage.getItem('phozy_token_expiration');
+    get expiration() {
+        const expiration = localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRATION);
+        return JSON.parse(expiration) as number;
+    }
+    get expirationTime() {
+        const expiration = localStorage.getItem(
+            STORAGE_KEYS.TOKEN_EXPIRATION_TIME
+        );
         const expiresAt = JSON.parse(expiration);
         return moment(expiresAt);
     }

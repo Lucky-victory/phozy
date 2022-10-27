@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { delay, map, tap } from 'rxjs/operators';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
@@ -11,6 +11,11 @@ import { PhotoService } from 'src/app/services/photo/photo.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState, STATE_STATUS } from 'src/app/state/app.state';
+import { userLogout } from 'src/app/state/auth/auth.actions';
+import {
+    selectAuthStatus,
+    selectIsLoggedIn,
+} from 'src/app/state/auth/auth.selectors';
 import {
     likePhoto,
     loadPaginatedPhotos,
@@ -31,53 +36,63 @@ import { UtilitiesService } from './../../services/utilities/utilities.service';
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
-    // photos$!: Observable<PHOTO_TO_VIEW[]>;
+export class HomePage implements OnInit, OnDestroy {
     photos$: Observable<PHOTO_TO_VIEW[]>;
     isLoggedIn!: boolean;
-    currentPage = 1;
+    private currentPage = 1;
     noMoreData: boolean;
-    // isLoading: boolean = true;
-    footerInfo: string;
+
+    private loadingSub: Subscription;
+    private loginSub: Subscription;
+    private photoStateSub: Subscription;
     isLoaded: boolean = false;
-    isLoading$!: Observable<STATE_STATUS>;
+
     constructor(
-        private apiService: ApiService,
-        private photoService: PhotoService,
         private utilsService: UtilitiesService,
-        private authService: AuthService,
+
         private navCtrl: NavController,
-        private router: Router,
+
         private store: Store<AppState>
     ) {}
 
     ngOnInit() {
-        // this.photos$=this.apiService.getPhotos(this.currentPage).pipe(tap(()=>this.isLoaded=true),map((response)=>response.data))
         this.store.dispatch(loadPhotos());
         this.photos$ = this.store.select(selectAllPhotos);
-        this.isLoading$ = this.store
+        this.loadingSub = this.store
             .select(selectPhotosStatus)
-            .pipe(map((status) => status));
-        this.isLoading$.subscribe((status) => {
-            this.isLoaded = status !== 'pending';
-        });
-        this.isLoggedIn = this.authService.isLoggedIn;
+            .subscribe((status) => {
+                this.isLoaded = status === 'complete';
+            });
+        this.loginSub = this.store
+            .select(selectIsLoggedIn)
+            .subscribe((isLoggedIn) => {
+                this.isLoggedIn = isLoggedIn;
+            });
     }
     onRefresh() {
         this.isLoaded = false;
+        this.store.dispatch(loadPhotos());
+        this.loadingSub.unsubscribe();
+        this.loadingSub = this.store
+            .select(selectPhotosStatus)
+            .subscribe((status) => {
+                this.isLoaded = status === 'complete';
+            });
     }
 
     loadMore(event) {
         this.currentPage += 1;
         this.store.dispatch(loadPaginatedPhotos({ page: this.currentPage }));
 
-        this.store.select(selectPhotosState).subscribe((state) => {
-            if (state.status === 'complete') event.target.complete();
-            if (state.is_at_end) {
-                this.noMoreData = true;
-                event.target.disabled = true;
-            }
-        });
+        this.photoStateSub = this.store
+            .select(selectPhotosState)
+            .subscribe((state) => {
+                if (state.status === 'complete') event.target.complete();
+                if (state.is_at_end) {
+                    this.noMoreData = true;
+                    event.target.disabled = true;
+                }
+            });
     }
     doRefresh(event) {
         this.onRefresh();
@@ -130,7 +145,12 @@ export class HomePage implements OnInit {
         });
     }
     logout() {
-        this.authService.logout();
+        this.store.dispatch(userLogout());
         this.navCtrl.navigateForward('/');
+    }
+    ngOnDestroy(): void {
+        this.loginSub.unsubscribe();
+        this.loadingSub.unsubscribe();
+        this.photoStateSub.unsubscribe();
     }
 }

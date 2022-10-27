@@ -14,6 +14,7 @@ import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState } from 'src/app/state/app.state';
+import { selectIsLoggedIn } from 'src/app/state/auth/auth.selectors';
 import { likePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
 
 @Component({
@@ -48,7 +49,9 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.isDesktop = this.platform.width() > this.tabletSize;
             });
-        this.isLoggedIn = this.authService.isLoggedIn;
+        this.store.select(selectIsLoggedIn).subscribe((isLoggedIn) => {
+            this.isLoggedIn = isLoggedIn;
+        });
     }
     ngOnInit() {
         this.isLiked = this.photo?.is_liked;
