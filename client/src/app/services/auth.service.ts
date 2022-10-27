@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { throwError, timer } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { QUERY_RESPONSE } from '../interfaces/photo.interface';
 import { IAuth, AUTH_USER } from '../interfaces/user.interface';
 
 @Injectable({
@@ -15,49 +16,44 @@ export class AuthService {
     constructor(private http: HttpClient) {}
     signIn(email_or_username: string, password: string) {
         return this.http
-            .post<IAuth>(
-                `${this.apiBaseUrl}/sign-in`,
-                { email_or_username, password },
-                {
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                }
-            )
-            .pipe(tap((res) => this.setSession(res)),map((result)=>({user:result.user,auth:result.auth})))
-            .pipe(catchError(this.errorHandler));
+            .post<QUERY_RESPONSE<IAuth>>(`${this.apiBaseUrl}/sign-in`, {
+                email_or_username,
+                password,
+            })
+            .pipe(
+                map((response) => response.data),
+                tap((result) => this.setSession(result)),
+                catchError(this.errorHandler)
+            );
     }
 
     signUp({ fullname, email, password }) {
         return this.http
-            .post<IAuth>(
-                `${this.apiBaseUrl}/sign-up`,
-                { fullname, email, password },
-                {
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                }
-            )
-            .pipe(tap((res) => this.setSession(res)),map((result)=>({user:result.user,auth:result.auth})))
-            .pipe(catchError(this.errorHandler));
+            .post<QUERY_RESPONSE<IAuth>>(`${this.apiBaseUrl}/sign-up`, {
+                fullname,
+                email,
+                password,
+            })
+            .pipe(
+                map((response) => response.data),
+                tap((result) => this.setSession(result)),
+                catchError(this.errorHandler)
+            );
     }
     errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
     }
 
-   get isLoggedIn() {
-        console.log(
-            moment().isBefore(this.getExpiration())
-        );
-        
-        return (
-            moment().isBefore(this.getExpiration())
-        );
-   }
-    autoLogout(time:number) {
-       return timer(time).subscribe(() => {
-            this.logout()
+    get isLoggedIn() {
+        console.log(moment().isBefore(this.getExpiration()));
+
+        return moment().isBefore(this.getExpiration());
+    }
+    autoLogout(time: number) {
+        return timer(time).subscribe(() => {
+            console.log('auto logout triggered');
+
+            // this.logout()
         });
     }
     isLoggedOut() {
@@ -67,17 +63,17 @@ export class AuthService {
         const user = localStorage.getItem('phozy_user');
         return JSON.parse(user) as AUTH_USER;
     }
-    private setSession(res:IAuth) {
+     setSession(res: IAuth) {
         const currentTime = new Date().getTime();
         const auth = res?.auth;
-        const expiresAt = currentTime+auth?.expiresIn
+        const expiresAt = currentTime + auth?.expiresIn;
         localStorage.setItem('phozy_token', auth?.token);
         localStorage.setItem('phozy_user', JSON.stringify(res?.user));
         localStorage.setItem(
             'phozy_token_expiration',
             JSON.stringify(expiresAt)
         );
-        this.autoLogout(expiresAt)
+        // this.autoLogout(expiresAt);
     }
     logout() {
         localStorage.removeItem('phozy_token');

@@ -7,9 +7,13 @@ import { albumsModel } from "../models/Albums";
 import { photosModel } from "../models/Photos";
 import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
-import { IPhoto, NEW_PHOTO, PHOTO_RESULT, PHOTO_TO_VIEW } from "./../interfaces/Photos";
+import {
+  IPhoto,
+  NEW_PHOTO,
+  PHOTO_RESULT,
+  PHOTO_TO_VIEW,
+} from "./../interfaces/Photos";
 const photoCache = new CacheManager();
-
 
 export default class PhotosController {
   static async getAll(req: Request, res: Response) {
@@ -20,16 +24,17 @@ export default class PhotosController {
         sort = "desc",
         orderby = "created_at",
       } = req.query;
-     
+
       const authUser = Utils.getAuthenticatedUser(req);
-      
+      console.log(authUser, "authUser");
+
       const { fields } = req.query;
       perPage = +perPage;
       page = +page;
       const offset = (page - 1) * perPage;
       if (!(sort === "desc" || sort === "asc")) sort = "desc";
       // check if the result was in cache
-      const cachedData = photoCache.get<PHOTO_RESULT>(`photos_${ page }`);
+      const cachedData = photoCache.get<PHOTO_RESULT>(`photos_${page}`);
       if (cachedData) {
         res
           .status(200)
@@ -46,7 +51,7 @@ export default class PhotosController {
         res.status(200).json({ message: "No more Photos", data: [] });
         return;
       }
-     
+
       const fieldsInSchema = albumsModel.fields;
       const getAttributes = Utils.getFields(
         fields as string,
@@ -62,8 +67,7 @@ export default class PhotosController {
         orderby: [orderby as string],
         order: sort as Order,
       });
-      console.log(photos.data);
-      
+
       // get the user IDs
       const userIds = photos.data?.map((photo) => photo?.user_id) as string[];
       // query users table with it
@@ -79,17 +83,14 @@ export default class PhotosController {
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
         photo = PhotosController.checkLike(photo, authUser?.id);
- photo= PhotosController.convertTags(
-         photo,  
-      ); 
+        photo = PhotosController.convertTags(photo);
         return photo;
       });
       // remove user_id property since the user object now has the ID
       data = Utils.omit(data, ["user_id"]) as (USER_RESULT & PHOTO_RESULT)[];
       photoCache.set(`photos_${page}`, data, 1000);
-     
-      
-      res.status(200).json({ message: "photos retrieved", data});
+
+      res.status(200).json({ message: "photos retrieved", data });
     } catch (error) {
       console.log(error);
 
@@ -104,8 +105,7 @@ export default class PhotosController {
       const { id } = req.params;
       const { fields } = req.query;
       const authUser = Utils.getAuthenticatedUser(req);
-    
-     
+
       const fieldsInSchema = albumsModel.fields;
       const getAttributes = Utils.getFields(
         fields as string,
@@ -113,8 +113,11 @@ export default class PhotosController {
         DEFAULT_PHOTO_FIELDS
       );
 
-      const response = await photosModel.findOne<PHOTO_RESULT>({ id }, getAttributes);
-      let photo=response.data
+      const response = await photosModel.findOne<PHOTO_RESULT>(
+        { id },
+        getAttributes
+      );
+      let photo = response.data;
       if (!photo) {
         res
           .status(404)
@@ -129,7 +132,7 @@ export default class PhotosController {
       const user = await PhotosController.getOwner(photoOwnerId);
 
       photo = PhotosController.checkLike(photo, authUser?.id);
-      
+
       // photo= PhotosController.convertPhotoTags(photo);
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
@@ -162,7 +165,7 @@ export default class PhotosController {
    */
   static async addNewPhotos(req: Request, res: Response) {
     try {
-      const { photo_urls,  } = req;
+      const { photo_urls } = req;
       const authUser = Utils.getAuthenticatedUser(req);
 
       const newPhotos: NEW_PHOTO[] = photo_urls.map((photo) => {
@@ -198,7 +201,7 @@ export default class PhotosController {
    */
   static async delete(req: Request, res: Response) {
     try {
-      const  authUser  = Utils.getAuthenticatedUser(req);
+      const authUser = Utils.getAuthenticatedUser(req);
       const { id } = req.params;
 
       const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
@@ -235,7 +238,7 @@ export default class PhotosController {
    */
   static async update(req: Request, res: Response) {
     try {
-     const  authUser  = Utils.getAuthenticatedUser(req);
+      const authUser = Utils.getAuthenticatedUser(req);
       const { id } = req.params;
 
       const photo = await photosModel.findOne<PHOTO_RESULT>({ id });
@@ -258,8 +261,9 @@ export default class PhotosController {
       const bodyData = Utils.pick(req.body, photosModel.fields);
 
       const dataToUpdate = {
-  ...bodyData,id
-}
+        ...bodyData,
+        id,
+      };
       await photosModel.update([dataToUpdate]);
       res.status(200).json({
         message: "photo updated successfully",
@@ -280,13 +284,15 @@ export default class PhotosController {
    */
   static async like(req: Request, res: Response) {
     try {
- 
       const { id } = req.params;
       /**
        * ID of the  authenticated user
        */
-      const authUserId =Utils.getAuthenticatedUser(req)?.id
-      const response = await photosModel.findOne<PHOTO_RESULT>({ id }, DEFAULT_PHOTO_FIELDS);
+      const authUserId = Utils.getAuthenticatedUser(req)?.id;
+      const response = await photosModel.findOne<PHOTO_RESULT>(
+        { id },
+        DEFAULT_PHOTO_FIELDS
+      );
 
       if (!response.data) {
         res
@@ -305,26 +311,22 @@ export default class PhotosController {
 
           return data.likes;
         },
-         getAttributes:DEFAULT_PHOTO_FIELDS
+        getAttributes: DEFAULT_PHOTO_FIELDS,
       });
-  
-      let photo =updatedPhoto.data as PHOTO_RESULT;
-      const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
-      photo= PhotosController.checkLike(
-         photo,
-         authUserId
-      ); 
-       photo= PhotosController.convertTags(
-         photo,
-         
-      ); 
+
+      let photo = updatedPhoto.data as PHOTO_RESULT;
+      const user = (await PhotosController.getOwner(
+        photo.user_id
+      )) as USER_RESULT;
+      photo = PhotosController.checkLike(photo, authUserId);
+      photo = PhotosController.convertTags(photo);
       //merge the photo object with the user object
-      let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
-      photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;;
-    
+      let photoToView = Object.assign({}, photo, { user }) as PHOTO_TO_VIEW;
+      photoToView = Utils.omit(photoToView, ["user_id"]) as PHOTO_TO_VIEW;
+
       res.status(200).json({
         message: "photo liked successfully",
-        data:photoToView,
+        data: photoToView,
       });
     } catch (error) {
       console.log(error);
@@ -345,7 +347,7 @@ export default class PhotosController {
   static async unlike(req: Request, res: Response) {
     try {
       const { id } = req.params;
-    
+
       const authUserId = Utils.getAuthenticatedUser(req)?.id;
       const response = await photosModel.findOne<PHOTO_RESULT>({ id });
       if (!response.data) {
@@ -364,30 +366,27 @@ export default class PhotosController {
 
           // reset to 0 incase it mistakenly goes below 0, e.g -1
           if (data.likes.count < 0) data.likes.count = 0;
-          data.likes.users = data.likes.users.filter((userId) => userId !== authUserId);
+          data.likes.users = data.likes.users.filter(
+            (userId) => userId !== authUserId
+          );
 
           return data.likes;
         },
-        getAttributes:DEFAULT_PHOTO_FIELDS
+        getAttributes: DEFAULT_PHOTO_FIELDS,
       });
       let photo = updatedPhoto.data as PHOTO_RESULT;
-      const user = await PhotosController.getOwner(photo.user_id) as USER_RESULT;
-      photo= PhotosController.checkLike(
-         photo,
-         authUserId
-      ); 
-      photo= PhotosController.convertTags(
-         photo,
-         
-      ); 
+      const user = (await PhotosController.getOwner(
+        photo.user_id
+      )) as USER_RESULT;
+      photo = PhotosController.checkLike(photo, authUserId);
+      photo = PhotosController.convertTags(photo);
       //merge the photo object with the user object
-      let photoToView = Object.assign({}, photo, { user })  as PHOTO_TO_VIEW;
-      photoToView = Utils.omit(photoToView, ['user_id']) as PHOTO_TO_VIEW;
-     
-      
+      let photoToView = Object.assign({}, photo, { user }) as PHOTO_TO_VIEW;
+      photoToView = Utils.omit(photoToView, ["user_id"]) as PHOTO_TO_VIEW;
+
       res.status(200).json({
         message: "photo unliked successfully",
-        data:photoToView,
+        data: photoToView,
       });
     } catch (error) {
       res.status(500).json({
@@ -396,19 +395,24 @@ export default class PhotosController {
       });
     }
   }
-  static async search(req:Request,res:Response) {
+  static async search(req: Request, res: Response) {
     try {
       let { q } = req.query;
       q = Utils.lower(q as string);
       const sqlQueryBuilder = new harpee.Sqler();
-      const { query } = sqlQueryBuilder.select(DEFAULT_PHOTO_FIELDS).from('phozy', 'photos').where('caption').like(q).or(`search_json('\'$[title in "${q}"]\'',tags)`);
+      const { query } = sqlQueryBuilder
+        .select(DEFAULT_PHOTO_FIELDS)
+        .from("phozy", "photos")
+        .where("caption")
+        .like(q)
+        .or(`search_json('$[title in "${q}"]',tags)`);
       const response = await photosModel.query<PHOTO_RESULT[]>(query);
 
       res.status(200).json({
-        message: 'search results recieved', data: response.data
+        message: "search results recieved",
+        data: response.data,
       });
-    }
-    catch (error) {
+    } catch (error) {
       res.status(500).json({
         message: "An error occcured couldn't search photos",
         error,
@@ -418,23 +422,20 @@ export default class PhotosController {
   /**
    * Get the photo owner from users model
    */
-  private static async getOwner(userId:string,columns=[
-          "username",
-          "fullname",
-          "profile_image",
-          "id"
-        ]){
-try{
- const response=
-        await usersModel.findOne<USER_RESULT>({ id: userId }, 
-          columns
+  private static async getOwner(
+    userId: string,
+    columns = ["username", "fullname", "profile_image", "id"]
+  ) {
+    try {
+      const response = await usersModel.findOne<USER_RESULT>(
+        { id: userId },
+        columns
       );
-  const user = response.data;
-  return user;
-}
-catch(_){
-
-}
+      const user = response.data;
+      return user;
+    } catch (_) {
+      //
+    }
   }
   /**
    * checks if a user has liked a photo and adds a 'liked' property to the photo object
@@ -442,23 +443,26 @@ catch(_){
    * @param userId
    * @returns
    */
-  private static checkLike<T extends PHOTO_RESULT>(photo:T, userId: string) {
-    photo.is_liked = photo.likes?.users?.includes(userId);
+  private static checkLike<T extends PHOTO_RESULT>(photo: T, userId: string) {
+    console.log(userId, "userid");
+    const l = photo.likes.users.includes(userId);
+    console.log(l, "liked");
+    photo.is_liked = photo.likes.users.includes(userId);
 
     return photo;
   }
-  private static convertTags<T extends PHOTO_RESULT|PHOTO_TO_VIEW>(photo:T) {
+  private static convertTags<T extends PHOTO_RESULT | PHOTO_TO_VIEW>(photo: T) {
     photo.tags = Utils.objectToStringArray(photo.tags as object[]);
     return photo;
- }
+  }
 }
-export  const DEFAULT_PHOTO_FIELDS = [
-        "id",
-        "created_at",
-        "url",
-        "user_id",
-        "caption",
-        "tags",
-        "views",
-        "likes",
-      ];
+export const DEFAULT_PHOTO_FIELDS = [
+  "id",
+  "created_at",
+  "url",
+  "user_id",
+  "caption",
+  "tags",
+  "views",
+  "likes",
+];

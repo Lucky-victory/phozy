@@ -25,18 +25,14 @@ export default class UsersController {
 
       // check if user exist by username or email
       const [usernameExist, emailExist] = await Promise.all([
-        await usersModel.findOne<USER_AUTH>({ email: emailOrUsername }, [
-          "password",
-          "id",
-          "fullname",
-          "username",
-        ]),
-        await usersModel.findOne<USER_AUTH>({ username: emailOrUsername }, [
-          "password",
-          "id",
-          "fullname",
-          "username",
-        ]),
+        await usersModel.findOne<USER_AUTH>(
+          { email: emailOrUsername },
+          AUTH_USER_FIELDS
+        ),
+        await usersModel.findOne<USER_AUTH>(
+          { username: emailOrUsername },
+          AUTH_USER_FIELDS
+        ),
       ]);
 
       if (!(usernameExist.data || emailExist.data)) {
@@ -64,7 +60,7 @@ export default class UsersController {
       // remove password from the object before sending it out to the client
       user = Utils.omit(user as USER_AUTH, ["password"]) as USER_AUTH;
 
-      // // remove profile image and password from the object before generating a token from it
+      // // remove profile image from the object before generating a token from it
       const userToToken = Utils.omit(user as USER_AUTH, ["profile_image"]);
       // generate a jwt token
       jwt.sign(
@@ -74,17 +70,19 @@ export default class UsersController {
           if (err) throw err;
           res.status(200).json({
             message: "login successful",
-            user,
-            auth: {
-              token: encoded as string,
-              expiresIn: ms(config.jwt_expiration as string),
+            data: {
+              user,
+              auth: {
+                token: encoded as string,
+                expiresIn: ms(config.jwt_expiration as string),
+              },
             },
           });
         }
       );
     } catch (error) {
       res.status(500).json({
-        message: "an error occurred ",
+        message: "an error occurred While logging in",
         error,
       });
     }
@@ -99,27 +97,28 @@ export default class UsersController {
     try {
       let { password } = req.body;
       const { email, fullname } = req.body;
-      const shortId = Utils.shortID(7);
-      const username = Utils.generateUsername(undefined, "", shortId);
+      const shortId = Utils.shortID(8);
 
       // check if user already exist
-      const [usernameExist, emailExist] = await Promise.all([
-        await usersModel.findOne({ username }),
-        await usersModel.findOne({ email }),
-      ]);
+      const emailExist = await usersModel.findOne({ email });
+      // const [usernameExist, emailExist] = await Promise.all([
+      //   await usersModel.findOne({ username }),
+      //   await usersModel.findOne({ email }),
+      // ]);
 
-      if (usernameExist.data) {
-        res.status(400).json({
-          message: "username is already taken",
-        });
-        return;
-      }
+      // if (usernameExist.data) {
+      //   res.status(400).json({
+      //     message: "username is already taken",
+      //   });
+      //   return;
+      // }
       if (emailExist.data) {
         res.status(400).json({
           message: "user already exist, do you want to login?",
         });
         return;
       }
+      const username = Utils.generateUsername(fullname, "", shortId);
       password = await hashPassword(String(password), 10);
 
       const newUser: NEW_USER = {
@@ -136,11 +135,14 @@ export default class UsersController {
         {
           id: insertId.data?.inserted_hashes[0] as string,
         },
-        ["id", "profile_image", "fullname", "username"]
+        DEFAULT_USER_FIELDS
       );
       const user = result.data;
       // remove profile image from the object before generating a token from it
-      const userToToken = Utils.omit(user as USER_RESULT, ["profile_image"]);
+      const userToToken = Utils.omit(user as USER_RESULT, [
+        "profile_image",
+        "socials",
+      ]);
 
       // generate JWT token
       jwt.sign(
@@ -150,10 +152,12 @@ export default class UsersController {
           if (err) throw err;
           res.status(200).json({
             messsage: "account successfully created ",
-            user,
-            auth: {
-              token: encoded,
-              expiresIn: ms(config.jwt_expiration as string),
+            data: {
+              user,
+              auth: {
+                token: encoded,
+                expiresIn: ms(config.jwt_expiration as string),
+              },
             },
           });
         }
@@ -250,3 +254,12 @@ export default class UsersController {
     next();
   }
 }
+export const DEFAULT_USER_FIELDS = [
+  "id",
+  "profile_image",
+  "fullname",
+  "username",
+  "socials",
+];
+
+export const AUTH_USER_FIELDS = ["password", "id", "fullname", "username"];

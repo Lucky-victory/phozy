@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { Location } from '@angular/common';
+import { AppState } from 'src/app/state/app.state';
+import { Store } from '@ngrx/store';
 
 @Component({
     selector: 'app-sign-up-page',
@@ -19,7 +21,8 @@ export class SignUpPage implements OnInit {
     constructor(
         private fb: FormBuilder,
         private location: Location,
-        private authService: AuthService
+        private authService: AuthService,
+        private store: Store<AppState>
     ) {
         this.signUpForm = this.fb.group({
             email: ['', [Validators.required, Validators.email]],

@@ -7,15 +7,17 @@ import { IonicModule } from '@ionic/angular';
 import { PhotoViewPageRoutingModule } from './photo-view-routing.module';
 
 import { PhotoViewPage } from './photo-view.page';
-import { SignInPageModule } from 'src/app/pages/sign-in/sign-in.module';
+
+import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    PhotoViewPageRoutingModule,SignInPageModule,
-  ],
-  declarations: [PhotoViewPage]
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        PhotoViewPageRoutingModule,
+        SignInFormComponent,
+    ],
+    declarations: [PhotoViewPage],
 })
 export class PhotoViewPageModule {}

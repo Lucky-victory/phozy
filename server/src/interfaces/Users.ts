@@ -17,9 +17,9 @@ export type NEW_USER = Pick<
 >;
 export type USER_RESULT = Pick<
   IUser,
-  "fullname" | "id" | "username" | "socials"
+  "fullname" | "id" | "username" | "socials" | "profile_image"
 >;
 export type USER_AUTH = Pick<
   IUser,
-  "password" | "id" | "fullname" | "username"|"profile_image"
+  "password" | "id" | "fullname" | "username" | "profile_image"
 >;

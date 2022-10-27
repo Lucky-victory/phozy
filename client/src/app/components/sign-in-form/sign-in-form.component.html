@@ -1,0 +1,64 @@
+<div class="sign-in-form-container">
+    <ion-card>
+        <ion-card-header>
+            <ion-card-title> Sign In </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <ion-text color="danger" class="error-message">{{
+                errorMessage
+            }}</ion-text>
+            <br />
+            <form [formGroup]="signInForm">
+                <ion-item>
+                    <ion-label for="emailOrUsername" position="floating">
+                        Email or Username:</ion-label
+                    >
+                    <ion-input
+                        type="text"
+                        formControlName="emailOrUsername"
+                        id="emailOrUsername"
+                    ></ion-input>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label for="password" position="floating">
+                        Password:</ion-label
+                    >
+                    <ion-input
+                        border
+                        type="{{ isText ? 'text' : 'password' }}"
+                        formControlName="password"
+                        id="password"
+                    ></ion-input>
+                    <ion-icon
+                        slot="end"
+                        name="{{ isText ? 'eye-off-outline' : 'eye-outline' }}"
+                        (click)="passwordToText()"
+                    ></ion-icon>
+                </ion-item>
+                <br />
+                <ion-text
+                    >Don't have an account yet?
+                    <ion-button
+                        [routerLink]="['/sign-up']"
+                        color="primary"
+                        fill="clear"
+                        >Sign up</ion-button
+                    >
+                </ion-text>
+                <br />
+                <ion-button
+                    type="submit"
+                    expand="block"
+                    [disabled]="!signInForm.valid || isSending"
+                    (click)="signIn()"
+                    ><ion-spinner
+                        name="bubbles"
+                        [ngClass]="{ 'ion-hide': !isSending }"
+                    ></ion-spinner>
+                    Sign In</ion-button
+                >
+            </form>
+        </ion-card-content>
+    </ion-card>
+</div>

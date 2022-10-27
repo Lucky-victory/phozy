@@ -2,12 +2,8 @@
     <ion-toolbar>
         <ion-title> Phozy App </ion-title>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
-            <ion-button [routerLink]="['/sign-in']">Sign in</ion-button>
-            <ion-button
-                fill="outline"
-                color="primary"
-                [routerLink]="['/sign-up']"
-                >Sign up</ion-button
+            <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"
+                >Join</ion-button
             >
         </ion-buttons>
         <ion-buttons *ngIf="isLoggedIn" slot="end">
@@ -19,7 +15,9 @@
     <app-banner [loaded]="isLoaded"></app-banner>
 
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-        <ion-refresher-content pullingText="Pull down to refresh"></ion-refresher-content>
+        <ion-refresher-content
+            pullingText="Pull down to refresh"
+        ></ion-refresher-content>
     </ion-refresher>
 
     <app-cards
@@ -30,11 +28,7 @@
         [photos$]="photos$"
         [isLoggedIn]="isLoggedIn"
     ></app-cards>
-    <ion-item
-        lines="none"
-       
-        *ngIf="noMoreData"
-    >
+    <ion-item lines="none" *ngIf="noMoreData">
         <div class="ion-text-center">You have reached the end.</div>
     </ion-item>
 
