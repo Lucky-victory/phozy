@@ -1,20 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+
+import { NavController, Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { delay, map, tap } from 'rxjs/operators';
+
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
-import { PhotoService } from 'src/app/services/photo/photo.service';
+import { USER_RESULT } from 'src/app/interfaces/user.interface';
+
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
-import { AppState, STATE_STATUS } from 'src/app/state/app.state';
+import { AppState, } from 'src/app/state/app.state';
 import { userLogout } from 'src/app/state/auth/auth.actions';
 import {
-    selectAuthStatus,
-    selectIsLoggedIn,
+     selectIsLoggedIn,
+    selectUser,
 } from 'src/app/state/auth/auth.selectors';
 import {
     likePhoto,
@@ -27,9 +28,7 @@ import {
     selectPhotosState,
     selectPhotosStatus,
 } from 'src/app/state/photo/photo.selectors';
-import { ApiService } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
-import { SignInPage } from '../sign-in/sign-in.page';
+
 import { UtilitiesService } from './../../services/utilities/utilities.service';
 @Component({
     selector: 'app-home',
@@ -41,21 +40,27 @@ export class HomePage implements OnInit, OnDestroy {
     isLoggedIn!: boolean;
     private currentPage = 1;
     noMoreData: boolean;
-
+isIos:boolean;
     private loadingSub: Subscription;
     private loginSub: Subscription;
     private photoStateSub: Subscription;
     isLoaded: boolean = false;
+    isMobile:boolean;
+    user$: Observable<USER_RESULT>;
 
     constructor(
         private utilsService: UtilitiesService,
-
+private platform:Platform,
         private navCtrl: NavController,
 
         private store: Store<AppState>
-    ) {}
+    ) {
+        this.isIos=this.platform.is('ios');
+        this.isMobile=this.platform.is('mobile');
+    }
 
     ngOnInit() {
+        this.user$ = this.store.select(selectUser);
         this.store.dispatch(loadPhotos());
         this.photos$ = this.store.select(selectAllPhotos);
         this.loadingSub = this.store

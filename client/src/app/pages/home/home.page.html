@@ -1,14 +1,22 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title> Phozy</ion-title>
+        <ion-title [ngClass]="{'ion-hide':isIos}"> Phozy</ion-title>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
             <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"
                 >Join</ion-button
             >
         </ion-buttons>
-        <ion-buttons *ngIf="isLoggedIn" slot="end">
+        <ion-chip slot="end" outline="true" *ngIf="user$|async as user">
+            <ion-avatar>
+                <img [src]="user.profile_image" />
+            </ion-avatar>
+            <ion-label [ngClass]="{'ion-hide':isMobile}"
+                >{{user.fullname}}</ion-label
+            >
+        </ion-chip>
+        <!-- <ion-buttons *ngIf="isLoggedIn" slot="end">
             <ion-button (click)="logout()"> Log out </ion-button>
-        </ion-buttons>
+        </ion-buttons> -->
     </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">

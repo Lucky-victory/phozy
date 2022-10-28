@@ -83,7 +83,7 @@ export class SignInFormComponent implements OnInit, OnDestroy {
                     await this.navCtrl.navigateForward('/');
                     this.signInForm.reset();
                     if (this.isInModal) {
-                        this.modalCtrl.dismiss();
+                        await this.modalCtrl.dismiss();
                     }
                 }
             });
@@ -93,6 +93,8 @@ export class SignInFormComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.statusSub.unsubscribe();
+        if (this.statusSub) {
+            this.statusSub.unsubscribe();
+        }
     }
 }

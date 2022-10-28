@@ -262,4 +262,10 @@ export const DEFAULT_USER_FIELDS = [
   "socials",
 ];
 
-export const AUTH_USER_FIELDS = ["password", "id", "fullname", "username"];
+export const AUTH_USER_FIELDS = [
+  "password",
+  "id",
+  "fullname",
+  "username",
+  "profile_image",
+];

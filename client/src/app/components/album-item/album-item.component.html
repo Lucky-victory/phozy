@@ -1,7 +1,5 @@
-<ion-card button class="album-card" (click)="selectAlbum(album,photo)" >
-  <ion-img [src]="album.photos[album.photos.length-1]?.url"></ion-img>
+<ion-card button class="album-card" [ngClass]="{'collected':isCollected}" (click)="selectAlbum(album,photo)" >
+  <ion-img [src]="album.photos[album.photos.length-1]?.url" class="album-card-image"></ion-img>
 
-    <ion-card-content>
-      {{album.title}}
-    </ion-card-content>
+
   </ion-card>

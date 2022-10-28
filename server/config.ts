@@ -13,7 +13,7 @@ const {
   DB_PASS,
   DB_USER,
   JWT_SECRET_KEY,
-  JWT_EXPIRATION = "2m",
+  JWT_EXPIRATION = "30m",
   CLOUDINARY_URL,
 } = process.env;
 if (
