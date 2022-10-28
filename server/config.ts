@@ -23,7 +23,7 @@ if (
   Utils.isEmpty(JWT_SECRET_KEY) ||
   Utils.isEmpty(CLOUDINARY_URL)
 ) {
-  throw new Error(
+ // throw new Error(
     "DB_HOST,DB_PASS,DB_USER, JWT_SECRET_KEY, and CLOUDINARY_URL are required "
   );
 }
