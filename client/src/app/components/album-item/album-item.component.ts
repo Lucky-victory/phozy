@@ -28,12 +28,16 @@ export class AlbumItemComponent implements OnInit {
 
     ngOnInit() {
         const photosInAlbumIds = this?.album?.photos?.map((photo) => photo?.id);
-        console.log(photosInAlbumIds, 'ids');
+      
         this.isAdding$ = this.store.select(selectAlbumsStatus);
         this.isCollected = photosInAlbumIds.includes(this?.photo?.id);
         console.log(this.isCollected, 'collected');
     }
     selectAlbum(album: ALBUM_RESULT, photo: PHOTO_TO_VIEW) {
         this.onAlbumSelect.emit({ album, photo });
+    }
+    setCardBg(photos:ALBUM_RESULT['photos']){
+        const lastPhoto=photos[photos.length-1]?.url;
+        return `url(${lastPhoto})`
     }
 }

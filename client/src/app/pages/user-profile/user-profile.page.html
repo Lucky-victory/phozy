@@ -1,28 +1,31 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-back-button slot="start"></ion-back-button>
-    <ion-title><span class="profile-name">{{userData?.fullname}}'s profile</span></ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-back-button slot="start"></ion-back-button>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
-<ion-card>
-  <ion-card-header>
-    <div class="image-wrapper">
-
-      <img src="{{userData?.profile_image}}" class="profile-avatar">
-    </div>
-  </ion-card-header>
-  <ion-card-content>
-    <ion-segment value="gallery" (ionChange)="segmentChanged($event)">
-      <ion-segment-button value="gallery" >
-        <ion-label>Gallery</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="albums" >
-        <ion-label>Albums</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-  </ion-card-content>
-</ion-card>
+    <ion-card>
+        <ion-card-header>
+            <div class="image-wrapper">
+                <img src="{{userData?.profile_image}}" class="profile-avatar" />
+            </div>
+        </ion-card-header>
+        <ion-card-content>
+            <div class="tabs-container">
+                <ion-segment
+                    value="gallery"
+                    [swipeGesture]="true"
+                    (ionChange)="segmentChanged($event)"
+                >
+                    <ion-segment-button value="gallery" class="tab">
+                        <ion-label>Gallery</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="albums" class="tab">
+                        <ion-label>Albums</ion-label>
+                    </ion-segment-button>
+                </ion-segment>
+            </div>
+        </ion-card-content>
+    </ion-card>
 </ion-content>

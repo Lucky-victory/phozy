@@ -69,3 +69,10 @@
         max-width: 750px;
     }
 }
+.primary-btn {
+    --background: var(--primary);
+    --color:#fff!important
+}
+.outline-btn {
+    --color: var(--primary);
+}

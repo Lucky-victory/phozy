@@ -1,6 +1,6 @@
 <div class="container">
     <ng-container *ngIf="isLoaded$ | async as isLoaded">
-        <div class="flex flex-wrap">
+        <div class="flex flex-wrap jc-center">
             <ion-card button class="flex ai-center jc-center album-card">
                 <ion-button fill="clear">
                     <ion-icon slot="icon-only" name="add"></ion-icon>
@@ -15,6 +15,10 @@
                     (onAlbumSelect)="selectAlbum($event)"
                 ></app-album-item>
             </ng-container>
+            <ng-container
+                *ngIf="isLoaded === 'complete' && albums$ | async as albums"
+            >
+            </ng-container>
         </div>
     </ng-container>
 </div>
@@ -24,4 +28,9 @@
         <ion-skeleton-text style="width: 100%; height: 100%" animated>
         </ion-skeleton-text>
     </ion-card>
+</ng-template>
+<ng-template #noAlbums>
+    <div class="no-album flex jc-center ai-center">
+        <h2 class="">You don't any albums yet.</h2>
+    </div>
 </ng-template>
