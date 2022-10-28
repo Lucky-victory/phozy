@@ -1,15 +1,17 @@
+import { Request, Response } from "express";
+import { ALBUM_RESULT, IAlbum } from "../interfaces/Albums";
 import { PHOTO_RESULT } from "./../interfaces/Photos";
 import { USER_RESULT } from "./../interfaces/Users";
-import { isAuthorized } from "./../utils/index";
-import { IAlbum, ALBUM_RESULT, NEW_ALBUM } from "../interfaces/Albums";
-import { Request, Response } from "express";
-import { IHarpeeResponse, IHarperDBInsertResponse } from "harpee";
-import { albumsModel } from "../models/Albums";
-import { usersModel } from "../models/Users";
-import { photosModel } from "../models/Photos";
+import { Utils } from "./../utils/index";
 
+import { albumsModel } from "../models/Albums";
+import { photosModel } from "../models/Photos";
+import { usersModel } from "../models/Users";
+
+import { Order } from "harpee";
 import CacheManager from "../utils/cache-manager";
-import { MyUtils } from "my-node-ts-utils";
+import { DEFAULT_PHOTO_FIELDS } from "./Photos";
+
 const albumCache = new CacheManager();
 
 export default class AlbumsController {
@@ -21,26 +23,22 @@ export default class AlbumsController {
    * @param res
    * @returns
    */
-  static async createNewAlbum(req: Request, res: Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
-      const { auth } = req;
-      const { title, is_public, description } = req.body;
-
-      const album: NEW_ALBUM = {
-        title,
-        description,
-        is_public,
-        user_id: auth?.user?.id,
+    
+      const authUser = Utils.getAuthenticatedUser(req);
+      // this will remove any property not specified in Schema fields 
+      const bodyData = Utils.pick(req.body, albumsModel.fields);
+      const album= {
+        ...bodyData,
+        user_id: authUser.id,
       };
 
-      // get the insert id
-      const result = (await albumsModel.create(
-        album
-      )) as IHarpeeResponse<IHarperDBInsertResponse>;
+      // get the inserted id
+      const result = await (await albumsModel.create(album)).data;
       // query with the insert id
       const insertedAlbum = await albumsModel.findOne<ALBUM_RESULT>(
-        { id: result.data?.inserted_hashes[0] as string },
-        ["id", "description", "title", "created_at", "user_id", "is_public"]
+        { id: result?.inserted_hashes[0] as string },DEFAULT_ALBUM_FIELDS
       );
       const data = insertedAlbum?.data;
 
@@ -61,35 +59,62 @@ export default class AlbumsController {
    * @param req
    * @param res
    */
-  static async getAlbums(req: Request, res: Response) {
+  static async getAll(req: Request, res: Response) {
     try {
-      const { page = 1, perPage = 10 } = req.query;
-      const { user } = req;
-      const offset =
-        (parseInt(page as string) - 1) * parseInt(perPage as string);
+   
+ let {
+        page = 1,
+        perPage = 10,
+        sort = "desc",
+        orderby = "created_at",
+      } = req.query;
+     
+      const { fields } = req.query;
+      perPage = +perPage;
+      page = +page;
+      const offset = (page - 1) * perPage;
+       if (!(sort === "desc" || sort === "asc")) sort = "desc";
+      const user = Utils.getAuthenticatedUser(req);
+     
+      // get the fields specified in schema
+      const fieldsInSchema = albumsModel.fields;
+      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, DEFAULT_ALBUM_FIELDS);
+       if (!fieldsInSchema.includes(orderby as string)) orderby = "created_at";
 
-      const albums = await albumsModel.find<ALBUM_RESULT[]>({
-        limit: perPage,
-        offset,
-        getAttributes: [
-          "id",
-          "title",
-          "description",
-          "created_at",
-          "user_id",
-          "is_public",
-        ],
-        where: `is_public=${MyUtils.isEmpty(user)}`,
+      const recordCountResult = await albumsModel.describeModel<any>();
+      const recordCount = recordCountResult.data.record_count;
+
+      if (recordCount - offset <= 0 || offset > recordCount) {
+        res.status(200).json({ message: "No more Albums", data: [] });
+        return;
+      }
+     
+      const result = await albumsModel.find<ALBUM_RESULT[]>({
+       where:`${Utils.isEmpty(user) ? 'is_public=true':''}`,
+        getAttributes,
+      
       });
-
+      let albums = result.data as ALBUM_RESULT[];
+      // get photos in albums
+     albums= await Promise.all(albums.map(async (album) => {
+        const photosResult = await photosModel.findById<PHOTO_RESULT[]>({
+          getAttributes: DEFAULT_PHOTO_FIELDS, id: album.photos as string[]})
+          album.photos=photosResult.data as PHOTO_RESULT[]
+          return album
+      }))
+   
+   
+      
       res.status(200).json({
         message: "albums retrieved",
         data: albums,
-        total: albums?.data?.length,
+     
       });
     } catch (error) {
+      console.log(error);
+      
       res.status(500).json({
-        message: "An error occurred",
+        message: "An error occurred",error
       });
     }
   }
@@ -97,56 +122,75 @@ export default class AlbumsController {
    * @desc Retrieves an album by id
    * @route GET /api/albums/:album_id
    * @param req
-   * @param res
+   * @param res 
    * @returns
    */
-  static async getAlbumById(req: Request, res: Response): Promise<void> {
+  static async getById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { auth } = req;
-      const albumId = id;
-      const { perPage = 10, page = 1 } = req.query;
-      let album;
-      const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
-      if (cachedData) {
-        res.status(200).json({
-          message: "album recieved from cache",
-          data: cachedData,
-        });
+      const authUser = Utils.getAuthenticatedUser(req);
+     
+      const { photoPerPage = 10, page = 1, fields } = req.query;
+      const offset = ((page as number) - 1) * (photoPerPage as number);
+      // get the fields specified in schema
+      const fieldsInSchema = albumsModel.fields;
+      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, DEFAULT_ALBUM_FIELDS);
 
-        return;
-      }
-      if (auth?.user) {
-        album = await albumsModel.findOne({
+      // const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
+      // if (cachedData) {
+      //   res.status(200).json({
+      //     message: "album recieved from cache",
+      //     data: cachedData,
+      //   });
+
+      //   return;
+      // }
+
+      const response = await albumsModel.findOne<ALBUM_RESULT>(
+        {
           id,
-        });
-      } else {
-        album = await albumsModel.findById(albumId);
-      }
+        },
+        getAttributes
+      );
+      const album = response.data;
       if (!album) {
         res.status(404).json({
-          message: `Album with '${id}' was not found`,
+          message: `Album with '${id}' does not exist`,
         });
         return;
       }
-      const hasAccess = isAuthorized(album, auth?.user);
+      const hasAccess = Utils.isAuthorized(
+        album,
+        authUser
+      );
       // if the album is private and the current user isn't the owner of the resource
-      if (album?.privacy && !hasAccess) {
+      if (!album.is_public && !hasAccess) {
         res.status(401).json({
-          message: "Unauthorized, don't have access to this resource",
+          message: "Unauthorized, you don't have access to this resource",
         });
         return;
       }
 
       // get the user that owns the albums
-      const user = (await usersModel.findById(album.user_id)) as USER_RESULT;
+      const user = await usersModel.findOne<USER_RESULT>({
+        id: album.user_id as string,
+      });
       // get photos under the albums
-      const photos = (await photosModel.findById([albumId])) as PHOTO_RESULT;
-      const data = {
-        ...album,
-        user,
-        photos,
-      };
+      const photos = await photosModel.findById<PHOTO_RESULT[]>({
+        id: album.photos as string[],
+        getAttributes: DEFAULT_PHOTO_FIELDS,
+      });
+      console.log(photos);
+      
+      const data = Object.assign({ ...response.data },
+        {
+          user: user?.data,
+          photos: photos?.data,
+        });
+      console.log('======');
+      
+      console.log(data,'album data');
+      
       albumCache.set("album" + id, data);
       res.status(201).json({
         message: "album retrieved",
@@ -160,43 +204,38 @@ export default class AlbumsController {
     }
   }
 
-  static async updateAlbum(req: Request, res: Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const { album_id } = req.params;
-      const { auth } = req;
-      const userId = auth?.user?.id;
-      const { title, description, privacy } = req.body;
 
-      const albumId = parseInt(album_id, 10);
-      // an album record to be updated
-      let albumToUpdate: ALBUM_RESULT = {
-        updated_at: db.fn.now(6) as unknown as string,
-        user_id: userId,
-        title,
-        description,
+       const authUser = Utils.getAuthenticatedUser(req);
+      // this will remove any property not specified in Schema fields 
+      const bodyData = Utils.pick(req.body, albumsModel.fields);
+
+      const albumToUpdate= {
+        ...bodyData,
+        updated_at: Utils.currentTime.getTime(),
+        id: album_id,
+   
       };
-      // if privacy is not undefined, add it as a property
-      privacy ? (albumToUpdate["privacy"] = privacy) : null;
 
-      console.log(albumToUpdate);
-      albumToUpdate = transformPrivacyToNumber(albumToUpdate) as ALBUM_RESULT;
-      console.log(albumToUpdate);
-      const album = await albumsModel.findByIdWithAuth(albumId);
-      if (!album) {
+
+      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
+      if (!album?.data) {
         res.status(404).json({
-          message: `Album with '${album_id}' was not found`,
+          message: `Album with '${album_id}' does not exist`,
         });
         return;
       }
-      const hasAccess = isAuthorized(album, auth?.user);
+      const hasAccess = Utils.isAuthorized(album.data, authUser);
       if (!hasAccess) {
         res.status(401).json({
-          message: "Unauthorized, don't have access to this resource",
+          message: "Unauthorized, you don't have access to this resource",
         });
         return;
       }
 
-      await albumsModel.updateAlbum(albumToUpdate, albumId, userId);
+      await albumsModel.update([albumToUpdate]);
 
       res.status(200).json({
         message: "album successfully updated",
@@ -208,28 +247,71 @@ export default class AlbumsController {
       });
     }
   }
-  static async deleteAlbum(req: Request, res: Response): Promise<void> {
+  static async addPhoto(req: Request, res: Response): Promise<void> {
+    try {
+      const { album_id } = req.params;
+      const { photo_id } = req.body;
+      const authUser = Utils.getAuthenticatedUser(req);
+    
+      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
+      if (!album?.data) {
+        res.status(404).json({
+          message: `Album with '${album_id}' does not exist`,
+        });
+        return;
+      }
+      const hasAccess = Utils.isAuthorized(album.data, authUser);
+      if (!hasAccess) {
+        res.status(401).json({
+          message: "Unauthorized, you don't have access to this resource",
+        });
+        return;
+      }
+
+      const response = await albumsModel.updateNested<ALBUM_RESULT>({
+        id: album_id, path: '.photos', getAttributes: DEFAULT_ALBUM_FIELDS, value: (data: IAlbum) => {
+          data.updated_at = Utils.currentTime.getTime();
+          if (!data.photos.includes(photo_id)) data.photos.push(photo_id);
+          return data.photos;
+        }
+      });
+
+      const albumToView = response.data as ALBUM_RESULT;
+      const photosInAlbum = await photosModel.findById<PHOTO_RESULT[]>({ id: albumToView?.photos as string[], getAttributes: DEFAULT_PHOTO_FIELDS });
+      albumToView.photos = photosInAlbum.data as PHOTO_RESULT[];
+      
+      res.status(200).json({data:albumToView,
+        message: "photo added to album successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "An error occcurred could't add photo to album",
+        error,
+      });
+    }
+  }
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const { album_id } = req.params;
       const { auth } = req;
       const userId = auth?.user?.id;
       const albumId = parseInt(album_id, 10);
 
-      const album = await albumsModel.findById(albumId);
-      if (!album) {
+      const album = await albumsModel.findOne<ALBUM_RESULT>({ id: albumId });
+      if (!album?.data) {
         res.status(404).json({
           message: `Album with '${album_id}' was not found`,
         });
         return;
       }
-      const hasAccess = isAuthorized(album, auth?.user);
+      const hasAccess = Utils.isAuthorized(album?.data, auth?.user);
       if (!hasAccess) {
         res.status(401).json({
           message: "Unauthorized, don't have access to this resource",
         });
         return;
       }
-      await albumsModel.deleteAlbum(albumId, userId);
+      await albumsModel.findByIdAndRemove([albumId]);
       res.status(200).json({
         message: "album successfully deleted",
       });
@@ -248,9 +330,11 @@ export default class AlbumsController {
       const result = await albumsModel.findOne<ALBUM_RESULT>({
         id,
       });
-      return [result?.data as ALBUM_RESULT, null];
+      return [result?.data, null];
     } catch (error) {
       return [null, error];
     }
   }
 }
+
+export const DEFAULT_ALBUM_FIELDS = ["id", "description", "title", "created_at", "user_id", "is_public", "photos"];

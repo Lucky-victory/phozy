@@ -1,38 +1,33 @@
-<app-photo-modal  [isModalOpen]="isModalOpen" (onModalClose)="modalClose($event)" [photo]="photoForModal" >
-</app-photo-modal>
-<app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
+
 <div class="cards-container">
-  <ng-container *ngIf="!generalPhotos?.length">
-<h2>No Photos Available yet</h2>
-  </ng-container>
-  <div class="single-card-container" *ngFor="let photo of generalPhotos">
-  
-  <div class="single-card-image-wrapper">
-    <ion-img [src]="photo.url" alt=""  class="single-card-image" (click)="showPhotoModal(photo)"></ion-img>
-  </div>
-
-  <div class="single-card-meta">
-<ion-avatar  class="single-card-meta__avatar">
-  <ion-img [src]="photo.user?.profile_image" alt=""></ion-img>
-</ion-avatar>
-<div class="single-card-meta__info">
-  <ion-text color="dark" fill="clear"  class="single-card-meta__info-name" >{{photo.user?.fullname}}</ion-text><br>
-  
-</div>
-<div class="single-card-add-btn-wrapper">
-<ion-buttons>
-<!-- <ion-button class="single-card-like-btn" (click)="like(photo)">
-    <ion-icon slot="icon-only" name="{{photo?.liked ? 'heart': 'heart-outline'}}" class="like-icon"></ion-icon>
-  </ion-button> -->
-<!-- <ion-button >
-    <ion-icon slot="icon-only" name="share-outline"  ></ion-icon>
-
-</ion-button> -->
-  <!-- <ion-button class="single-card-add-btn" (click)="addToAlbum(photo)">
-    <ion-icon slot="icon-only" name="add" class="add-to-album-icon"></ion-icon>
-  </ion-button> -->
-</ion-buttons>
-</div>
-  </div>
+    <ng-container *ngIf="loaded; else loading"> </ng-container>
+    <app-card
+        [photo]="photo"
+        *ngFor="let photo of photos$|async"
+        (onLike)="likePhoto($event)"
+        (onCollect)="collectPhoto($event)"
+        (onDownload)="downloadPhoto($event)"
+    ></app-card>
 </div>
 
+<ng-template #loading>
+    <ng-container *ngFor="let skeleton of skeletons">
+        <div class="card">
+            <ion-skeleton-text
+                [animated]="true"
+                [style]="{ width: '100%', height: '350px' }"
+            >
+            </ion-skeleton-text>
+
+            <ion-item>
+                <ion-avatar>
+                    <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+                </ion-avatar>
+                <ion-skeleton-text
+                    [animated]="true"
+                    [style]="{ width: '50%', marginLeft: '16px' }"
+                ></ion-skeleton-text>
+            </ion-item>
+        </div>
+    </ng-container>
+</ng-template>

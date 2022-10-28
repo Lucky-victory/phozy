@@ -1,19 +1,13 @@
-import { ALBUM_RESULT } from "./../interfaces/Albums";
-import { transformPrivacyToBoolean } from "./../utils/index";
-import config from "../config";
 import jwt from "jsonwebtoken";
-import {
-  defaultProfileImage,
-  removePropFromObject,
-  generateUsername,
-} from "../utils";
-import { NEW_USER, USER_RESULT } from "../interfaces/Users";
+import config from "../../config";
+import { NEW_USER, USER_AUTH, USER_RESULT } from "../interfaces/Users";
+import { defaultProfileImage, Utils } from "../utils";
 
+import { compare as comparePassword, hash as hashPassword } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { hash as hashPassword, compare as comparePassword } from "bcrypt";
-import UsersModel from "../models/Users";
 import ms from "ms";
-import AlbumsModel from "../models/Albums";
+import { albumsModel } from "../models/Albums";
+import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
 const userCache = new CacheManager();
 
@@ -30,24 +24,30 @@ export default class UsersController {
       const { password } = req.body;
 
       // check if user exist by username or email
-      const [usernameExist, emailExist] = (await Promise.all([
-        await UsersModel.findByUsername(emailOrUsername, ["password"]),
-        UsersModel.findByEmail(emailOrUsername, ["password"]),
-      ])) as [NEW_USER, NEW_USER];
+      const [usernameExist, emailExist] = await Promise.all([
+        await usersModel.findOne<USER_AUTH>(
+          { email: emailOrUsername },
+          AUTH_USER_FIELDS
+        ),
+        await usersModel.findOne<USER_AUTH>(
+          { username: emailOrUsername },
+          AUTH_USER_FIELDS
+        ),
+      ]);
 
-      if (!(usernameExist || emailExist)) {
+      if (!(usernameExist.data || emailExist.data)) {
         res.status(404).json({
           message: "Invalid credentials",
         });
         return;
       }
-      const prevPassword = usernameExist?.password
-        ? usernameExist?.password
-        : emailExist?.password;
+      const prevPassword = usernameExist.data?.password
+        ? usernameExist.data?.password
+        : emailExist.data?.password;
       // compare the password to see if it matches
       const isPasswordMatch = await comparePassword(
         String(password),
-        prevPassword
+        prevPassword as string
       );
       if (!isPasswordMatch) {
         res.status(403).json({
@@ -56,11 +56,12 @@ export default class UsersController {
         });
         return;
       }
-      let user = usernameExist ? usernameExist : emailExist;
+      let user = usernameExist.data ? usernameExist.data : emailExist.data;
       // remove password from the object before sending it out to the client
-      user = removePropFromObject(user, ["password"]);
-      // remove profile image from the object before generating a token from it
-      const userToToken = removePropFromObject(user, ["profile_image"]);
+      user = Utils.omit(user as USER_AUTH, ["password"]) as USER_AUTH;
+
+      // // remove profile image from the object before generating a token from it
+      const userToToken = Utils.omit(user as USER_AUTH, ["profile_image"]);
       // generate a jwt token
       jwt.sign(
         { user: userToToken },
@@ -69,17 +70,19 @@ export default class UsersController {
           if (err) throw err;
           res.status(200).json({
             message: "login successful",
-            user,
-            auth: {
-              token: encoded as string,
-              expiresIn: ms(config.jwt_expiration as string),
+            data: {
+              user,
+              auth: {
+                token: encoded as string,
+                expiresIn: ms(config.jwt_expiration as string),
+              },
             },
           });
         }
       );
     } catch (error) {
       res.status(500).json({
-        message: "an error occurred ",
+        message: "an error occurred While logging in",
         error,
       });
     }
@@ -90,30 +93,32 @@ export default class UsersController {
    * @param res
    * @returns
    */
-  static async createNewUser(req: Request, res: Response): Promise<void> {
+  static async addNewUser(req: Request, res: Response): Promise<void> {
     try {
-      let { password, username } = req.body;
+      let { password } = req.body;
       const { email, fullname } = req.body;
-      username = generateUsername(username);
+      const shortId = Utils.shortID(8);
 
       // check if user already exist
-      const [usernameExist, emailExist] = await Promise.all([
-        await UsersModel.findByUsername(username),
-        UsersModel.findByEmail(email),
-      ]);
+      const emailExist = await usersModel.findOne({ email });
+      // const [usernameExist, emailExist] = await Promise.all([
+      //   await usersModel.findOne({ username }),
+      //   await usersModel.findOne({ email }),
+      // ]);
 
-      if (usernameExist) {
-        res.status(400).json({
-          message: "username is already taken",
-        });
-        return;
-      }
-      if (emailExist) {
+      // if (usernameExist.data) {
+      //   res.status(400).json({
+      //     message: "username is already taken",
+      //   });
+      //   return;
+      // }
+      if (emailExist.data) {
         res.status(400).json({
           message: "user already exist, do you want to login?",
         });
         return;
       }
+      const username = Utils.generateUsername(fullname, "", shortId);
       password = await hashPassword(String(password), 10);
 
       const newUser: NEW_USER = {
@@ -124,13 +129,19 @@ export default class UsersController {
         profile_image: defaultProfileImage,
       };
 
-      const insertId = (await UsersModel.create(newUser)) as number[];
+      const insertId = await usersModel.create(newUser);
       // get the newly added user with the id
-      const result = (await UsersModel.findById(insertId[0])) as USER_RESULT;
-      const user = result;
+      const result = await usersModel.findOne<USER_RESULT>(
+        {
+          id: insertId.data?.inserted_hashes[0] as string,
+        },
+        DEFAULT_USER_FIELDS
+      );
+      const user = result.data;
       // remove profile image from the object before generating a token from it
-      const userToToken = removePropFromObject(user as unknown as NEW_USER, [
+      const userToToken = Utils.omit(user as USER_RESULT, [
         "profile_image",
+        "socials",
       ]);
 
       // generate JWT token
@@ -141,15 +152,19 @@ export default class UsersController {
           if (err) throw err;
           res.status(200).json({
             messsage: "account successfully created ",
-            user,
-            auth: {
-              token: encoded,
-              expiresIn: ms(config.jwt_expiration as string),
+            data: {
+              user,
+              auth: {
+                token: encoded,
+                expiresIn: ms(config.jwt_expiration as string),
+              },
             },
           });
         }
       );
     } catch (error) {
+      console.log(error);
+
       res.status(500).json({
         error,
         message: "an error occured",
@@ -159,8 +174,8 @@ export default class UsersController {
   static async getUserByUsername(req: Request, res: Response) {
     try {
       const { username } = req.params;
-      const user = (await UsersModel.findByUsername(username)) as USER_RESULT;
-      if (!user) {
+      const user = await usersModel.findOne<USER_RESULT>({ username });
+      if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
         });
@@ -168,7 +183,7 @@ export default class UsersController {
       }
       res.status(200).json({
         message: "user info retrieved",
-        data: user,
+        data: user.data,
       });
     } catch (error) {
       res.status(500).json({
@@ -182,24 +197,17 @@ export default class UsersController {
       const { username } = req.params;
       const { auth } = req;
       let albums;
-      const user = (await UsersModel.findByUsername(username)) as USER_RESULT;
-      if (!user) {
+      const user = await usersModel.findOne<USER_RESULT>({ username });
+      if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
         });
         return;
       }
       // check if the authenticated user is the same requesting the resource by comparing the user ID
-      if (user.id === auth?.user?.id) {
+      if (user.data.id === auth?.user?.id) {
         // if the current user, get both public and private albums
-        albums = await AlbumsModel.findByUserIdWithAuth([], auth?.user?.id);
-
-        albums = transformPrivacyToBoolean(albums as ALBUM_RESULT[]);
-      } else {
-        // otherwise get only public albums
-        albums = await AlbumsModel.findByUserId([], user?.id);
-
-        albums = transformPrivacyToBoolean(albums as ALBUM_RESULT[]);
+        albums = await albumsModel.findById([auth?.user?.id]);
       }
       res.status(200).json({
         message: "user info retrieved",
@@ -216,12 +224,12 @@ export default class UsersController {
     const { photo_url, user } = req;
     const userId = user.id;
     try {
-      await UsersModel.update(
-        {
-          profile_image: photo_url,
-        },
-        userId
-      );
+      // await usersModel.update(
+      //   {
+      //     // profile_image: photo_url,
+      //   },
+      //   userId
+      // );
     } catch (error) {
       res.status(500).json({
         message: "an error occured, couldn't update profile image",
@@ -235,14 +243,29 @@ export default class UsersController {
   ) {
     const { auth } = req;
     const userId = auth?.user?.id;
-    const user = (await UsersModel.findById(userId)) as USER_RESULT;
+    const user = await usersModel.findOne<USER_RESULT>({ id: userId });
     if (!user) {
       res.status(404).json({
         message: "user does not exist",
       });
       return;
     }
-    req.user = user;
+    req.user = user?.data as USER_RESULT;
     next();
   }
 }
+export const DEFAULT_USER_FIELDS = [
+  "id",
+  "profile_image",
+  "fullname",
+  "username",
+  "socials",
+];
+
+export const AUTH_USER_FIELDS = [
+  "password",
+  "id",
+  "fullname",
+  "username",
+  "profile_image",
+];

@@ -9,21 +9,11 @@ export default class Validators {
         .trim()
         .not()
         .isEmpty()
-        .withMessage("Name is required!")
+        .withMessage("FullName is required!")
         .isString()
         .withMessage("Must be a valid name!")
-        .isLength({ min: 3, max: 20 })
-        .withMessage("Name must be within 3 to 20 character!"),
-      check("username")
-        .trim()
-        .not()
-        .isEmpty()
-        .isString()
-        .withMessage("Username is required")
-        .isLength({ min: 4, max: 20 })
-        .withMessage("Username must be within 3 to 20 character!")
-        .matches(/[a-z0-9]/g)
-        .withMessage("Username must be alpha-numeric"),
+        .isLength({ min: 3, max: 30 })
+        .withMessage("FullName must be within 3 to 30 character!"),
       check("email").normalizeEmail().isEmail().withMessage("Invalid email!"),
       check("password")
         .trim()
@@ -32,20 +22,10 @@ export default class Validators {
         .withMessage("Password is empty!")
         .isLength({ min: 6, max: 20 })
         .withMessage("Password must be 6 to 20 characters long!")
-        .matches(/\d/)
-        .withMessage(" Must contain at least one digit")
-        .matches(/[A-Z]/)
-        .withMessage("Must contain at least one capital letter"),
-      check("confirm_password")
-        .trim()
-        .not()
-        .isEmpty()
-        .custom((value: string, { req }) => {
-          if (value !== req.body.password) {
-            throw new Error("Both password must be same!");
-          }
-          return true;
-        }),
+        .matches(/[a-z0-9_A-Z]{6,}/)
+        .withMessage(
+          "Must contain at least one numeric,uppercase and one lowercase"
+        ),
     ];
   }
   static validateSignIn() {
@@ -71,10 +51,8 @@ export default class Validators {
         .isEmpty()
         .withMessage("title is required!")
         .isString()
-        .withMessage("Must be a string")
-        .isLength({ min: 3, max: 20 })
-        .withMessage("title must be within 3 to 20 character!"),
-      check("privacy").isBoolean().withMessage("privacy must be a boolean "),
+        .isLength({ min: 2, max: 20 })
+        .withMessage("title must be within 2 to 20 character!"),
     ];
   }
   static validationResult(req: Request, res: Response, next: NextFunction) {

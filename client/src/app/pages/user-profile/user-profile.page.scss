@@ -1,14 +1,28 @@
-.profile-avatar{
+.profile-avatar {
     width: 150px;
     height: 150px;
-    border-radius:50%;
+    border-radius: 50%;
     margin: 1rem auto;
 }
-.profile-name{
+.profile-name {
     text-transform: capitalize;
 }
 
-.image-wrapper{
+.image-wrapper {
     width: 150px;
     margin: auto;
+}
+
+.tab:not(.ios) {
+    --background-hover: var(--primary);
+    --background-focused: var(--primary);
+
+    --background-hover-opacity: 0.04;
+    --color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6);
+    --color-checked: var(--primary, #3880ff);
+    --indicator-box-shadow: none;
+    --indicator-color: var(--primary);
+}
+.tabs-container {
+    overflow-x: auto;
 }

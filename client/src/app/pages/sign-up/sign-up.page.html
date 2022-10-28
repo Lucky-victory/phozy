@@ -1,60 +1,74 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-back-button slot="start"></ion-back-button>
+    <ion-toolbar>
+        <ion-back-button slot="start"></ion-back-button>
 
-    <ion-title>Sign up</ion-title>
-  </ion-toolbar>
+        <ion-title>Sign up</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
+    <div class="signup-form-container">
+        <ion-card>
+            <ion-card-header>
+                <ion-card-title> Create an account </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-text color="danger" class="error-message"
+                    >{{errorMessage}}</ion-text
+                >
+                <br />
+                <form [formGroup]="signUpForm" (ngSubmit)="signUp($event)">
+                    <ion-item>
+                        <ion-label for="fullname" position="floating">
+                            Fullname:</ion-label
+                        >
+                        <ion-input
+                            formControlName="fullname"
+                            type="text"
+                            id="fullname"
+                        ></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label for="email" position="floating">
+                            Email:</ion-label
+                        >
+                        <ion-input
+                            type="email"
+                            formControlName="email"
+                            id="email"
+                        ></ion-input>
+                    </ion-item>
 
-<div class="signup-form-container">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title> Create an account </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-text color="danger" class="error-message">{{errorMessage}}</ion-text>
-<br>
-      <form [formGroup]="signUpForm" (ngSubmit)="signUp($event)">
-        <ion-item>
-          <ion-label for="fullname" position="floating"> Fullname:</ion-label>
-          <ion-input
-            formControlName="fullname"
-            type="text"
-            id="fullname"
-          ></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label for="email" position="floating"> Email:</ion-label>
-          <ion-input
-            type="email"
-            formControlName="email"
-            id="email"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
+                    <!-- <ion-item>
           <ion-label for="username" position="floating"> Username:</ion-label>
           <ion-input
             type="text"
             formControlName="username"
             id="username"
           ></ion-input>
-        </ion-item>
+        </ion-item> -->
 
-        <ion-item>
-          <ion-label for="password" position="floating"> Password:</ion-label>
-          <ion-input #password
-            type="{{isText? 'text':'password'}}"
-            formControlName="password"
-            id="password"
-          ></ion-input>
-          <ion-icon slot="end" name="{{isText ? 'eye-off-outline':'eye-outline'}}" (click)="passwordToText()"></ion-icon>
-          <ion-note>min: 6 characters (uppercase/lowercase) with atleast one number</ion-note>
-        </ion-item>
-        <ion-item>
+                    <ion-item>
+                        <ion-label for="password" position="floating">
+                            Password:</ion-label
+                        >
+                        <ion-input
+                            #password
+                            type="{{isText? 'text':'password'}}"
+                            formControlName="password"
+                            id="password"
+                        ></ion-input>
+                        <ion-icon
+                            slot="end"
+                            name="{{isText ? 'eye-off-outline':'eye-outline'}}"
+                            (click)="passwordToText()"
+                        ></ion-icon>
+                        <ion-note
+                            >min: 6 characters (uppercase/lowercase) with
+                            atleast one number</ion-note
+                        >
+                    </ion-item>
+                    <!-- <ion-item>
           <ion-label for="confirm_password" position="floating"> Confirm password:</ion-label>
           <ion-input #confirmPassword
     type="{{isText? 'text':'password'}}"
@@ -64,20 +78,31 @@
           <ion-icon slot="end" name="{{isText ? 'eye-off-outline':'eye-outline'}}" (click)="passwordToText()"></ion-icon>
         </ion-item>
         <ion-text color="danger" *ngIf="password.value!==confirmPassword.value">Passwords doesn't match</ion-text>
-        
-        <br>
-<ion-text>Already have an account? <ion-button [routerLink]="['/sign-in']" color="primary" fill="clear">Sign in</ion-button> </ion-text>
-        <br />
-        <ion-button
-          type="submit"
-          expand="block"
-        
-      [disabled]="!signUpForm.valid || isSending" 
-          ><ion-spinner name="bubbles" *ngIf="isSending"></ion-spinner> Sign Up</ion-button
-        >
-      </form>
-    </ion-card-content>
-  </ion-card>
-</div>
-
+         -->
+                    <br />
+                    <ion-text
+                        >Already have an account?
+                        <ion-button
+                            [routerLink]="['/sign-in']"
+                            fill="clear"
+                            class="outline-btn"
+                            >Sign in</ion-button
+                        >
+                    </ion-text>
+                    <br />
+                    <ion-button
+                        type="submit"
+                        expand="block"
+                        class="btn primary-btn"
+                        [disabled]="!signUpForm.valid || isSending"
+                        ><ion-spinner
+                            name="bubbles"
+                            [ngClass]="{ 'ion-hide': !isSending }"
+                        ></ion-spinner>
+                        Sign Up</ion-button
+                    >
+                </form>
+            </ion-card-content>
+        </ion-card>
+    </div>
 </ion-content>

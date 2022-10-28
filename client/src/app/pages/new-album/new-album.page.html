@@ -9,7 +9,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <app-notif-toast [message]="infoMessage" *ngIf="infoMessage"></app-notif-toast>
+  <ion-item>
+    <ion-label>Albums</ion-label>
+    <ion-select value="peperoni" placeholder="Select Album">
+      <ion-select-option value="{{album.id}}" *ngFor="let album of albums$|async">{{album.title}}</ion-select-option>
+    
+    </ion-select>
+  </ion-item>
   <ion-card>
 
     <ion-card-content>
@@ -32,9 +38,9 @@
   </ion-item>
 
         <br />
-  <ion-chip for="privacy">
+  <ion-chip for="is_public">
 <ion-label  [ngStyle]="{'margin-right':'10px'}">Private: </ion-label>
-    <ion-toggle formControlName="privacy" id="privacy"  ></ion-toggle>
+    <ion-toggle formControlName="is_public" id="is_public"  ></ion-toggle>
   </ion-chip>
         <br />
         <br />

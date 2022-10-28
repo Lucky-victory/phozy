@@ -8,7 +8,6 @@ import { NewAlbumPageRoutingModule } from './new-album-routing.module';
 
 import { NewAlbumPage } from './new-album.page';
 import { ApiService } from 'src/app/services/api.service';
-import { NotifToastModule } from 'src/app/components/notif-toast/notif-toast.module';
 
 
 @NgModule({
@@ -16,7 +15,7 @@ import { NotifToastModule } from 'src/app/components/notif-toast/notif-toast.mod
     CommonModule,
     FormsModule,
     IonicModule,ReactiveFormsModule,
-    NewAlbumPageRoutingModule,NotifToastModule
+    NewAlbumPageRoutingModule,
   ],
   declarations: [NewAlbumPage],providers:[ApiService]
 })

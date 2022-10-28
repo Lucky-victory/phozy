@@ -1,7 +1,8 @@
 import { harpee, HType } from "harpee";
-import { MyUtils } from "my-node-ts-utils";
+import { connectDB } from "../config/db";
+import { Utils } from "../utils";
 const { Model, Schema } = harpee;
-
+connectDB();
 const usersSchema = new Schema({
   name: "phozy",
   fields: {
@@ -10,12 +11,11 @@ const usersSchema = new Schema({
     password: HType.string(),
     email: HType.string().email().required(),
     verified: HType.bool().default(false),
-    profile: HType.object({
-      image: HType.string(),
-      cover: HType.string(),
-    }),
+    profile_image: HType.string(),
+    profile_cover: HType.string(),
     socials: HType.object(),
-    created_at: HType.date().default(MyUtils.currentTime.getTime()),
+    bio: HType.string(),
+    created_at: HType.date().default(Utils.currentTime.getTime()),
     updated_at: HType.ref("created_at"),
   },
 });

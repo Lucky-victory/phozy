@@ -1,18 +1,23 @@
-import { checkIfAuthenticated } from "./../middlewares/Auth";
 import { Router } from "express";
-const router = Router();
-import ImageUploader from "../utils/Image-uploader";
-import PhotosController from "../controllers/Photos";
 import asyncHandler from "express-async-handler";
+import PhotosController from "../controllers/Photos";
+import ImageUploader from "../utils/Image-uploader";
+import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "./../middlewares/Auth";
+const router = Router();
 
-router.use(checkIfAuthenticated);
-router.get('/:id').post(
-  "/:album_id",
-  PhotosController.checkIfAlbumExist,
-  ImageUploader.upload().array("album_images", 10),
-  asyncHandler(ImageUploader.albumImageUpload),
-  asyncHandler(PhotosController.createNewPhotos)
-)
-  .put(':/id')
-  .delete("/:id", asyncHandler(PhotosController.deleteItem));
+router
+  .get("/",checkIfAuthenticatedOptional,  PhotosController.getAll)
+  .get("/search",checkIfAuthenticatedOptional,  PhotosController.search)
+  .get("/:id",checkIfAuthenticatedOptional, PhotosController.getOne)
+  .use(checkIfAuthenticated)
+  .post(
+    "/",
+    asyncHandler(ImageUploader.upload),
+    asyncHandler(ImageUploader.uploadToCloudinary),
+    asyncHandler(PhotosController.addNewPhotos)
+  )
+  .put("/:id", PhotosController.update)
+  .post("/:id/like", PhotosController.like)
+  .post("/:id/unlike", PhotosController.unlike)
+  .delete("/:id", asyncHandler(PhotosController.delete));
 export default router;

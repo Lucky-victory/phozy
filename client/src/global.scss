@@ -10,17 +10,69 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "~@ionic/angular/css/core.css";
+@import '~@ionic/angular/css/core.css';
 
 /* Basic CSS for apps built with Ionic */
-@import "~@ionic/angular/css/normalize.css";
-@import "~@ionic/angular/css/structure.css";
-@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/normalize.css';
+@import '~@ionic/angular/css/structure.css';
+@import '~@ionic/angular/css/typography.css';
 @import '~@ionic/angular/css/display.css';
 
 /* Optional CSS utils that can be commented out */
-@import "~@ionic/angular/css/padding.css";
-@import "~@ionic/angular/css/float-elements.css";
-@import "~@ionic/angular/css/text-alignment.css";
-@import "~@ionic/angular/css/text-transformation.css";
-@import "~@ionic/angular/css/flex-utils.css";
+@import '~@ionic/angular/css/padding.css';
+@import '~@ionic/angular/css/float-elements.css';
+@import '~@ionic/angular/css/text-alignment.css';
+@import '~@ionic/angular/css/text-transformation.css';
+@import '~@ionic/angular/css/flex-utils.css';
+
+* {
+    font-family: 'Poppins', sans-serif;
+}
+.flex {
+    display: flex;
+}
+.ai-center {
+    align-items: center;
+}
+.ai-start {
+    align-items: flex-start;
+}
+.ai-end {
+    align-items: flex-end;
+}
+.jc-center {
+    align-items: center;
+}
+.jc-end {
+    justify-content: flex-end;
+}
+.jc-start {
+    justify-content: flex-start;
+}
+.flex-wrap {
+    flex-wrap: wrap;
+}
+.btn {
+    &.primary-btn {
+        background-color: var(--primary);
+        color: #fff;
+        border-radius: 8px;
+    }
+    &.outline {
+        border-color: var(--primary);
+        background: transparent;
+        color: var(--primary);
+    }
+}
+.form-modal {
+    &::part(content) {
+        max-width: 750px;
+    }
+}
+.primary-btn {
+    --background: var(--primary);
+    --color:#fff!important
+}
+.outline-btn {
+    --color: var(--primary);
+}

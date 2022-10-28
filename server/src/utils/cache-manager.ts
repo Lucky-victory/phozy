@@ -8,7 +8,7 @@ export default class CacheManager {
   get<T>(key: string) {
     return this.cache.get<T>(key);
   }
-  set<T>(key: string, value: T, ttl: number = 30) {
+  set<T>(key: string, value: T, ttl = 30) {
     return this.cache.set<T>(key, value, ttl);
   }
 }

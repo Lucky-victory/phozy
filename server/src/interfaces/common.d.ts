@@ -1,5 +1,7 @@
 import { USER_RESULT } from "./Users";
 import { ALBUM_RESULT } from "./Albums";
+import { PHOTO_FROM_CLIENT } from "./Photos";
+import formidable from "formidable";
 
 export interface Config {
   db_host: string;
@@ -15,10 +17,14 @@ declare global {
     interface Request {
       auth: AuthUser;
       jwtToken: string;
+      photos: PHOTO_FROM_CLIENT[];
       photo_url: string;
-      photo_urls: string[];
+      photo_urls: any[];
       album: ALBUM_RESULT;
       user: USER_RESULT;
+      files: formidable.File[];
+      fields: any;
+      captions: string[];
     }
   }
 }

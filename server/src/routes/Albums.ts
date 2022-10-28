@@ -8,11 +8,11 @@ import Validators from "../middlewares/validators";
 
 const router = Router();
 
-router.get("/", checkIfAuthenticatedOptional, AlbumsController.getAlbums);
+router.get("/", checkIfAuthenticatedOptional, AlbumsController.getAll);
 router.get(
   "/:album_id",
   checkIfAuthenticatedOptional,
-  asyncHandler(AlbumsController.getAlbumById)
+  asyncHandler(AlbumsController.getById)
 );
 
 router
@@ -21,9 +21,10 @@ router
     "/",
     Validators.validateAlbumAdd(),
     Validators.validationResult,
-    asyncHandler(AlbumsController.createNewAlbum)
+    asyncHandler(AlbumsController.create)
   )
-  .put("/:album_id", asyncHandler(AlbumsController.updateAlbum))
-  .delete("/:album_id", asyncHandler(AlbumsController.deleteAlbum));
+  .put("/:album_id", asyncHandler(AlbumsController.update))
+  .put("/:album_id/photo", asyncHandler(AlbumsController.addPhoto))
+  .delete("/:album_id", asyncHandler(AlbumsController.delete));
 
 export default router;

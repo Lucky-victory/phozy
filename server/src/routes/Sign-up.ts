@@ -8,7 +8,7 @@ router.post(
   "/",
   Validators.validateSignUp(),
   Validators.validationResult,
-  asyncHandler(UsersController.createNewUser)
+  asyncHandler(UsersController.addNewUser)
 );
 
 export default router;

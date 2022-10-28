@@ -1,0 +1,72 @@
+<ion-card class="card">
+    <div class="card-top flex jc-end">
+        <div class="card-btns-wrapper flex">
+            <ion-button
+                class="card-btn"
+                (click)="collectPhoto(photo)"
+                title="Add to collection"
+            >
+                <ion-icon slot="icon-only" name="bookmarks-outline"></ion-icon>
+            </ion-button>
+            <ion-button
+                class="card-btn"
+                [ngClass]="{ liked: isLiked }"
+                title="{{ isLiked ? 'Unlike' : 'Like' }}"
+                (click)="likePhoto(photo)"
+            >
+                <ion-icon
+                    slot="icon-only"
+                    [name]="isLiked ? 'heart' : 'heart-outline'"
+                ></ion-icon>
+            </ion-button>
+        </div>
+    </div>
+    <div class="card-image-wrapper">
+        <a
+            [routerLink]="['/photo', photo.id]"
+            [state]="photo"
+            class="card-image-link"
+        >
+            <ion-img
+                [src]="photo.url"
+                [alt]="photo.caption"
+                class="card-image"
+            ></ion-img>
+        </a>
+    </div>
+
+    <div class="card-bottom">
+        <div class="card-meta">
+            <div class="card-meta-inner">
+                <ion-item class="card-meta__info" lines="none">
+                    <a
+                        [routerLink]="['/profile', photo.user?.username]"
+                        fill="clear"
+                        class="card-meta__info"
+                    >
+                        <ion-avatar class="card-meta__avatar">
+                            <ion-img
+                                class="card-meta__avatar"
+                                [src]="photo.user?.profile_image"
+                                alt=""
+                                [routerLink]="[
+                                    '/profile',
+                                    photo.user?.username
+                                ]"
+                            ></ion-img>
+                        </ion-avatar>
+                        {{ photo.user?.fullname }}</a
+                    >
+                </ion-item>
+            </div>
+
+            <ion-button
+                (click)="downloadPhoto(photo)"
+                class="card-btn download-btn"
+                title="download"
+            >
+                <ion-icon slot="icon-only" name="arrow-down"></ion-icon>
+            </ion-button>
+        </div>
+    </div>
+</ion-card>

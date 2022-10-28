@@ -1,0 +1,19 @@
+<ion-card
+    button
+    class="album-card"
+    [ngStyle]="{ backgroundImage: setCardBg(album.photos) }"
+    [ngClass]="{ collected: isCollected }"
+    (click)="selectAlbum(album, photo)"
+>
+    <ion-card-content>
+        <!-- <ion-img
+            [src]=""
+            class="album-card-image"
+        ></ion-img> -->
+
+        <ion-note slot="end">
+            <ion-icon name="camera"></ion-icon>
+            {{ album?.photos?.length }}
+        </ion-note>
+    </ion-card-content>
+</ion-card>

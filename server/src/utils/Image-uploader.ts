@@ -1,11 +1,26 @@
-import { v4 as uuidV4 } from "uuid";
 import { v2 as cloudinary } from "cloudinary";
 import { NextFunction, Request, Response } from "express";
-import multer, { FileFilterCallback } from "multer";
+
+import formidable from "formidable";
+import { zipWith } from "lodash/fp";
+import { Utils } from ".";
 
 export default class ImageUploader {
-  static upload() {
-    return multer({ storage: multer.diskStorage({}), fileFilter: fileFilter });
+  static upload(req: Request, res: Response, next: NextFunction) {
+    const form = formidable({ multiples: true });
+    form.parse(req, (err, fields, files) => {
+      if (err) throw err;
+
+      req.fields = JSON.parse(fields.all as string);
+
+      req.captions = req.fields.map((field: any) => field?.caption);
+
+      req.files = files.photos as formidable.File[];
+      if (!Array.isArray(req.files)) req.files = [req.files];
+      next();
+    });
+    // req.f=
+    // return multer({ storage: multer.diskStorage({}), fileFilter: fileFilter });
   }
   static async profileImageUpload(
     req: Request,
@@ -13,53 +28,57 @@ export default class ImageUploader {
     next: NextFunction
   ) {
     const { auth } = req;
-    const result = await cloudinary.uploader.upload(req.file?.path as string, {
-      public_id: `profile_image_${auth?.user?.id}`,
-      radius: "max",
-      width: 500,
-      height: 500,
-      crop: "fill",
-      gravity: "faces",
-    });
+    // const result = await cloudinary.uploader.upload(req.file?.path as string, {
+    //   public_id: `profile_image_${auth?.user?.id}`,
+    //   radius: "max",
+    //   width: 500,
+    //   height: 500,
+    //   crop: "fill",
+    //   gravity: "faces",
+    // });
 
-    req.photo_url = result.secure_url;
+    // req.photo_url = result.secure_url;
     next();
   }
-  static async albumImageUpload(
+  static async uploadToCloudinary(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     const photo_urls: string[] = [];
+
     if (!req.files?.length) {
       res.status(400).json({
-        message: "No files were found",
+        message: "No photos to upload",
       });
       return;
     }
-    for (const file of req.files as Express.Multer.File[]) {
-      const result = await cloudinary.uploader.upload(file.path, {
-        public_id: `album_image_${uuidV4()}`,
-
-        width: 1000,
-        height: 1000,
-        crop: "fill",
-        gravity: "faces",
+    for (const [index, file] of req.files.entries()) {
+      const result = await cloudinary.uploader.upload(file.filepath, {
+        public_id: `${Utils.generateSlug(req.captions[index])}`,
+        folder: "phozy",
       });
+
       photo_urls.push(result.secure_url);
     }
-    req.photo_urls = photo_urls;
+    const { fields } = req;
+
+    req.photo_urls = zipWith(
+      (url, field: object) => ({ url, ...field }),
+      photo_urls,
+      fields
+    );
     next();
   }
 }
-export const fileFilter = (
-  req: Request,
-  file: Express.Multer.File,
-  cb: FileFilterCallback
-) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type"));
-  }
-};
+// export const fileFilter = (
+//   req: Request,
+//   file: Express.Multer.File,
+//   cb: FileFilterCallback
+// ) => {
+//   if (file.mimetype.startsWith("image")) {
+//     cb(null, true);
+//   } else {
+//     cb(new Error("Invalid file type"));
+//   }
+// };
