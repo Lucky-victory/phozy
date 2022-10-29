@@ -1,5 +1,5 @@
 import { harpee } from "harpee";
-import config from "../../config";
+import config from "../env-config";
 
 export const connectDB = () =>
   harpee.createConnection({

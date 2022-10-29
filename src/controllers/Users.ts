@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import config from "../../config";
+import config from "../env-config";
 import { NEW_USER, USER_AUTH, USER_RESULT } from "../interfaces/Users";
 import { defaultProfileImage, Utils } from "../utils";
 

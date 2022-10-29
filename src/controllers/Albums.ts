@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 import { ALBUM_RESULT, IAlbum } from "../interfaces/Albums";
-import { PHOTO_RESULT } from "./../interfaces/Photos";
-import { USER_RESULT } from "./../interfaces/Users";
-import { Utils } from "./../utils/index";
+import { PHOTO_RESULT } from "../interfaces/Photos";
+import { USER_RESULT } from "../interfaces/Users";
+import { Utils } from "../utils/index";
 
 import { albumsModel } from "../models/Albums";
 import { photosModel } from "../models/Photos";
 import { usersModel } from "../models/Users";
 
-import { Order } from "harpee";
 import CacheManager from "../utils/cache-manager";
 import { DEFAULT_PHOTO_FIELDS } from "./Photos";
 

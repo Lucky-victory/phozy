@@ -1,10 +1,12 @@
 import dotenv from "dotenv";
-import { Config } from "./src/interfaces/common";
-import { Utils } from "./src/utils";
+import { Config } from "./interfaces/common";
+import { Utils } from "./utils";
 
 if (process.env.NODE_ENV !== "production") {
+  console.log("dev env");
+  
   dotenv.config({
-    path: "../.env",
+    path: ".env",
   });
 }
 

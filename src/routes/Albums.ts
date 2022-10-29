@@ -1,6 +1,6 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
-import { checkIfAuthenticatedOptional } from "./../middlewares/Auth";
+import { checkIfAuthenticatedOptional } from "../middlewares/Auth";
 
 import AlbumsController from "../controllers/Albums";
 import { checkIfAuthenticated } from "../middlewares/Auth";

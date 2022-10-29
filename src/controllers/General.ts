@@ -1,5 +1,5 @@
-import { IGeneralResult } from "./../interfaces/General";
-import { Response, Request } from "express";
+import { Request, Response } from "express";
+import { IGeneralResult } from "../interfaces/General";
 
 import CacheManager from "../utils/cache-manager";
 const generalCache = new CacheManager();

@@ -1,5 +1,5 @@
 import { expressjwt } from "express-jwt";
-import config from "../../config";
+import config from "../env-config";
 
 /**
  * Validate the authorization token

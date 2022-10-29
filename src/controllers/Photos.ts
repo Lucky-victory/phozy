@@ -1,18 +1,18 @@
-import { Utils } from "./../utils/index";
+import { Utils } from "../utils/index";
 
 import { Request, Response } from "express";
 import { harpee, Order } from "harpee";
+import {
+    IPhoto,
+    NEW_PHOTO,
+    PHOTO_RESULT,
+    PHOTO_TO_VIEW
+} from "../interfaces/Photos";
 import { USER_RESULT } from "../interfaces/Users";
 import { albumsModel } from "../models/Albums";
 import { photosModel } from "../models/Photos";
 import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
-import {
-  IPhoto,
-  NEW_PHOTO,
-  PHOTO_RESULT,
-  PHOTO_TO_VIEW,
-} from "./../interfaces/Photos";
 const photoCache = new CacheManager();
 
 export default class PhotosController {
@@ -132,8 +132,8 @@ export default class PhotosController {
       const user = await PhotosController.getOwner(photoOwnerId);
 
       photo = PhotosController.checkLike(photo, authUser?.id);
-
-      // photo= PhotosController.convertPhotoTags(photo);
+      photo = PhotosController.convertTags(photo);
+    
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
@@ -404,7 +404,7 @@ export default class PhotosController {
         .select(DEFAULT_PHOTO_FIELDS)
         .from("phozy", "photos")
         .where("caption")
-        .like(q)
+        .like(`%${q}%`)
         .or(`search_json('$[title in "${q}"]',tags)`);
       const response = await photosModel.query<PHOTO_RESULT[]>(query);
 

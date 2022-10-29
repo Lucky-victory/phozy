@@ -12,7 +12,7 @@ import {
     loadOnePhoto,
     loadOnePhotoSuccess,
     photosLoadFailure,
-    loadPaginatedPhotosFailure,
+    
 
 } from './photo.actions';
 
@@ -82,14 +82,7 @@ export const photoReducer = createReducer(
             is_at_end: !photos.length,
         };
     }),
-    on(loadPaginatedPhotosFailure, (state, { error }) => {
-        return {
-            ...state,
-            status: 'error',
-            error,
-            is_at_end: false,
-        };
-    }),
+    
     on(photosLoadSuccess, (state, { photos }) => ({
         ...state,
         photos: photos,

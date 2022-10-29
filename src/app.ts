@@ -2,14 +2,14 @@ import express, { NextFunction, Response, Request } from "express";
 const app = express();
 const port = process.env.PORT || 3300;
 
-import albumRoute from "./src/routes/Albums";
-import signUpRoute from "./src/routes/Sign-up";
-import signInRoute from "./src/routes/Sign-in";
-import generalRoute from "./src/routes/General";
-import photosRoute from "./src/routes/Photos";
+import albumRoute from "./routes/Albums";
+import signUpRoute from "./routes/Sign-up";
+import signInRoute from "./routes/Sign-in";
+//import generalRoute from "./routes/General";
+import photosRoute from "./routes/Photos";
 // import likesRoute from "./routes/Likes";
-import usersRoute from "./src/routes/Users";
-import { errorHandler } from "./src/middlewares/Error-handler";
+import usersRoute from "./routes/Users";
+import { errorHandler } from "./middlewares/Error-handler";
 import cors from "cors";
 import createError from "http-errors";
 import path from "path";
@@ -41,7 +41,9 @@ app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("PHOZY API 1.0");
 });
 app.get("*", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
+
+  const indexPath="public/index.html"
+  res.sendFile(path.join(__dirname,indexPath ));
 });
 // app.use((req: Request, res: Response, next: NextFunction) => {
 //   next(createError(404));

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
 import PhotosController from "../controllers/Photos";
+import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "../middlewares/Auth";
 import ImageUploader from "../utils/Image-uploader";
-import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "./../middlewares/Auth";
 const router = Router();
 
 router
