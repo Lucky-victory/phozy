@@ -14,31 +14,27 @@ import { Observable } from 'rxjs';
     imports: [CommonModule, IonicModule, RouterModule],
 })
 export class CardComponent implements OnInit {
-    @Input() photo!:PHOTO_TO_VIEW;
-    @Output() onLike =
-        new EventEmitter<[PHOTO_TO_VIEW,boolean]>();
-    @Output() onDownload=
-        new EventEmitter<PHOTO_TO_VIEW>();
-    @Output() onCollect =
-        new EventEmitter<PHOTO_TO_VIEW>();
+    @Input() photo!: PHOTO_TO_VIEW;
+    @Output() onLike = new EventEmitter<[PHOTO_TO_VIEW, boolean]>();
+    @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
     @Input() isLiked: boolean;
-    constructor(private router: Router,private authService:AuthService) {}
+    constructor(private router: Router, private authService: AuthService) {}
 
     ngOnInit(photo = this.photo) {
         this.isLiked = photo.is_liked;
     }
 
-    collectPhoto(photo:PHOTO_TO_VIEW) {
+    collectPhoto(photo: PHOTO_TO_VIEW) {
         this.onCollect.emit(photo);
     }
 
-    downloadPhoto(photo:PHOTO_TO_VIEW) {
+    downloadPhoto(photo: PHOTO_TO_VIEW) {
         this.onDownload.emit(photo);
     }
     likePhoto(photo: PHOTO_TO_VIEW) {
-       
-        this.onLike.emit([photo,this.isLiked]);
-        // this.isLiked = !this.isLiked;
+        this.onLike.emit([photo, this.isLiked]);
+        this.isLiked = !this.isLiked;
     }
     showPhotoModal(photo) {
         // this.router.navigate(['/photo', photo.id],{

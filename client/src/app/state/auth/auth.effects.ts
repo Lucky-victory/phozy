@@ -24,7 +24,16 @@ export class AuthEffects {
             switchMap((details) =>
                 this.authService
                     .signIn(details.email_or_username, details.password)
-                    .pipe(map((result) => userAuthSuccess(result)))
+                    .pipe(
+                        map((result) => userAuthSuccess(result)),
+                        catchError(() =>
+                            of(
+                                userAuthFailure({
+                                    error: "Couldn't sign up, Try again",
+                                })
+                            )
+                        )
+                    )
             )
         )
     );
@@ -32,9 +41,16 @@ export class AuthEffects {
         this.actions$.pipe(
             ofType(userSignUp),
             switchMap((details) =>
-                this.authService
-                    .signUp(details)
-                    .pipe(map((result) => userAuthSuccess(result)))
+                this.authService.signUp(details).pipe(
+                    map((result) => userAuthSuccess(result)),
+                    catchError(() =>
+                        of(
+                            userAuthFailure({
+                                error: "Couldn't sign in, Try again",
+                            })
+                        )
+                    )
+                )
             )
         )
     );

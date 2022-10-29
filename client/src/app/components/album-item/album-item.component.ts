@@ -26,18 +26,18 @@ export class AlbumItemComponent implements OnInit {
     isAdding$: Observable<STATE_STATUS>;
     constructor(private store: Store<AppState>) {}
 
-    ngOnInit() {
-        const photosInAlbumIds = this?.album?.photos?.map((photo) => photo?.id);
-      
+    ngOnInit(album = this.album, photo = this.photo) {
         this.isAdding$ = this.store.select(selectAlbumsStatus);
-        this.isCollected = photosInAlbumIds.includes(this?.photo?.id);
+        const photosInAlbumIds = album?.photos?.map((photo) => photo?.id);
+
+        this.isCollected = photosInAlbumIds.includes(photo?.id);
         console.log(this.isCollected, 'collected');
     }
     selectAlbum(album: ALBUM_RESULT, photo: PHOTO_TO_VIEW) {
         this.onAlbumSelect.emit({ album, photo });
     }
-    setCardBg(photos:ALBUM_RESULT['photos']){
-        const lastPhoto=photos[photos.length-1]?.url;
-        return `url(${lastPhoto})`
+    setCardBg(photos: ALBUM_RESULT['photos']) {
+        const lastPhoto = photos[photos.length - 1]?.url;
+        return `url(${lastPhoto})`;
     }
 }

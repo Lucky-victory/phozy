@@ -2,7 +2,6 @@
   "name": "phozy",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "build": "cd server && npm i && npm run start",
     "postinstall": "cd client && npm i && npm run build",

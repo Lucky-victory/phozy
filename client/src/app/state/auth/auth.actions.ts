@@ -1,7 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { AUTH_TOKEN, USER_RESULT } from 'src/app/interfaces/user.interface';
 
-export const userAuths = createAction('[Auth] User Auths');
 export const userSignIn = createAction(
     '[Auth] User Sign In',
     props<{ email_or_username: string; password: string }>()
