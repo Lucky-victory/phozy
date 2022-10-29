@@ -8,7 +8,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-   
     <ion-card>
         <ion-card-header>
             <ion-card-title> </ion-card-title>
@@ -19,6 +18,7 @@
                     [disabled]="isSending"
                     size="default"
                     expand="block"
+                    class="primary-btn"
                     (click)="fileInput.click()"
                 >
                     <ion-icon lazy="true" slot="start" name="image"></ion-icon>
@@ -85,6 +85,7 @@
 
                 <ion-button
                     type="submit"
+                    class="primary-btn"
                     [ngClass]="{'ion-hide':!photosToPreview.length}"
                     [disabled]="!newPhotoForm.valid || isSending"
                     ><ion-spinner
