@@ -12,8 +12,6 @@ import {
     loadOnePhoto,
     loadOnePhotoSuccess,
     photosLoadFailure,
-    
-
 } from './photo.actions';
 
 export const photoFeatureKey = 'photo';
@@ -38,7 +36,7 @@ export const photoReducer = createReducer(
     on(loadPhotos, (state) => ({ ...state, error: null })),
     on(likePhoto, (state, action) => ({
         ...state,
-        status: 'pending',
+
         error: null,
     })),
     on(loadOnePhoto, (state, action) => ({
@@ -58,7 +56,7 @@ export const photoReducer = createReducer(
     })),
     on(unlikePhoto, (state, action) => ({
         ...state,
-        status: 'pending',
+
         error: null,
     })),
     on(photoLikeOrUnlikeSuccess, (state, { photo: updatedPhoto }) => ({
@@ -71,9 +69,8 @@ export const photoReducer = createReducer(
             }),
         ],
     })),
-  
 
-    on(loadPaginatedPhotos, (state) => ({ ...state, status: 'pending' })),
+    on(loadPaginatedPhotos, (state) => ({ ...state,status:'pending' })),
     on(loadPaginatedPhotosSuccess, (state, { photos }) => {
         return {
             ...state,
@@ -82,7 +79,7 @@ export const photoReducer = createReducer(
             is_at_end: !photos.length,
         };
     }),
-    
+
     on(photosLoadSuccess, (state, { photos }) => ({
         ...state,
         photos: photos,

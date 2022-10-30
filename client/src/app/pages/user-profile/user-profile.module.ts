@@ -8,14 +8,16 @@ import { UserProfilePageRoutingModule } from './user-profile-routing.module';
 
 import { UserProfilePage } from './user-profile.page';
 import { ApiService } from 'src/app/services/api.service';
+import { GalleryComponent } from 'src/app/components/gallery/gallery.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    UserProfilePageRoutingModule
-  ],
-  declarations: [UserProfilePage],providers:[ApiService]
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        UserProfilePageRoutingModule,
+        GalleryComponent,
+    ],
+    declarations: [UserProfilePage],
 })
 export class UserProfilePageModule {}

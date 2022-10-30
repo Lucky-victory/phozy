@@ -6,7 +6,7 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="container">
     <div class="signup-form-container">
         <ion-card>
             <ion-card-header>
@@ -79,16 +79,16 @@
         </ion-item>
         <ion-text color="danger" *ngIf="password.value!==confirmPassword.value">Passwords doesn't match</ion-text>
          -->
-                    <br />
-                    <ion-text
-                        >Already have an account?
-                        <ion-button
-                            [routerLink]="['/sign-in']"
-                            fill="clear"
-                            class="outline-btn"
-                            >Sign in</ion-button
-                        >
-                    </ion-text>
+
+                    <div class="text-wrapper">
+                        <ion-text
+                            >Already have an account?
+                            <a [routerLink]="['/sign-in']" class="outline-btn"
+                                >Sign in</a
+                            >
+                        </ion-text>
+                    </div>
+
                     <br />
                     <ion-button
                         type="submit"

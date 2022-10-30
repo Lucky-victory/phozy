@@ -5,13 +5,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { AuthService } from 'src/app/services/auth.service';
 import { Observable } from 'rxjs';
+import { PhotoOwnerComponent } from '../photo-owner/photo-owner.component';
 
 @Component({
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
     standalone: true,
-    imports: [CommonModule, IonicModule, RouterModule],
+    imports: [CommonModule, IonicModule, RouterModule, PhotoOwnerComponent],
 })
 export class CardComponent implements OnInit {
     @Input() photo!: PHOTO_TO_VIEW;
@@ -19,7 +20,7 @@ export class CardComponent implements OnInit {
     @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW>();
     @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
     @Input() isLiked: boolean;
-    constructor(private router: Router, private authService: AuthService) {}
+    constructor() {}
 
     ngOnInit(photo = this.photo) {
         this.isLiked = photo.is_liked;
@@ -34,11 +35,6 @@ export class CardComponent implements OnInit {
     }
     likePhoto(photo: PHOTO_TO_VIEW) {
         this.onLike.emit([photo, this.isLiked]);
-        this.isLiked = !this.isLiked;
-    }
-    showPhotoModal(photo) {
-        // this.router.navigate(['/photo', photo.id],{
-        //     state:photo
-        // });
+        // this.isLiked = !this.isLiked;
     }
 }

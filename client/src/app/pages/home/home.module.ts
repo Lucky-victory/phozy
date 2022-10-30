@@ -30,7 +30,6 @@ import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-for
         SignInFormComponent,
     ],
     declarations: [HomePage],
-    providers: [ApiService, AuthService],
     exports: [HomePage],
 })
 export class HomePageModule {}

@@ -91,7 +91,11 @@ export class SignInFormComponent implements OnInit, OnDestroy {
     passwordToText() {
         this.isText = !this.isText;
     }
-
+ async   closeModal() {
+        if (this.isInModal) {
+            await this.modalCtrl.dismiss();
+        }
+    }
     ngOnDestroy(): void {
         if (this.statusSub) {
             this.statusSub.unsubscribe();

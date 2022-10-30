@@ -4,7 +4,7 @@
             <ion-button
                 class="card-btn"
                 (click)="collectPhoto(photo)"
-                title="Add to collection"
+                title="Add to album"
             >
                 <ion-icon slot="icon-only" name="bookmarks-outline"></ion-icon>
             </ion-button>
@@ -38,26 +38,7 @@
     <div class="card-bottom">
         <div class="card-meta">
             <div class="card-meta-inner">
-                <ion-item class="card-meta__info" lines="none">
-                    <a
-                        [routerLink]="['/profile', photo.user?.username]"
-                        fill="clear"
-                        class="card-meta__info"
-                    >
-                        <ion-avatar class="card-meta__avatar">
-                            <ion-img
-                                class="card-meta__avatar"
-                                [src]="photo.user?.profile_image"
-                                alt=""
-                                [routerLink]="[
-                                    '/profile',
-                                    photo.user?.username
-                                ]"
-                            ></ion-img>
-                        </ion-avatar>
-                        {{ photo.user?.fullname }}</a
-                    >
-                </ion-item>
+                <app-photo-owner [photo]="photo"></app-photo-owner>
             </div>
 
             <ion-button

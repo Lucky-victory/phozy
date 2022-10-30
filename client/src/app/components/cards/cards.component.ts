@@ -32,23 +32,11 @@ export class CardsComponent implements OnInit {
     isModalOpen: boolean;
     photoForModal: any;
     isLiked!: boolean;
-    infoMessage!: string;
+
     skeletons = new Array(10).map((_, i) => i);
     constructor(private router: Router) {}
 
     ngOnInit() {}
-   
-    like(photo) {
-        if (!this.isLoggedIn) {
-            this.infoMessage = ' please sign up or signIn';
-            setTimeout(() => {
-                this.infoMessage = undefined;
-            }, 2000);
-            return;
-        }
-        photo.liked = photo.liked;
-        this.onLike.emit(photo);
-    }
  
   
     downloadPhoto(photo: PHOTO_TO_VIEW) {

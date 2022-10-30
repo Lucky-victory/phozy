@@ -8,6 +8,7 @@
     max-height: 500px;
     min-height: 450px;
     max-width: 450px;
+    padding: 0;
     background-color: transparent;
     .card-image-link {
         display: flex;
@@ -76,11 +77,11 @@
     background: var(--bg);
     height: 40px;
     width: 40px;
-    padding: 10px;
-    border-radius: 8px;
     color: var(--text-color);
     box-shadow: 0 3px 5px #0003;
     background: var(--bg);
+    border-radius: 10px;
+    overflow: hidden;
     &.liked {
         color: var(--like-btn-color);
     }
@@ -89,6 +90,7 @@
         color: #fff;
     }
     &::part(native) {
+        padding: 10px;
         background: inherit;
         color: inherit;
         padding-inline-start: 0;
@@ -113,7 +115,7 @@ ion-avatar.card-meta__avatar {
     display: flex;
     align-items: center;
     flex: 1 0 auto;
-    color: var(--text-color) !important;
+    color: var(--text-color, #fff) !important;
     letter-spacing: 1px;
     font-weight: 500 !important;
     text-decoration: none;

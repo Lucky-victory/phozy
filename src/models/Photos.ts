@@ -1,6 +1,7 @@
 import { harpee, HType } from "harpee";
-import { MyUtils } from "my-node-ts-utils";
+
 import { connectDB } from "../config/db";
+import { Utils } from "../utils";
 const { Model, Schema } = harpee;
 
 connectDB();
@@ -10,8 +11,8 @@ const photosSchema = new Schema({
     user_id: HType.string().required(),
     url: HType.string().required(),
     caption: HType.string().allow(""),
-    created_at: HType.date().default(MyUtils.currentTime.getTime()),
-    updated_at: HType.ref("created_at"),
+    created_at: HType.date().default(Utils.currentTime.getTime()),
+    updated_at: HType.date().default(Utils.currentTime.getTime()),
     likes: HType.object({
       count: HType.number(),
       users: HType.array(),

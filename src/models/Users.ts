@@ -16,7 +16,7 @@ const usersSchema = new Schema({
     socials: HType.object(),
     bio: HType.string(),
     created_at: HType.date().default(Utils.currentTime.getTime()),
-    updated_at: HType.ref("created_at"),
+    updated_at: HType.date().default(Utils.currentTime.getTime()),
   },
 });
 

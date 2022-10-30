@@ -11,6 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class UserProfilePage implements OnInit {
     active: boolean;
     userData: any;
+    selectedTab: string = 'gallery';
     userAlbums: any;
     constructor(
         private activeRoute: ActivatedRoute,
@@ -20,15 +21,14 @@ export class UserProfilePage implements OnInit {
     ngOnInit() {
         const username = this.activeRoute.snapshot.paramMap.get('username');
         this.apiService.getUserByUsername$(username).subscribe((res) => {
-            this.userData = res.data 
+            this.userData = res.data;
         });
         // this.apiService.getUserCollections(username).subscribe((res) => {
         //     this.userAlbums = res.data;
         // });
     }
-    segmentChanged(event:Event) {
+    segmentChanged(event: Event) {
         const ev = event as SegmentCustomEvent;
-        console.log(ev.detail.value);
-        
+        this.selectedTab = ev.detail.value;
     }
 }

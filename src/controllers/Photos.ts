@@ -3,10 +3,10 @@ import { Utils } from "../utils/index";
 import { Request, Response } from "express";
 import { harpee, Order } from "harpee";
 import {
-    IPhoto,
-    NEW_PHOTO,
-    PHOTO_RESULT,
-    PHOTO_TO_VIEW
+  IPhoto,
+  NEW_PHOTO,
+  PHOTO_RESULT,
+  PHOTO_TO_VIEW,
 } from "../interfaces/Photos";
 import { USER_RESULT } from "../interfaces/Users";
 import { albumsModel } from "../models/Albums";
@@ -14,6 +14,7 @@ import { photosModel } from "../models/Photos";
 import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
 const photoCache = new CacheManager();
+const CACHE_TIME = 2000;
 
 export default class PhotosController {
   static async getAll(req: Request, res: Response) {
@@ -26,7 +27,6 @@ export default class PhotosController {
       } = req.query;
 
       const authUser = Utils.getAuthenticatedUser(req);
-      console.log(authUser, "authUser");
 
       const { fields } = req.query;
       perPage = +perPage;
@@ -34,8 +34,12 @@ export default class PhotosController {
       const offset = (page - 1) * perPage;
       if (!(sort === "desc" || sort === "asc")) sort = "desc";
       // check if the result was in cache
-      const cachedData = photoCache.get<PHOTO_RESULT>(`photos_${page}`);
+      let cachedData = photoCache.get<PHOTO_RESULT[]>(`photos_${page}`);
       if (cachedData) {
+        cachedData = cachedData.map((photo) => {
+          photo = PhotosController.checkLike(photo, authUser?.id);
+          return photo;
+        });
         res
           .status(200)
           .json({ message: "photos retrieved from cache", data: cachedData });
@@ -88,7 +92,7 @@ export default class PhotosController {
       });
       // remove user_id property since the user object now has the ID
       data = Utils.omit(data, ["user_id"]) as (USER_RESULT & PHOTO_RESULT)[];
-      photoCache.set(`photos_${page}`, data, 1000);
+      photoCache.set(`photos_${page}`, data, CACHE_TIME);
 
       res.status(200).json({ message: "photos retrieved", data });
     } catch (error) {
@@ -124,6 +128,22 @@ export default class PhotosController {
           .json({ message: `photo with id '${id}' does no exist` });
         return;
       }
+      let cachedPhoto = photoCache.get<PHOTO_RESULT>(`photo_${id}`);
+      if (cachedPhoto) {
+        cachedPhoto = PhotosController.checkLike(photo, authUser?.id);
+        res
+          .status(200)
+          .json({ message: "photo retrieved successfully", data: cachedPhoto });
+        await photosModel.updateNested({
+          id,
+          path: ".views",
+          value: (data: IPhoto) => {
+            (data.views as number) += 1;
+            return data.views;
+          },
+        });
+        return;
+      }
       /**
        the photo owner ID
        *  */
@@ -133,7 +153,7 @@ export default class PhotosController {
 
       photo = PhotosController.checkLike(photo, authUser?.id);
       photo = PhotosController.convertTags(photo);
-    
+
       const mergedData = Object.assign({}, photo, { user });
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
@@ -145,7 +165,7 @@ export default class PhotosController {
           return data.views;
         },
       });
-
+      photoCache.set(`photo_${id}`, data, CACHE_TIME);
       res.status(200).json({ message: "photo retrieved successfully", data });
     } catch (error) {
       console.log(error);

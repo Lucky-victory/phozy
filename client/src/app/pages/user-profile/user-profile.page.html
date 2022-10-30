@@ -25,6 +25,9 @@
                         <ion-label>Albums</ion-label>
                     </ion-segment-button>
                 </ion-segment>
+                <ng-container [ngSwitch]="selectedTab">
+                    <app-gallery *ngSwitchCase="'gallery'"></app-gallery>
+                </ng-container>
             </div>
         </ion-card-content>
     </ion-card>
