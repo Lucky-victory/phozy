@@ -9,6 +9,9 @@ import ms from "ms";
 import { albumsModel } from "../models/Albums";
 import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
+import { photosModel } from "../models/Photos";
+import { PHOTO_RESULT } from "../interfaces/Photos";
+import { DEFAULT_PHOTO_FIELDS } from "./Photos";
 const userCache = new CacheManager();
 
 export default class UsersController {
@@ -194,10 +197,10 @@ export default class UsersController {
   }
   static async getAlbumsByUser(req: Request, res: Response) {
     try {
-      const { username } = req.params;
+      const { user_id } = req.params;
       const { auth } = req;
       let albums;
-      const user = await usersModel.findOne<USER_RESULT>({ username });
+      const user = await usersModel.findOne<USER_RESULT>({ id: user_id });
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
@@ -212,6 +215,34 @@ export default class UsersController {
       res.status(200).json({
         message: "user info retrieved",
         data: albums,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "an error occurred",
+        error,
+      });
+    }
+  }
+  static async getPhotosByUser(req: Request, res: Response) {
+    try {
+      const { user_id } = req.params;
+
+      const user = await usersModel.findOne<USER_RESULT>({ id: user_id });
+      if (!user.data) {
+        res.status(404).json({
+          message: "user does not exist",
+        });
+        return;
+      }
+
+      const photos = await photosModel.find<PHOTO_RESULT[]>({
+        getAttributes: DEFAULT_PHOTO_FIELDS,
+        where: `user_id="${user?.data?.id}`,
+      });
+
+      res.status(200).json({
+        message: "user info retrieved",
+        data: photos,
       });
     } catch (error) {
       res.status(500).json({

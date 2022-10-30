@@ -1,6 +1,8 @@
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/state/app.state';
 
 @Component({
     selector: 'app-gallery',
@@ -10,7 +12,7 @@ import { Component, OnInit } from '@angular/core';
     imports: [CommonModule, IonicModule],
 })
 export class GalleryComponent implements OnInit {
-    constructor() {}
+    constructor(private store: Store<AppState>) {}
 
     ngOnInit() {}
 }

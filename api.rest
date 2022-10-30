@@ -1,1 +1,5 @@
-GET https://3300-luckyvictory-phozy-lxndigm60ro.ws-eu73.gitpod.io/api/photos/search?q=vi
+GET http://localhost:3300/api/photos/search?q=c
+
+
+###
+GET http://localhost:3300/api/profile/988e5b2c-bb5e-4351-8809-7cb97bcaad/photos
