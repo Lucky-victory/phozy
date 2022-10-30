@@ -22,6 +22,9 @@ const isBehindTime =
 const initialTokenExpiration = parseInt(
     localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRATION) || '0'
 );
+const savedUser = JSON.parse(
+    localStorage.getItem(STORAGE_KEYS.USER)
+) as USER_RESULT;
 export interface UserState {
     user?: USER_RESULT;
     status: STATE_STATUS;
@@ -31,7 +34,7 @@ export interface UserState {
 }
 
 export const initialState: UserState = {
-    user: undefined,
+    user: savedUser,
     status: 'pending',
     auth: undefined,
     is_logged_in: initialTokenExpiration > 0,
@@ -48,7 +51,8 @@ export const authReducer = createReducer(
         token_expiration: 0,
     })),
     on(userSignIn, (state) => ({ ...state, status: 'pending' })),
-    on(userSignUp, (state) => ({ ...state })),
+
+    on(userSignUp, (state) => ({ ...state, status: 'pending' })),
     on(userAuthSuccess, (state, { user, auth }) => ({
         ...state,
         status: 'complete',

@@ -128,12 +128,15 @@ export default class PhotosController {
           .json({ message: `photo with id '${id}' does no exist` });
         return;
       }
+
       let cachedPhoto = photoCache.get<PHOTO_RESULT>(`photo_${id}`);
       if (cachedPhoto) {
-        cachedPhoto = PhotosController.checkLike(photo, authUser?.id);
-        res
-          .status(200)
-          .json({ message: "photo retrieved successfully", data: cachedPhoto });
+        cachedPhoto = PhotosController.checkLike(cachedPhoto, authUser?.id);
+
+        res.status(200).json({
+          message: "photo retrieved successfully from cache",
+          data: cachedPhoto,
+        });
         await photosModel.updateNested({
           id,
           path: ".views",
@@ -155,6 +158,7 @@ export default class PhotosController {
       photo = PhotosController.convertTags(photo);
 
       const mergedData = Object.assign({}, photo, { user });
+
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
       await photosModel.updateNested({
@@ -165,6 +169,7 @@ export default class PhotosController {
           return data.views;
         },
       });
+
       photoCache.set(`photo_${id}`, data, CACHE_TIME);
       res.status(200).json({ message: "photo retrieved successfully", data });
     } catch (error) {
@@ -464,9 +469,6 @@ export default class PhotosController {
    * @returns
    */
   private static checkLike<T extends PHOTO_RESULT>(photo: T, userId: string) {
-    console.log(userId, "userid");
-    const l = photo.likes.users.includes(userId);
-    console.log(l, "liked");
     photo.is_liked = photo.likes.users.includes(userId);
 
     return photo;

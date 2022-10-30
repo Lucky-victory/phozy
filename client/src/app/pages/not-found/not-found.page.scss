@@ -1,0 +1,13 @@
+.container {
+    max-width: 700px;
+    margin: auto;
+}
+ion-content {
+    display: flex;
+    &::part(background) {
+        background: #000
+            url('../../../assets/images/pexels-kamaji-ogino-5064613.jpg')
+            center/cover no-repeat;
+        background-blend-mode: hard-light;
+    }
+}

@@ -1,3 +1,37 @@
 .photo-owner {
     display: flex;
 }
+.photo-owner-link {
+    --text-color: var(--ion-text-color);
+    display: flex;
+    align-items: center;
+    flex: 1 0 auto;
+    color: var(--text-color, #fff) !important;
+    letter-spacing: 1px;
+    font-weight: 500 !important;
+    text-decoration: none;
+    color: inherit;
+    --ion-item-background: transparent;
+    --padding-start: 0;
+
+    text-transform: capitalize;
+}
+ion-avatar {
+    &.photo-owner-avatar {
+        max-width: 45px;
+        max-height: 45px;
+        margin-right: 0.875rem;
+        flex-shrink: 0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    ion-avatar {
+        &.photo-owner-avatar {
+            max-width: 30px;
+            max-height: 30px;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+    }
+}

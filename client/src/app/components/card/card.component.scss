@@ -25,9 +25,9 @@
             inset: 0;
             background: linear-gradient(
                 180deg,
-                #1f1f1f,
-                transparent 80%,
-                #1f1f1f
+                #1a1a1a,
+                transparent 70%,
+                #1a1a1a
             );
             opacity: 0;
         }
@@ -99,31 +99,10 @@
     }
 }
 
-ion-avatar.card-meta__avatar {
-    max-width: 40px;
-    max-height: 40px;
-    margin-right: 0.5rem;
-    flex-shrink: 0;
-}
 .card-meta-inner {
     flex: 1 1 0;
     display: flex;
     align-items: center;
-}
-.card-meta__info {
-    --text-color: var(--ion-text-color);
-    display: flex;
-    align-items: center;
-    flex: 1 0 auto;
-    color: var(--text-color, #fff) !important;
-    letter-spacing: 1px;
-    font-weight: 500 !important;
-    text-decoration: none;
-    color: inherit;
-    --ion-item-background: transparent;
-    --padding-start: 0;
-
-    text-transform: capitalize;
 }
 
 .card-top {

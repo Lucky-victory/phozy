@@ -25,7 +25,7 @@ import { likePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
 export class PhotoViewPage implements OnInit, OnDestroy {
     @Input() photo: PHOTO_TO_VIEW;
     isDesktop: boolean;
-    private tabletSize: number = 768;
+    private tabletSize: number = 767;
     private resizeSub: Subscription;
     isLiked!: boolean;
     isLoaded!: boolean;
@@ -33,7 +33,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
     likesCount: number = 0;
     constructor(
         private router: Router,
-        private authService: AuthService,
+
         private utilsService: UtilitiesService,
         private activeRoute: ActivatedRoute,
         private photoService: PhotoService,

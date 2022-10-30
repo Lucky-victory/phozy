@@ -11,10 +11,10 @@ import { USER_RESULT } from 'src/app/interfaces/user.interface';
 
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
-import { AppState, } from 'src/app/state/app.state';
+import { AppState } from 'src/app/state/app.state';
 import { userLogout } from 'src/app/state/auth/auth.actions';
 import {
-     selectIsLoggedIn,
+    selectIsLoggedIn,
     selectUser,
 } from 'src/app/state/auth/auth.selectors';
 import {
@@ -40,26 +40,27 @@ export class HomePage implements OnInit, OnDestroy {
     isLoggedIn!: boolean;
     private currentPage = 1;
     noMoreData: boolean;
-isIos:boolean;
+    isIos: boolean;
     private loadingSub: Subscription;
     private loginSub: Subscription;
     private photoStateSub: Subscription;
     isLoaded: boolean = false;
-    isMobile:boolean;
+    isMobile: boolean;
     user$: Observable<USER_RESULT>;
 
     constructor(
         private utilsService: UtilitiesService,
-private platform:Platform,
+        private platform: Platform,
         private navCtrl: NavController,
 
         private store: Store<AppState>
     ) {
-        this.isIos=this.platform.is('ios');
-        this.isMobile=this.platform.is('mobile');
+        this.isIos = this.platform.is('ios');
+        this.isMobile = this.platform.is('mobile');
     }
 
     ngOnInit() {
+        // this.store.dispatch(loadUser());
         this.user$ = this.store.select(selectUser);
         this.store.dispatch(loadPhotos());
         this.photos$ = this.store.select(selectAllPhotos);
@@ -154,8 +155,8 @@ private platform:Platform,
         this.navCtrl.navigateForward('/');
     }
     ngOnDestroy(): void {
-        this.loginSub.unsubscribe();
-        this.loadingSub.unsubscribe();
-        this.photoStateSub.unsubscribe();
+        this.loginSub && this.loginSub.unsubscribe();
+        this.loadingSub && this.loadingSub.unsubscribe();
+        this.photoStateSub && this.photoStateSub.unsubscribe();
     }
 }

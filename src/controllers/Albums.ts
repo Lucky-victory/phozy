@@ -24,11 +24,10 @@ export default class AlbumsController {
    */
   static async create(req: Request, res: Response): Promise<void> {
     try {
-    
       const authUser = Utils.getAuthenticatedUser(req);
-      // this will remove any property not specified in Schema fields 
+      // this will remove any property not specified in Schema fields
       const bodyData = Utils.pick(req.body, albumsModel.fields);
-      const album= {
+      const album = {
         ...bodyData,
         user_id: authUser.id,
       };
@@ -37,7 +36,8 @@ export default class AlbumsController {
       const result = await (await albumsModel.create(album)).data;
       // query with the insert id
       const insertedAlbum = await albumsModel.findOne<ALBUM_RESULT>(
-        { id: result?.inserted_hashes[0] as string },DEFAULT_ALBUM_FIELDS
+        { id: result?.inserted_hashes[0] as string },
+        DEFAULT_ALBUM_FIELDS
       );
       const data = insertedAlbum?.data;
 
@@ -60,25 +60,28 @@ export default class AlbumsController {
    */
   static async getAll(req: Request, res: Response) {
     try {
-   
- let {
+      let {
         page = 1,
         perPage = 10,
         sort = "desc",
         orderby = "created_at",
       } = req.query;
-     
+
       const { fields } = req.query;
       perPage = +perPage;
       page = +page;
       const offset = (page - 1) * perPage;
-       if (!(sort === "desc" || sort === "asc")) sort = "desc";
+      if (!(sort === "desc" || sort === "asc")) sort = "desc";
       const user = Utils.getAuthenticatedUser(req);
-     
+
       // get the fields specified in schema
       const fieldsInSchema = albumsModel.fields;
-      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, DEFAULT_ALBUM_FIELDS);
-       if (!fieldsInSchema.includes(orderby as string)) orderby = "created_at";
+      const getAttributes = Utils.getFields(
+        fields as string,
+        fieldsInSchema,
+        DEFAULT_ALBUM_FIELDS
+      );
+      if (!fieldsInSchema.includes(orderby as string)) orderby = "created_at";
 
       const recordCountResult = await albumsModel.describeModel<any>();
       const recordCount = recordCountResult.data.record_count;
@@ -87,33 +90,34 @@ export default class AlbumsController {
         res.status(200).json({ message: "No more Albums", data: [] });
         return;
       }
-     
+
       const result = await albumsModel.find<ALBUM_RESULT[]>({
-       where:`${Utils.isEmpty(user) ? 'is_public=true':''}`,
+        where: `${Utils.isEmpty(user) ? "is_public=true" : ""}`,
         getAttributes,
-      
       });
       let albums = result.data as ALBUM_RESULT[];
       // get photos in albums
-     albums= await Promise.all(albums.map(async (album) => {
-        const photosResult = await photosModel.findById<PHOTO_RESULT[]>({
-          getAttributes: DEFAULT_PHOTO_FIELDS, id: album.photos as string[]})
-          album.photos=photosResult.data as PHOTO_RESULT[]
-          return album
-      }))
-   
-   
-      
+      albums = await Promise.all(
+        albums.map(async (album) => {
+          const photosResult = await photosModel.findById<PHOTO_RESULT[]>({
+            getAttributes: DEFAULT_PHOTO_FIELDS,
+            id: album.photos as string[],
+          });
+          album.photos = photosResult.data as PHOTO_RESULT[];
+          return album;
+        })
+      );
+
       res.status(200).json({
         message: "albums retrieved",
         data: albums,
-     
       });
     } catch (error) {
       console.log(error);
-      
+
       res.status(500).json({
-        message: "An error occurred",error
+        message: "An error occurred",
+        error,
       });
     }
   }
@@ -121,19 +125,23 @@ export default class AlbumsController {
    * @desc Retrieves an album by id
    * @route GET /api/albums/:album_id
    * @param req
-   * @param res 
+   * @param res
    * @returns
    */
   static async getById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const authUser = Utils.getAuthenticatedUser(req);
-     
+
       const { photoPerPage = 10, page = 1, fields } = req.query;
       const offset = ((page as number) - 1) * (photoPerPage as number);
       // get the fields specified in schema
       const fieldsInSchema = albumsModel.fields;
-      const getAttributes = Utils.getFields(fields as string, fieldsInSchema, DEFAULT_ALBUM_FIELDS);
+      const getAttributes = Utils.getFields(
+        fields as string,
+        fieldsInSchema,
+        DEFAULT_ALBUM_FIELDS
+      );
 
       // const cachedData = albumCache.get<ALBUM_RESULT>("album" + id);
       // if (cachedData) {
@@ -158,10 +166,7 @@ export default class AlbumsController {
         });
         return;
       }
-      const hasAccess = Utils.isAuthorized(
-        album,
-        authUser
-      );
+      const hasAccess = Utils.isAuthorized(album, authUser);
       // if the album is private and the current user isn't the owner of the resource
       if (!album.is_public && !hasAccess) {
         res.status(401).json({
@@ -180,16 +185,15 @@ export default class AlbumsController {
         getAttributes: DEFAULT_PHOTO_FIELDS,
       });
       console.log(photos);
-      
-      const data = Object.assign({ ...response.data },
+
+      const data = Object.assign(
+        { ...response.data },
         {
           user: user?.data,
           photos: photos?.data,
-        });
-      console.log('======');
-      
-      console.log(data,'album data');
-      
+        }
+      );
+
       albumCache.set("album" + id, data);
       res.status(201).json({
         message: "album retrieved",
@@ -207,17 +211,15 @@ export default class AlbumsController {
     try {
       const { album_id } = req.params;
 
-       const authUser = Utils.getAuthenticatedUser(req);
-      // this will remove any property not specified in Schema fields 
+      const authUser = Utils.getAuthenticatedUser(req);
+      // this will remove any property not specified in Schema fields
       const bodyData = Utils.pick(req.body, albumsModel.fields);
 
-      const albumToUpdate= {
+      const albumToUpdate = {
         ...bodyData,
         updated_at: Utils.currentTime.getTime(),
         id: album_id,
-   
       };
-
 
       const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
       if (!album?.data) {
@@ -251,7 +253,7 @@ export default class AlbumsController {
       const { album_id } = req.params;
       const { photo_id } = req.body;
       const authUser = Utils.getAuthenticatedUser(req);
-    
+
       const album = await albumsModel.findOne<ALBUM_RESULT>({ id: album_id });
       if (!album?.data) {
         res.status(404).json({
@@ -268,20 +270,29 @@ export default class AlbumsController {
       }
 
       const response = await albumsModel.updateNested<ALBUM_RESULT>({
-        id: album_id, path: '.photos', getAttributes: DEFAULT_ALBUM_FIELDS, value: (data: IAlbum) => {
+        id: album_id,
+        path: ".photos",
+        getAttributes: DEFAULT_ALBUM_FIELDS,
+        value: (data: IAlbum) => {
           data.updated_at = Utils.currentTime.getTime();
           if (!data.photos.includes(photo_id)) data.photos.push(photo_id);
           return data.photos;
-        }
+        },
       });
 
       const albumToView = response.data as ALBUM_RESULT;
-      const photosInAlbum = await photosModel.findById<PHOTO_RESULT[]>({ id: albumToView?.photos as string[], getAttributes: DEFAULT_PHOTO_FIELDS });
-      albumToView.photos = photosInAlbum.data as PHOTO_RESULT[];
-      
-      res.status(200).json({data:albumToView,
-        message: "photo added to album successfully",
+      const photosInAlbum = await photosModel.findById<PHOTO_RESULT[]>({
+        id: albumToView?.photos as string[],
+        getAttributes: DEFAULT_PHOTO_FIELDS,
       });
+      albumToView.photos = photosInAlbum.data as PHOTO_RESULT[];
+
+      res
+        .status(200)
+        .json({
+          data: albumToView,
+          message: "photo added to album successfully",
+        });
     } catch (error) {
       res.status(500).json({
         message: "An error occcurred could't add photo to album",
@@ -336,4 +347,12 @@ export default class AlbumsController {
   }
 }
 
-export const DEFAULT_ALBUM_FIELDS = ["id", "description", "title", "created_at", "user_id", "is_public", "photos"];
+export const DEFAULT_ALBUM_FIELDS = [
+  "id",
+  "description",
+  "title",
+  "created_at",
+  "user_id",
+  "is_public",
+  "photos",
+];

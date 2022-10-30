@@ -1,7 +1,7 @@
 import NodeCache from "node-cache";
 
 export default class CacheManager {
-  cache!: NodeCache;
+  private cache!: NodeCache;
   constructor() {
     this.cache = new NodeCache();
   }
