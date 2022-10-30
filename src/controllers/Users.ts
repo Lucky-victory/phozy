@@ -231,18 +231,19 @@ export default class UsersController {
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
+          data: user.data,
         });
         return;
       }
 
       const photos = await photosModel.find<PHOTO_RESULT[]>({
         getAttributes: DEFAULT_PHOTO_FIELDS,
-        where: `user_id="${user?.data?.id}`,
+        where: `user_id="${user?.data?.id}"`,
       });
 
       res.status(200).json({
-        message: "user info retrieved",
-        data: photos,
+        message: "photos retrieved successfully",
+        data: photos.data,
       });
     } catch (error) {
       res.status(500).json({
