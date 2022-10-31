@@ -1,5 +1,5 @@
 .cards-container {
-    padding-bottom: 3rem;
+    padding: 2rem 1rem 3rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 
@@ -16,6 +16,8 @@
 
         grid-template-rows: minmax(auto, auto);
         grid-gap: 12px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
     }
 }
 @media screen and (min-width: 1350px) {

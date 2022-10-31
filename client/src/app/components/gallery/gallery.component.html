@@ -1,3 +1,8 @@
-<p>
-  gallery works!
-</p>
+<div class="container">
+    <app-cards
+        [photos$]="photos$"
+        [loaded]="isLoaded"
+        [useState]="false"
+        [showOwner]="false"
+    ></app-cards>
+</div>

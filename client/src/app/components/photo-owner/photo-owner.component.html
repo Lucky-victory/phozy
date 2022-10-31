@@ -1,19 +1,20 @@
 <div class="photo-owner" lines="none">
     <a
-        [routerLink]="['/profile', photo.user?.username]"
+        [routerLink]="['/profile', photo?.user?.username]"
         fill="clear"
         class="photo-owner-link"
+        [title]="photo?.user?.fullname"
     >
         <ion-avatar class="photo-owner-avatar">
             <ion-img
                 class="photo-owner-avatar"
-                [src]="photo.user?.profile_image"
+                [src]="photo?.user?.profile_image"
                 alt=""
-                [routerLink]="['/profile', photo.user?.username]"
+                [routerLink]="['/profile', photo?.user?.username]"
             ></ion-img>
         </ion-avatar>
         <span class="photo-owner-name">
-            {{ photo.user?.fullname }}
+            {{ photo?.user?.fullname }}
         </span>
     </a>
 </div>

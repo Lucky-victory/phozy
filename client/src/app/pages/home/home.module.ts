@@ -15,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
 import { SignInPageModule } from '../sign-in/sign-in.module';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
+import { ProfilePageModule } from '../profile/profile.module';
 
 @NgModule({
     imports: [
@@ -28,6 +29,7 @@ import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-for
         BannerComponent,
         SignInPageModule,
         SignInFormComponent,
+        ProfilePageModule,
     ],
     declarations: [HomePage],
     exports: [HomePage],

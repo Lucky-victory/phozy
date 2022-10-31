@@ -28,6 +28,7 @@ import {
     selectPhotosState,
     selectPhotosStatus,
 } from 'src/app/state/photo/photo.selectors';
+import { ProfilePage } from '../profile/profile.page';
 
 import { UtilitiesService } from './../../services/utilities/utilities.service';
 @Component({
@@ -151,6 +152,13 @@ export class HomePage implements OnInit, OnDestroy {
     logout() {
         this.store.dispatch(userLogout());
         this.navCtrl.navigateForward('/');
+    }
+    showPopover(event) {
+        this.utilsService.showPopover({
+            component: ProfilePage,
+            event,
+            arrow: true,
+        });
     }
     ngOnDestroy(): void {
         this.loginSub && this.loginSub.unsubscribe();

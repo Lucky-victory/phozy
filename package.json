@@ -1,5 +1,5 @@
 {
-  "name": "phozy-api",
+  "name": "phozy",
   "version": "1.0.0",
   "description": "A simple image API for sharing images",
   "main": "dist/app.js",

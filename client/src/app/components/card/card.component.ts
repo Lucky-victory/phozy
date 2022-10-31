@@ -28,6 +28,8 @@ export class CardComponent implements OnInit {
     @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
     @Input() isLiked: boolean;
     @Input() isLoggedIn: boolean;
+    @Input() showOwner: boolean = true;
+    @Input() useState:boolean=true;
     constructor(private utilsService: UtilitiesService) {}
 
     ngOnInit(photo = this.photo) {

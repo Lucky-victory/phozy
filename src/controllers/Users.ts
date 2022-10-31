@@ -179,10 +179,14 @@ export default class UsersController {
   static async getUserByUsername(req: Request, res: Response) {
     try {
       const { username } = req.params;
-      const user = await usersModel.findOne<USER_RESULT>({ username });
+      const user = await usersModel.findOne<USER_RESULT>(
+        { username },
+        DEFAULT_USER_FIELDS
+      );
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
+          data: null,
         });
         return;
       }
@@ -206,6 +210,7 @@ export default class UsersController {
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
+          data: null,
         });
         return;
       }

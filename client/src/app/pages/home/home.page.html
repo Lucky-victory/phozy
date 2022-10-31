@@ -1,22 +1,21 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title> Phozy</ion-title>
+        <ion-title><a routerLink="/"> Phozy </a> </ion-title>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
             <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"
                 >Join</ion-button
             >
         </ion-buttons>
-        <ion-chip slot="end" outline="true" *ngIf="user">
-            <ion-avatar>
-                <img [src]="user.profile_image" />
-            </ion-avatar>
-            <ion-label [ngClass]="{'ion-hide':isMobile}"
-                >{{user.fullname}}</ion-label
-            >
-        </ion-chip>
-        <!-- <ion-buttons *ngIf="isLoggedIn" slot="end">
-            <ion-button (click)="logout()"> Log out </ion-button>
-        </ion-buttons> -->
+        <ng-container *ngIf="user">
+            <ion-chip slot="end" outline="true" (click)="showPopover($event)">
+                <ion-avatar>
+                    <img [src]="user.profile_image" />
+                </ion-avatar>
+                <ion-label [ngClass]="{'ion-hide':isMobile}"
+                    >{{user.fullname}}</ion-label
+                >
+            </ion-chip>
+        </ng-container>
     </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
@@ -45,7 +44,10 @@
             <ion-icon name="add-outline"></ion-icon>
         </ion-fab-button>
         <ion-fab-list side="top">
-            <ion-fab-button title="upload images" [routerLink]="['/new-photo']">
+            <ion-fab-button
+                title="upload images"
+                [routerLink]="[!isLoggedIn ? '/sign-in':'/new-photo']"
+            >
                 <ion-icon name="image-outline"></ion-icon>
             </ion-fab-button>
             <ion-fab-button

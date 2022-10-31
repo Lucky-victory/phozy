@@ -1,12 +1,15 @@
 <div class="cards-container">
-    <ng-container *ngIf="loaded; else loading"> </ng-container>
-    <app-card
-        [photo]="photo"
-        *ngFor="let photo of photos$ | async"
-        (onLike)="likePhoto($event)"
-        (onCollect)="collectPhoto($event)"
-        (onDownload)="downloadPhoto($event)"
-    ></app-card>
+    <ng-container *ngIf="loaded; else loading">
+        <app-card
+            [photo]="photo"
+            *ngFor="let photo of photos$ | async"
+            (onLike)="likePhoto($event)"
+            (onCollect)="collectPhoto($event)"
+            (onDownload)="downloadPhoto($event)"
+            [showOwner]="showOwner"
+            [useState]="useState"
+        ></app-card>
+    </ng-container>
 </div>
 
 <ng-template #loading>

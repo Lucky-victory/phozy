@@ -52,6 +52,9 @@
 .flex-wrap {
     flex-wrap: wrap;
 }
+.fd-column {
+    flex-direction: column;
+}
 .btn {
     &.primary-btn {
         background-color: var(--primary);
@@ -85,4 +88,9 @@
         padding: 0.75rem 1rem;
         height: 100%;
     }
+}
+ion-chip {
+    border-color: var(--primary);
+
+    color: var(--primary) !important;
 }

@@ -24,7 +24,7 @@
     <div class="card-image-wrapper">
         <a
             [routerLink]="['/photo', photo.id]"
-            [state]="photo"
+            [state]="useState ? photo : null"
             class="card-image-link"
         >
             <ion-img
@@ -38,7 +38,10 @@
     <div class="card-bottom">
         <div class="card-meta">
             <div class="card-meta-inner">
-                <app-photo-owner [photo]="photo"></app-photo-owner>
+                <app-photo-owner
+                    *ngIf="showOwner"
+                    [photo]="photo"
+                ></app-photo-owner>
             </div>
 
             <ion-button
