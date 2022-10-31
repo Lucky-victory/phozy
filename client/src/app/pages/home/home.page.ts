@@ -46,7 +46,8 @@ export class HomePage implements OnInit, OnDestroy {
     private photoStateSub: Subscription;
     isLoaded: boolean = false;
     isMobile: boolean;
-    user$: Observable<USER_RESULT>;
+    user: USER_RESULT;
+    private userSub: Subscription;
 
     constructor(
         private utilsService: UtilitiesService,
@@ -60,8 +61,9 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // this.store.dispatch(loadUser());
-        this.user$ = this.store.select(selectUser);
+        this.userSub = this.store.select(selectUser).subscribe((user) => {
+            this.user = user;
+        });
         this.store.dispatch(loadPhotos());
         this.photos$ = this.store.select(selectAllPhotos);
         this.loadingSub = this.store
@@ -112,7 +114,7 @@ export class HomePage implements OnInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(loadAlbums());
+        this.store.dispatch(loadAlbums({ userId: this.user?.id }));
         const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
             component: AlbumListComponent,
@@ -132,10 +134,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
-        if (!this.isLoggedIn) {
-            this.showModal();
-            return;
-        }
+    
         if (isLiked) {
             return this.store.dispatch(unlikePhoto({ id: photo.id }));
         }
@@ -158,5 +157,6 @@ export class HomePage implements OnInit, OnDestroy {
         this.loginSub && this.loginSub.unsubscribe();
         this.loadingSub && this.loadingSub.unsubscribe();
         this.photoStateSub && this.photoStateSub.unsubscribe();
+        this.userSub && this.userSub.unsubscribe();
     }
 }

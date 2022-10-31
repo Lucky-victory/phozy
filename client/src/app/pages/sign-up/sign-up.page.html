@@ -14,7 +14,7 @@
             </ion-card-header>
             <ion-card-content>
                 <ion-text color="danger" class="error-message"
-                    >{{errorMessage}}</ion-text
+                    >{{errorMessage$|async}}</ion-text
                 >
                 <br />
                 <form [formGroup]="signUpForm" (ngSubmit)="signUp($event)">

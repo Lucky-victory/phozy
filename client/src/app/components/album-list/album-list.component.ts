@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { collectPhoto } from 'src/app/state/album/album.actions';
 import { selectAlbumsStatus } from 'src/app/state/album/album.selectors';
 import { AppState, STATE_STATUS } from 'src/app/state/app.state';
-// import { collectPhoto } from 'src/app/state/photo/photo.actions';
+
 import { AlbumItemComponent } from '../album-item/album-item.component';
 
 @Component({
@@ -16,7 +17,7 @@ import { AlbumItemComponent } from '../album-item/album-item.component';
     templateUrl: './album-list.component.html',
     styleUrls: ['./album-list.component.scss'],
     standalone: true,
-    imports: [CommonModule, IonicModule, AlbumItemComponent],
+    imports: [CommonModule, IonicModule, AlbumItemComponent, RouterModule],
 })
 export class AlbumListComponent implements OnInit {
     @Input() albums$!: Observable<ALBUM_RESULT[]>;
@@ -39,4 +40,5 @@ export class AlbumListComponent implements OnInit {
             collectPhoto({ albumId: album.id, photoId: photo.id })
         );
     }
+    createAlbum() {}
 }

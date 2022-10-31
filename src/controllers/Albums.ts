@@ -287,12 +287,10 @@ export default class AlbumsController {
       });
       albumToView.photos = photosInAlbum.data as PHOTO_RESULT[];
 
-      res
-        .status(200)
-        .json({
-          data: albumToView,
-          message: "photo added to album successfully",
-        });
+      res.status(200).json({
+        data: albumToView,
+        message: "photo added to album successfully",
+      });
     } catch (error) {
       res.status(500).json({
         message: "An error occcurred could't add photo to album",

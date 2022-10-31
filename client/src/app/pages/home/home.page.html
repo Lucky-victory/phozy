@@ -6,7 +6,7 @@
                 >Join</ion-button
             >
         </ion-buttons>
-        <ion-chip slot="end" outline="true" *ngIf="user$|async as user">
+        <ion-chip slot="end" outline="true" *ngIf="user">
             <ion-avatar>
                 <img [src]="user.profile_image" />
             </ion-avatar>

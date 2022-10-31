@@ -5,7 +5,7 @@
         </ion-card-header>
         <ion-card-content>
             <ion-text color="danger" class="error-message">{{
-                errorMessage
+                errorMessage$ | async
             }}</ion-text>
             <br />
             <form [formGroup]="signInForm">

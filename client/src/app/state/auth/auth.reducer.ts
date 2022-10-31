@@ -31,12 +31,14 @@ export interface UserState {
     auth?: AUTH_TOKEN;
     is_logged_in: boolean;
     token_expiration?: number;
+    error: string;
 }
 
 export const initialState: UserState = {
     user: savedUser,
     status: 'pending',
     auth: undefined,
+    error: null,
     is_logged_in: initialTokenExpiration > 0,
     token_expiration: isBehindTime ? 0 : initialTokenExpiration,
 };
@@ -60,10 +62,12 @@ export const authReducer = createReducer(
         auth: auth,
         token_expiration: auth.expiresIn,
         is_logged_in: true,
+        error: null,
     })),
-    on(userAuthFailure, (state) => ({
+    on(userAuthFailure, (state, { error }) => ({
         ...state,
         status: 'error',
         is_logged_in: false,
+        error,
     }))
 );

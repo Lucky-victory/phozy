@@ -462,6 +462,26 @@ export default class PhotosController {
       //
     }
   }
+ static async getByIds(ids:string[],authUserId?:string): Promise<PHOTO_RESULT[] | null>{
+  try{
+
+    const response=await photosModel.findById<PHOTO_RESULT[]>({
+      getAttributes: DEFAULT_PHOTO_FIELDS,
+      id: ids
+    });
+    const photos=response.data as PHOTO_RESULT[]
+    // photos=photos?.map((photo)=>{
+      // photo=PhotosController.checkLike(photo,authUserId);
+      // photo=PhotosController.convertTags(photo);
+      // return photo
+      // })
+      
+      return photos
+    }
+    catch(_){
+      return null
+    }
+  }
   /**
    * checks if a user has liked a photo and adds a 'liked' property to the photo object
    * @param photo
@@ -478,6 +498,7 @@ export default class PhotosController {
     return photo;
   }
 }
+
 export const DEFAULT_PHOTO_FIELDS = [
   "id",
   "created_at",

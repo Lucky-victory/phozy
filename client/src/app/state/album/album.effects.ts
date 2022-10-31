@@ -19,8 +19,8 @@ export class AlbumEffects {
     loadAlbums$ = createEffect(() =>
         this.actions$.pipe(
             ofType(loadAlbums),
-            switchMap(() =>
-                this.albumService.getAll$().pipe(
+            switchMap(({ userId }) =>
+                this.albumService.getAlbumsByUser$(userId).pipe(
                     map((albums) => loadAlbumsSuccess({ albums })),
                     catchError(() =>
                         of(

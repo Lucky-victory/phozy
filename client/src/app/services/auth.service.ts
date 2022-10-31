@@ -1,8 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import * as moment from 'moment';
-import { throwError, timer } from 'rxjs';
+
+import { throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { STORAGE_KEYS } from '../interfaces/common';
@@ -75,16 +74,5 @@ export class AuthService {
     }
     get token() {
         return localStorage.getItem(STORAGE_KEYS.TOKEN);
-    }
-    get expiration() {
-        const expiration = localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRATION);
-        return JSON.parse(expiration) as number;
-    }
-    get expirationTime() {
-        const expiration = localStorage.getItem(
-            STORAGE_KEYS.TOKEN_EXPIRATION_TIME
-        );
-        const expiresAt = JSON.parse(expiration);
-        return moment(expiresAt);
     }
 }

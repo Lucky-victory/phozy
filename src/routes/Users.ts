@@ -20,11 +20,7 @@ router.get(
   checkIfAuthenticatedOptional,
   asyncHandler(UsersController.getAlbumsByUser)
 );
-router.get(
-  "/:user_id/photos",
-  checkIfAuthenticatedOptional,
-  asyncHandler(UsersController.getPhotosByUser)
-);
+router.get("/:user_id/photos", asyncHandler(UsersController.getPhotosByUser));
 
 // route to update profile image only
 router.post(

@@ -70,7 +70,7 @@ export const photoReducer = createReducer(
         ],
     })),
 
-    on(loadPaginatedPhotos, (state) => ({ ...state,status:'pending' })),
+    on(loadPaginatedPhotos, (state) => ({ ...state, status: 'pending' })),
     on(loadPaginatedPhotosSuccess, (state, { photos }) => {
         return {
             ...state,

@@ -80,7 +80,7 @@
 }
 .btn {
     height: auto;
-    max-height: 40px;
+    max-height: 40px !important;
     &::part(native) {
         padding: 0.75rem 1rem;
         height: 100%;

@@ -32,7 +32,7 @@ export const albumReducer = createReducer(
     initialState,
     on(collectPhoto, (state, action) => ({
         ...state,
-        status: 'pending',
+
         error: null,
     })),
     on(collectPhotoSuccess, (state, { album }) => ({
@@ -47,28 +47,36 @@ export const albumReducer = createReducer(
     on(collectPhotoFailure, (state, { error }) => ({
         ...state,
         status: 'error',
-        error
+        error,
     })),
-    on(loadAlbums, (state) => ({ ...state, status: 'pending',error:null })),
+    on(loadAlbums, (state) => ({ ...state, status: 'pending', error: null })),
     on(loadAlbumsSuccess, (state, { albums }) => ({
         ...state,
         albums: albums,
-        status: 'complete',error:null
+        status: 'complete',
+        error: null,
     })),
-    on(loadAlbumsFailure, (state, {error}) => ({
+    on(loadAlbumsFailure, (state, { error }) => ({
         ...state,
-       
-        status: 'error',error
+
+        status: 'error',
+        error,
     })),
-    on(createAlbum, (state, { album }) => ({ ...state, status: 'pending' ,error:null})),
+    on(createAlbum, (state, { album }) => ({
+        ...state,
+        status: 'pending',
+        error: null,
+    })),
     on(createAlbumSuccess, (state, { album }) => ({
         ...state,
         albums: [...state.albums, album],
-        status: 'complete',error:null
+        status: 'complete',
+        error: null,
     })),
     on(createAlbumFailure, (state, { error }) => ({
         ...state,
-      
-        status: 'error',error
+
+        status: 'error',
+        error,
     }))
 );

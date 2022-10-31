@@ -7,6 +7,7 @@ import { debounceTime } from 'rxjs/operators';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import { USER_RESULT } from 'src/app/interfaces/user.interface';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { PhotoService } from 'src/app/services/photo/photo.service';
@@ -14,7 +15,10 @@ import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState } from 'src/app/state/app.state';
-import { selectIsLoggedIn } from 'src/app/state/auth/auth.selectors';
+import {
+    selectIsLoggedIn,
+    selectUser,
+} from 'src/app/state/auth/auth.selectors';
 import { likePhoto, unlikePhoto } from 'src/app/state/photo/photo.actions';
 
 @Component({
@@ -27,10 +31,13 @@ export class PhotoViewPage implements OnInit, OnDestroy {
     isDesktop: boolean;
     private tabletSize: number = 767;
     private resizeSub: Subscription;
+    private loginSub: Subscription;
     isLiked!: boolean;
     isLoaded!: boolean;
     isLoggedIn!: boolean;
     likesCount: number = 0;
+    user: USER_RESULT;
+    userSub: Subscription;
     constructor(
         private router: Router,
 
@@ -45,15 +52,20 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             .state as PHOTO_TO_VIEW;
         this.isLoaded = typeof this.photo !== 'undefined';
         this.resizeSub = this.platform.resize
-            .pipe(debounceTime(500))
+            .pipe(debounceTime(300))
             .subscribe(() => {
                 this.isDesktop = this.platform.width() > this.tabletSize;
             });
-        this.store.select(selectIsLoggedIn).subscribe((isLoggedIn) => {
-            this.isLoggedIn = isLoggedIn;
-        });
     }
     ngOnInit() {
+        this.loginSub = this.store
+            .select(selectIsLoggedIn)
+            .subscribe((isLoggedIn) => {
+                this.isLoggedIn = isLoggedIn;
+            });
+        this.userSub = this.store.select(selectUser).subscribe((user) => {
+            this.user = user;
+        });
         this.isLiked = this.photo?.is_liked;
         this.likesCount = this.photo?.likes?.count;
         /**
@@ -62,12 +74,21 @@ export class PhotoViewPage implements OnInit, OnDestroy {
         if (!this.photo) {
             this.activeRoute.paramMap.subscribe((params) => {
                 const id = params.get('id');
-                this.photoService.getPhoto$(id).subscribe((photo) => {
-                    this.photo = photo;
-                    this.isLiked = photo?.is_liked;
-                    this.likesCount = photo?.likes?.count;
-                    this.isLoaded = true;
-                });
+                this.photoService.getPhoto$(id).subscribe(
+                    (photo) => {
+                        this.photo = photo;
+                        this.isLiked = photo?.is_liked;
+                        this.likesCount = photo?.likes?.count;
+                        this.isLoaded = true;
+                    },
+                    (error) => {
+                        if (error.status === 404) {
+                            this.router.navigateByUrl('/not-found', {
+                                skipLocationChange: true,
+                            });
+                        }
+                    }
+                );
             });
         }
     }
@@ -77,7 +98,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             this.showModal();
             return;
         }
-        this.store.dispatch(loadAlbums());
+        this.store.dispatch(loadAlbums({ userId: this.user.id }));
         const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
             component: AlbumListComponent,
@@ -106,6 +127,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
     }
     ngOnDestroy(): void {
         this.resizeSub.unsubscribe();
+        this.loginSub && this.loginSub.unsubscribe();
     }
     downloadPhoto(photo: PHOTO_TO_VIEW) {
         this.utilsService.downloadPhoto(photo);

@@ -2,7 +2,10 @@ import { createAction, props } from '@ngrx/store';
 import { ALBUM_RESULT, NEW_ALBUM } from 'src/app/interfaces/album.interface';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 
-export const loadAlbums = createAction('[Album] Load Albums');
+export const loadAlbums = createAction(
+    '[Album] Load Albums',
+    props<{ userId: string }>()
+);
 export const createAlbum = createAction(
     '[Album] Create Album',
     props<{ album: NEW_ALBUM }>()

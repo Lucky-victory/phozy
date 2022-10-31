@@ -11,7 +11,9 @@ import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
 import { photosModel } from "../models/Photos";
 import { PHOTO_RESULT } from "../interfaces/Photos";
-import { DEFAULT_PHOTO_FIELDS } from "./Photos";
+import PhotosController, { DEFAULT_PHOTO_FIELDS } from "./Photos";
+import { DEFAULT_ALBUM_FIELDS } from "./Albums";
+import { ALBUM_RESULT } from "../interfaces/Albums";
 const userCache = new CacheManager();
 
 export default class UsersController {
@@ -39,7 +41,7 @@ export default class UsersController {
       ]);
 
       if (!(usernameExist.data || emailExist.data)) {
-        res.status(404).json({
+        res.status(400).json({
           message: "Invalid credentials",
         });
         return;
@@ -53,7 +55,7 @@ export default class UsersController {
         prevPassword as string
       );
       if (!isPasswordMatch) {
-        res.status(403).json({
+        res.status(400).json({
           user: null,
           message: "Invalid credentials",
         });
@@ -198,8 +200,8 @@ export default class UsersController {
   static async getAlbumsByUser(req: Request, res: Response) {
     try {
       const { user_id } = req.params;
-      const { auth } = req;
-      let albums;
+      const authUser = Utils.getAuthenticatedUser(req);
+
       const user = await usersModel.findOne<USER_RESULT>({ id: user_id });
       if (!user.data) {
         res.status(404).json({
@@ -207,13 +209,28 @@ export default class UsersController {
         });
         return;
       }
-      // check if the authenticated user is the same requesting the resource by comparing the user ID
-      if (user.data.id === auth?.user?.id) {
-        // if the current user, get both public and private albums
-        albums = await albumsModel.findById([auth?.user?.id]);
-      }
+      // checks if the authnticated user is the same user requesting for the resource
+      const isSameUser = UsersController.isCurrentUser(authUser, user_id);
+
+      const response = await albumsModel.find<ALBUM_RESULT[]>({
+        getAttributes: DEFAULT_ALBUM_FIELDS,
+        where: `user_id="${user_id}" ${
+          !isSameUser ? "AND is_public=true" : ""
+        }`,
+      });
+      let albums = response.data as ALBUM_RESULT[];
+
+      albums = await Promise.all(
+        albums.map(async (album) => {
+          album.photos = (await PhotosController.getByIds(
+            album.photos as string[]
+          )) as PHOTO_RESULT[];
+          return album;
+        })
+      );
+
       res.status(200).json({
-        message: "user info retrieved",
+        message: "albums retrieved successfully",
         data: albums,
       });
     } catch (error) {
@@ -223,6 +240,7 @@ export default class UsersController {
       });
     }
   }
+
   static async getPhotosByUser(req: Request, res: Response) {
     try {
       const { user_id } = req.params;
@@ -238,7 +256,7 @@ export default class UsersController {
 
       const photos = await photosModel.find<PHOTO_RESULT[]>({
         getAttributes: DEFAULT_PHOTO_FIELDS,
-        where: `user_id="${user?.data?.id}"`,
+        where: `user_id="${user_id}"`,
       });
 
       res.status(200).json({
@@ -284,6 +302,9 @@ export default class UsersController {
     }
     req.user = user?.data as USER_RESULT;
     next();
+  }
+  private static isCurrentUser(authUser: USER_RESULT, userId: string): boolean {
+    return authUser?.id === userId;
   }
 }
 export const DEFAULT_USER_FIELDS = [

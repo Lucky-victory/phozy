@@ -26,13 +26,13 @@ export class AuthEffects {
                     .signIn(details.email_or_username, details.password)
                     .pipe(
                         map((result) => userAuthSuccess(result)),
-                        catchError(() =>
-                            of(
+                        catchError((error) => {
+                            return of(
                                 userAuthFailure({
-                                    error: "Couldn't sign up, Try again",
+                                    error: error?.error?.message,
                                 })
-                            )
-                        )
+                            );
+                        })
                     )
             )
         )
@@ -43,13 +43,13 @@ export class AuthEffects {
             switchMap((details) =>
                 this.authService.signUp(details).pipe(
                     map((result) => userAuthSuccess(result)),
-                    catchError(() =>
-                        of(
+                    catchError((error) => {
+                        return of(
                             userAuthFailure({
-                                error: "Couldn't sign in, Try again",
+                                error: error?.error?.message,
                             })
-                        )
-                    )
+                        );
+                    })
                 )
             )
         )

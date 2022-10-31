@@ -1,4 +1,4 @@
-import { Location, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     FormsModule,
@@ -7,21 +7,21 @@ import {
     ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { ModalController, IonicModule, NavController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { ISignInForm } from 'src/app/interfaces/sign-in.interface';
-import { USER_RESULT } from 'src/app/interfaces/user.interface';
+
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 import { AppState } from 'src/app/state/app.state';
 import { userSignIn } from 'src/app/state/auth/auth.actions';
 import {
+    selectAuthError,
     selectAuthStatus,
     selectUser,
     selectUserState,
 } from 'src/app/state/auth/auth.selectors';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-sign-in-form',
@@ -37,21 +37,20 @@ import { AuthService } from '../../services/auth.service';
     ],
 })
 export class SignInFormComponent implements OnInit, OnDestroy {
-    result: any;
-    errorResult: any;
     isSending: boolean;
-    errorMessage: string;
+
     infoMessage: string;
     isText: boolean;
     isInModal!: boolean;
     signInForm: FormGroup<ISignInForm>;
     statusSub!: Subscription;
+    errorMessage$: Observable<string>;
     constructor(
         private store: Store<AppState>,
 
         public utilsService: UtilitiesService,
         private navCtrl: NavController,
-        private location: Location,
+
         private fb: FormBuilder,
         public modalCtrl: ModalController
     ) {
@@ -63,35 +62,36 @@ export class SignInFormComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {}
-    async signIn() {
+    signIn() {
+        this.errorMessage$ = null;
         const email_or_username = this.signInForm.get('emailOrUsername').value;
         const password = this.signInForm.get('password').value;
         console.log('signing in');
 
-        this.errorResult = null;
         this.isSending = true;
         this.store.dispatch(userSignIn({ email_or_username, password }));
         this.statusSub = this.store
             .select(selectAuthStatus)
             .subscribe(async (status) => {
-                this.isSending = status !== 'complete';
+                this.isSending = status === 'pending';
                 if (status === 'complete') {
                     this.infoMessage = 'Sign in successful';
                     await this.utilsService.showToast({
                         message: this.infoMessage,
                     });
-                    await this.navCtrl.navigateForward('/');
-                    this.signInForm.reset();
-                    if (this.isInModal) {
-                        await this.modalCtrl.dismiss();
+                    if (!this.isInModal) {
+                        await this.navCtrl.navigateForward('/');
                     }
+                    this.signInForm.reset();
+                    await this.closeModal();
                 }
             });
+        this.errorMessage$ = this.store.select(selectAuthError);
     }
     passwordToText() {
         this.isText = !this.isText;
     }
- async   closeModal() {
+    async closeModal() {
         if (this.isInModal) {
             await this.modalCtrl.dismiss();
         }
