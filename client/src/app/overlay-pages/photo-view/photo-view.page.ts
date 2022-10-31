@@ -96,7 +96,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             this.showModal();
             return;
         }
-        this.store.dispatch(loadAlbums({ username: this.user.id }));
+        this.store.dispatch(loadAlbums({ username: this.user.username }));
         const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
             component: AlbumListComponent,

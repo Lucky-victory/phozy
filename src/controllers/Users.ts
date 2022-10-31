@@ -243,13 +243,13 @@ export default class UsersController {
 
   static async getPhotosByUser(req: Request, res: Response) {
     try {
-      const { user_id: username } = req.params;
+      const { username } = req.params;
 
       const user = await usersModel.findOne<USER_RESULT>({ username });
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
-          data: user.data,
+          data: null,
         });
         return;
       }
