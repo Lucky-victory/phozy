@@ -1,25 +1,20 @@
-import { routerReducer } from '@ngrx/router-store';
-import {
-    ActionReducer,
-    ActionReducerMap,
-    createFeatureSelector,
-    createSelector,
-    MetaReducer,
-} from '@ngrx/store';
+import { ActionReducerMap, MetaReducer } from '@ngrx/store';
 import { environment } from '../../environments/environment';
 import { albumReducer } from '../state/album/album.reducer';
+import { AppState } from '../state/app.state';
 import { authReducer } from '../state/auth/auth.reducer';
-import { photoReducer } from '../state/photo/photo.reducer';
+import {
+    photoReducer,
+    photosByUserReducer,
+} from '../state/photo/photo.reducer';
 
-export interface State {}
-
-export const reducers: ActionReducerMap<State> = {
+export const reducers: ActionReducerMap<AppState> = {
     photos: photoReducer,
     albums: albumReducer,
-
+    photosByUser: photosByUserReducer,
     user: authReducer,
 };
 
-export const metaReducers: MetaReducer<State>[] = !environment.production
+export const metaReducers: MetaReducer<AppState>[] = !environment.production
     ? []
     : [];

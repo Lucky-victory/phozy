@@ -6,7 +6,8 @@ import { environment } from 'src/environments/environment';
 import { ALBUM_RESULT, NEW_ALBUM } from '../interfaces/album.interface';
 
 import {
-    PHOTO_FROM_CLIENT, QUERY_RESPONSE
+    PHOTO_FROM_CLIENT,
+    QUERY_RESPONSE,
 } from '../interfaces/photo.interface';
 import { USER_RESULT } from '../interfaces/user.interface';
 
@@ -17,14 +18,7 @@ export class ApiService {
     protected apiBaseUrl: string = environment.apiBaseUrl;
     protected retryCount: number = 2;
     protected retryDelay: number = 5000;
-    constructor(protected http: HttpClient) { }
-    getUserAlbums$(username: string) {
-        return this.http
-            .get<QUERY_RESPONSE>(
-                `${this.apiBaseUrl}/profile/${username}/albums`
-            )
-            .pipe(catchError(this.errorHandler));
-    }
+    constructor(protected http: HttpClient) {}
 
     protected errorHandler(error: HttpErrorResponse) {
         return throwError(error || '');
@@ -50,31 +44,34 @@ export class ApiService {
 
         return this.http
             .post(`${this.apiBaseUrl}/photos`, formdata)
-            .pipe(
-                catchError(this.errorHandler)
-            );
+            .pipe(catchError(this.errorHandler));
     }
-    createAlbum$({ 
-        title,
-        description,
-        is_public
-    }:NEW_ALBUM) {
+    createAlbum$({ title, description, is_public }: NEW_ALBUM) {
         return this.http
             .post<QUERY_RESPONSE<ALBUM_RESULT>>(`${this.apiBaseUrl}/albums`, {
                 title,
                 description,
                 is_public,
             })
-            .pipe(map((response)=>response.data),catchError(this.errorHandler));
+            .pipe(
+                map((response) => response.data),
+                catchError(this.errorHandler)
+            );
     }
-    addPhotoToAlbum$(albumId:string,photoId:string) {
-        return this.http.put<QUERY_RESPONSE<ALBUM_RESULT>>(`${this.apiBaseUrl}/albums/${albumId}/photo`, {photo_id:photoId}).pipe(map((response)=>response.data));
+    addPhotoToAlbum$(albumId: string, photoId: string) {
+        return this.http
+            .put<QUERY_RESPONSE<ALBUM_RESULT>>(
+                `${this.apiBaseUrl}/albums/${albumId}/photo`,
+                { photo_id: photoId }
+            )
+            .pipe(map((response) => response.data));
     }
-   
 
     getUserByUsername$(username: string) {
         return this.http
-            .get<QUERY_RESPONSE<USER_RESULT>>(`${this.apiBaseUrl}/profile/${username}`)
+            .get<QUERY_RESPONSE<USER_RESULT>>(
+                `${this.apiBaseUrl}/profile/${username}`
+            )
             .pipe(catchError(this.errorHandler));
     }
 }

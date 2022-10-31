@@ -72,24 +72,22 @@ export class PhotoViewPage implements OnInit, OnDestroy {
          * if the photo object is not in router state,e.g when the url is shared,  then query the database for it,
          */
         if (!this.photo) {
-            this.activeRoute.paramMap.subscribe((params) => {
-                const id = params.get('id');
-                this.photoService.getPhoto$(id).subscribe(
-                    (photo) => {
-                        this.photo = photo;
-                        this.isLiked = photo?.is_liked;
-                        this.likesCount = photo?.likes?.count;
-                        this.isLoaded = true;
-                    },
-                    (error) => {
-                        if (error.status === 404) {
-                            this.router.navigateByUrl('/not-found', {
-                                skipLocationChange: true,
-                            });
-                        }
+            const id = this.activeRoute.snapshot.paramMap.get('id');
+            this.photoService.getPhoto$(id).subscribe(
+                (photo) => {
+                    this.photo = photo;
+                    this.isLiked = photo?.is_liked;
+                    this.likesCount = photo?.likes?.count;
+                    this.isLoaded = true;
+                },
+                (error) => {
+                    if (error.status === 404) {
+                        this.router.navigateByUrl('/not-found', {
+                            skipLocationChange: true,
+                        });
                     }
-                );
-            });
+                }
+            );
         }
     }
 
@@ -98,7 +96,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             this.showModal();
             return;
         }
-        this.store.dispatch(loadAlbums({ userId: this.user.id }));
+        this.store.dispatch(loadAlbums({ username: this.user.id }));
         const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
             component: AlbumListComponent,

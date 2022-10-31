@@ -114,7 +114,7 @@ export class HomePage implements OnInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(loadAlbums({ userId: this.user?.id }));
+        this.store.dispatch(loadAlbums({ username: this.user?.username }));
         const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
             component: AlbumListComponent,
@@ -134,7 +134,6 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
-    
         if (isLiked) {
             return this.store.dispatch(unlikePhoto({ id: photo.id }));
         }

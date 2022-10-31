@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+
 import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
 
 import { PHOTO_FROM_CLIENT } from 'src/app/interfaces/photo.interface';
 import { ApiService } from 'src/app/services/api.service';
-import { AuthService } from 'src/app/services/auth.service';
+
 import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
 
 @Component({
@@ -17,42 +17,19 @@ export class NewPhotoPage implements OnInit {
     photosToPreview: PHOTO_FROM_CLIENT[] = [];
     photosToUpload: Partial<PHOTO_FROM_CLIENT[]> = [];
     userAlbums: ALBUM_RESULT[] = [];
-    maxPhotoCount = 10;
+    maxPhotoCount = 5;
 
     infoMessage!: string;
 
     constructor(
-        private formBuilder: FormBuilder,
         private apiService: ApiService,
-        private authService: AuthService,
+
         private utilsService: UtilitiesService
     ) {}
 
-    ngOnInit() {
-        // this.fetchUserAlbums();
-    }
-    removeImage(id: string) {
-        this.photosToPreview = this.photosToPreview.filter(
-            (preview) => preview.id !== id
-        );
-        this.photosToUpload = this.photosToUpload.filter(
-            (photo) => photo.id !== id
-        );
-    }
-    fetchUserAlbums() {
-        const user = this.authService.User;
-        this.apiService
-            .getUserAlbums$(user?.username as string)
-            .subscribe((res) => {
-                this.userAlbums = res.data as ALBUM_RESULT[];
-            });
-    }
-    ionViewDidEnter(): void {
-        // this.fetchUserAlbums();
-    }
+    ngOnInit() {}
 
     addNewPhoto() {
-        // const albumId = this.newPhotoForm.get('prevAlbums').value;
         this.isSending = true;
         console.log(this.photosToPreview, 'preview');
         const photosToPreview = [...this.photosToPreview];

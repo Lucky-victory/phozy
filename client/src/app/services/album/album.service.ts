@@ -24,10 +24,10 @@ export class AlbumService extends ApiService {
                 catchError(this.errorHandler)
             );
     }
-    getAlbumsByUser$(userId: string) {
+    getAlbumsByUser$(username: string) {
         return this.http
             .get<QUERY_RESPONSE<ALBUM_RESULT[]>>(
-                `${this.apiBaseUrl}/profile/${userId}/albums`
+                `${this.apiBaseUrl}/profile/${username}/albums`
             )
             .pipe(
                 retry(this.retryCount),

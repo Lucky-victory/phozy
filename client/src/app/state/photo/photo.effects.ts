@@ -12,6 +12,9 @@ import {
     loadPaginatedPhotos,
     loadPaginatedPhotosSuccess,
     loadPhotos,
+    loadPhotosByUser,
+    loadPhotosByUserFailure,
+    loadPhotosByUserSuccess,
     photoLikeOrUnlikeSuccess,
     photosLoadFailure,
     photosLoadSuccess,
@@ -29,6 +32,23 @@ export class PhotoEffects {
                     catchError(() =>
                         of(
                             photosLoadFailure({
+                                error: "Sorry, couldn't load photos, Try again",
+                            })
+                        )
+                    )
+                )
+            )
+        )
+    );
+    loadPhotosByUser$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(loadPhotosByUser),
+            switchMap(({ username }) =>
+                this.photoService.getPhotosByUser$(username).pipe(
+                    map((photos) => loadPhotosByUserSuccess({ photos })),
+                    catchError(() =>
+                        of(
+                            loadPhotosByUserFailure({
                                 error: "Sorry, couldn't load photos, Try again",
                             })
                         )

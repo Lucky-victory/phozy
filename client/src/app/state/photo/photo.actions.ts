@@ -11,6 +11,10 @@ export const unlikePhoto = createAction(
 );
 
 export const loadPhotos = createAction('[Photos] Load Photos');
+export const loadPhotosByUser = createAction(
+    '[Photos] Load Photos By User',
+    props<{ username: string }>()
+);
 export const loadOnePhoto = createAction(
     '[Photos] Load One Photo',
     props<{ id: string }>()
@@ -18,6 +22,14 @@ export const loadOnePhoto = createAction(
 export const loadOnePhotoSuccess = createAction(
     '[Photos] Load One Photo',
     props<{ photo: PHOTO_TO_VIEW }>()
+);
+export const loadPhotosByUserSuccess = createAction(
+    '[Photos] Load Photos By User Success',
+    props<{ photos: PHOTO_TO_VIEW[] }>()
+);
+export const loadPhotosByUserFailure = createAction(
+    '[Photos] Load Photos By User Failure',
+    props<{ error: string }>()
 );
 export const loadPaginatedPhotos = createAction(
     '[Photos] paginated photos',

@@ -4,7 +4,7 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 
 export const loadAlbums = createAction(
     '[Album] Load Albums',
-    props<{ userId: string }>()
+    props<{ username: string }>()
 );
 export const createAlbum = createAction(
     '[Album] Create Album',

@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button></ion-back-button>
         </ion-buttons>
-        <ion-title>Add a new photo</ion-title>
+        <ion-title>Add new photo(s)</ion-title>
     </ion-toolbar>
 </ion-header>
 
@@ -35,7 +35,7 @@
                     max="10"
                 />
 
-                <ion-note slot="end">Max: 10 photos</ion-note>
+                <ion-note slot="end">Max: {{maxPhotoCount}} photos</ion-note>
             </ion-item>
             <form #newPhotoForm="ngForm" (ngSubmit)="addNewPhoto()">
                 <ion-label *ngIf="photosToPreview.length"
@@ -64,8 +64,8 @@
                         </ion-buttons>
                         <img src="{{preview.image}}" />
                         <ion-item>
-                            <ion-label>caption:</ion-label>
-                            <ion-input
+                            <ion-label>caption:<ion-note color="danger">*</ion-note></ion-label>
+                            <ion-input required="" minlength="3"
                                 type="text"
                                 name="caption-{{preview.id}}"
                                 [(ngModel)]="preview.caption"

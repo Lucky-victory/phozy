@@ -12,6 +12,9 @@ import {
     loadOnePhoto,
     loadOnePhotoSuccess,
     photosLoadFailure,
+    loadPhotosByUser,
+    loadPhotosByUserSuccess,
+    loadPhotosByUserFailure,
 } from './photo.actions';
 
 export const photoFeatureKey = 'photo';
@@ -23,13 +26,43 @@ export interface PhotosState {
     photo?: PHOTO_TO_VIEW;
     error: string;
 }
+export interface PhotosByUserState {
+    photos: PHOTO_TO_VIEW[];
+    status: STATE_STATUS;
+    is_at_end: boolean;
+    error: string;
+}
 
+export const initialPhotosByUserState: PhotosByUserState = {
+    photos: [],
+    status: 'pending',
+    is_at_end: false,
+    error: null,
+};
 export const initialState: PhotosState = {
     photos: [],
     status: 'pending',
     is_at_end: false,
     error: null,
 };
+export const photosByUserReducer = createReducer(
+    initialPhotosByUserState,
+    on(loadPhotosByUser, (state) => ({
+        ...state,
+        error: null,
+        status: 'pending',
+    })),
+    on(loadPhotosByUserSuccess, (state, { photos }) => ({
+        ...state,
+        photos,
+        status: 'complete',
+    })),
+    on(loadPhotosByUserFailure, (state, { error }) => ({
+        ...state,
+        error,
+        status: 'error',
+    }))
+);
 
 export const photoReducer = createReducer(
     initialState,

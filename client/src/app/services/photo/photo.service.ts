@@ -26,6 +26,18 @@ export class PhotoService extends ApiService {
                 catchError(this.errorHandler)
             );
     }
+    getPhotosByUser$(username: string) {
+        return this.http
+            .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(
+                `${this.apiBaseUrl}/profile/${username}/photos`
+            )
+            .pipe(
+                retry(this.retryCount),
+                delay(this.retryDelay),
+                map((response) => response.data),
+                catchError(this.errorHandler)
+            );
+    }
     likePhoto(photoId: string) {
         return this.http
             .post<QUERY_RESPONSE<PHOTO_TO_VIEW>>(

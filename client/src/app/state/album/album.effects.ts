@@ -8,6 +8,7 @@ import {
     collectPhotoFailure,
     collectPhotoSuccess,
     createAlbum,
+    createAlbumFailure,
     createAlbumSuccess,
     loadAlbums,
     loadAlbumsFailure,
@@ -19,8 +20,8 @@ export class AlbumEffects {
     loadAlbums$ = createEffect(() =>
         this.actions$.pipe(
             ofType(loadAlbums),
-            switchMap(({ userId }) =>
-                this.albumService.getAlbumsByUser$(userId).pipe(
+            switchMap(({ username }) =>
+                this.albumService.getAlbumsByUser$(username).pipe(
                     map((albums) => loadAlbumsSuccess({ albums })),
                     catchError(() =>
                         of(
@@ -41,7 +42,7 @@ export class AlbumEffects {
                     map((album) => createAlbumSuccess({ album })),
                     catchError(() =>
                         of(
-                            loadAlbumsFailure({
+                            createAlbumFailure({
                                 error: "Sorry, couldn't create album, Try again",
                             })
                         )
