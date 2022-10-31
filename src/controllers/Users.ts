@@ -199,10 +199,10 @@ export default class UsersController {
   }
   static async getAlbumsByUser(req: Request, res: Response) {
     try {
-      const { user_id } = req.params;
+      const { username } = req.params;
       const authUser = Utils.getAuthenticatedUser(req);
 
-      const user = await usersModel.findOne<USER_RESULT>({ id: user_id });
+      const user = await usersModel.findOne<USER_RESULT>({ username });
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
@@ -210,11 +210,11 @@ export default class UsersController {
         return;
       }
       // checks if the authnticated user is the same user requesting for the resource
-      const isSameUser = UsersController.isCurrentUser(authUser, user_id);
+      const isSameUser = UsersController.isCurrentUser(authUser, user.data?.id);
 
       const response = await albumsModel.find<ALBUM_RESULT[]>({
         getAttributes: DEFAULT_ALBUM_FIELDS,
-        where: `user_id="${user_id}" ${
+        where: `user_id="${user.data?.id}" ${
           !isSameUser ? "AND is_public=true" : ""
         }`,
       });
@@ -243,9 +243,9 @@ export default class UsersController {
 
   static async getPhotosByUser(req: Request, res: Response) {
     try {
-      const { user_id } = req.params;
+      const { user_id: username } = req.params;
 
-      const user = await usersModel.findOne<USER_RESULT>({ id: user_id });
+      const user = await usersModel.findOne<USER_RESULT>({ username });
       if (!user.data) {
         res.status(404).json({
           message: "user does not exist",
@@ -256,7 +256,7 @@ export default class UsersController {
 
       const photos = await photosModel.find<PHOTO_RESULT[]>({
         getAttributes: DEFAULT_PHOTO_FIELDS,
-        where: `user_id="${user_id}"`,
+        where: `user_id="${user.data?.id}"`,
       });
 
       res.status(200).json({
