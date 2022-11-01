@@ -29,7 +29,6 @@ import {
     selectPhotosState,
     selectPhotosStatus,
 } from 'src/app/state/photo/photo.selectors';
-import { ProfilePage } from '../profile/profile.page';
 
 import { UtilitiesService } from './../../services/utilities/utilities.service';
 @Component({

@@ -1,7 +1,7 @@
 {
   "name": "phozy",
   "version": "1.0.0",
-  "description": "A simple image API for sharing images",
+  "description": "A simple image sharing app",
   "main": "dist/app.js",
   "scripts": {
     "dev": "nodemon src/app.ts",

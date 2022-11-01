@@ -9,10 +9,9 @@ import { HomePageRoutingModule } from './home-routing.module';
 
 import { BannerComponent } from 'src/app/components/banner/banner.component';
 
-import { SignInPageModule } from '../sign-in/sign-in.module';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
-import { ProfilePageModule } from '../profile/profile.module';
+
 import { PopoverComponent } from 'src/app/components/popover/popover.component';
 
 @NgModule({
