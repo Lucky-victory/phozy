@@ -1,9 +1,13 @@
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state/app.state';
-import { loadPhotosByUser } from 'src/app/state/photo/photo.actions';
+import {
+    likePhoto,
+    loadPhotosByUser,
+    unlikePhoto,
+} from 'src/app/state/photo/photo.actions';
 import {
     PHOTO_RESULT,
     PHOTO_TO_VIEW,
@@ -12,32 +16,98 @@ import {
     selectPhotosByUser,
     selectPhotosByUserStatus,
 } from 'src/app/state/photo/photo.selectors';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CardsComponent } from '../cards/cards.component';
+import { AlbumListComponent } from '../album-list/album-list.component';
+import { loadAlbums } from 'src/app/state/album/album.actions';
+import { selectAllAlbums } from 'src/app/state/album/album.selectors';
+import { UtilitiesService } from 'src/app/services/utilities/utilities.service';
+import { USER_RESULT } from 'src/app/interfaces/user.interface';
+import {
+    selectIsLoggedIn,
+    selectUser,
+} from 'src/app/state/auth/auth.selectors';
+import { SignInFormComponent } from '../sign-in-form/sign-in-form.component';
 
 @Component({
     selector: 'app-gallery',
     templateUrl: './gallery.component.html',
     styleUrls: ['./gallery.component.scss'],
     standalone: true,
-    imports: [CommonModule, IonicModule, CardsComponent],
+    imports: [
+        CommonModule,
+        IonicModule,
+        CardsComponent,
+        AlbumListComponent,
+        SignInFormComponent,
+    ],
 })
-export class GalleryComponent implements OnInit {
+export class GalleryComponent implements OnInit, OnDestroy {
     @Input() photos$: Observable<PHOTO_TO_VIEW[]>;
     username: string;
     @Input() isLoaded: boolean;
+    isLoggedIn: boolean;
+    private currentUser: USER_RESULT;
+    loginSub: Subscription;
     constructor(
         private store: Store<AppState>,
-        private route: ActivatedRoute
+        private utilsService: UtilitiesService
     ) {}
 
     ngOnInit() {
-        // const username = this.route.snapshot.paramMap.get('username');
-        // this.store.dispatch(loadPhotosByUser({ username: username }));
-        // this.store.select(selectPhotosByUserStatus).subscribe((status) => {
-        //     this.isLoaded = status === 'complete';
-        // });
-        // this.photos$ = this.store.select(selectPhotosByUser);
+        this.store.select(selectUser).subscribe((user) => {
+            this.currentUser = user;
+        });
+        this.loginSub = this.store
+            .select(selectIsLoggedIn)
+            .subscribe((isLoggedIn) => {
+                this.isLoggedIn = isLoggedIn;
+            });
+    }
+    addToCollection(photo: PHOTO_TO_VIEW) {
+        if (!this.isLoggedIn) {
+            this.showFormModal();
+            return;
+        }
+
+        this.store.dispatch(
+            loadAlbums({ username: this.currentUser?.username })
+        );
+        const albums$ = this.store.select(selectAllAlbums);
+        this.utilsService.showModal({
+            component: AlbumListComponent,
+            componentProps: {
+                photo: photo,
+                albums$,
+            },
+        });
+    }
+    private showFormModal() {
+        this.utilsService.showModal({
+            component: SignInFormComponent,
+            componentProps: {
+                isInModal: true,
+            },
+        });
+    }
+    downloadPhoto(photo: PHOTO_TO_VIEW) {
+        this.utilsService.downloadPhoto(photo);
+        this.utilsService.$downloadComplete.subscribe((isComplete) => {
+            if (isComplete) {
+                alert('Thanks for downloading');
+            }
+        });
+    }
+
+    likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
+        if (isLiked) {
+            return this.store.dispatch(unlikePhoto({ id: photo.id }));
+        }
+
+        return this.store.dispatch(likePhoto({ id: photo.id }));
+    }
+    ngOnDestroy() {
+        this.loginSub && this.loginSub.unsubscribe();
     }
 }

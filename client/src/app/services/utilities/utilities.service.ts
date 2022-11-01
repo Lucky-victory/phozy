@@ -59,7 +59,7 @@ export class UtilitiesService {
         await modal.present();
     }
     async showPopover(options: PopoverOptions) {
-        const defOpts = {};
+        const defOpts = { dismissOnSelect: true };
         const opts = Object.assign({}, options, defOpts);
         const popover = await this.popoverCtrl.create(opts);
         await popover.present();

@@ -1,0 +1,24 @@
+<ion-header> </ion-header>
+
+<ion-content>
+    <div class="container">
+        <ion-item lines="none">
+            <ion-button
+                class="primary-btn"
+                [routerLink]="['/create/photo']"
+                size="default"
+            >
+                <ion-icon slot="start" name="arrow-up"></ion-icon>
+                Upload photo
+            </ion-button>
+        </ion-item>
+        <ion-item lines="none">
+            <ion-buttons>
+                <ion-button (click)="logout()">
+                    <ion-icon name="log-out-outline" slot="start"></ion-icon>
+                    Log out
+                </ion-button>
+            </ion-buttons>
+        </ion-item>
+    </div>
+</ion-content>

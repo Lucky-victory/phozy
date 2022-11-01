@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
@@ -24,7 +24,10 @@ export class AlbumListComponent implements OnInit {
     @Input() photo: PHOTO_TO_VIEW;
     @Input() isLoaded$: Observable<STATE_STATUS>;
     skeletons = new Array(3).map((_, i) => i);
-    constructor(private store: Store<AppState>) {}
+    constructor(
+        private store: Store<AppState>,
+        private modalCtrl: ModalController
+    ) {}
 
     ngOnInit() {
         this.isLoaded$ = this.store.select(selectAlbumsStatus);
@@ -40,5 +43,7 @@ export class AlbumListComponent implements OnInit {
             collectPhoto({ albumId: album.id, photoId: photo.id })
         );
     }
-    createAlbum() {}
+    async createAlbum() {
+        await this.modalCtrl.dismiss();
+    }
 }

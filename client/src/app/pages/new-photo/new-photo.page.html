@@ -53,6 +53,7 @@
                         <ion-buttons>
                             <ion-button
                                 class="remove-btn"
+                                title="remove photo"
                                 (click)="removeImage(preview.id)"
                                 fill="clear"
                             >
@@ -64,8 +65,14 @@
                         </ion-buttons>
                         <img src="{{preview.image}}" />
                         <ion-item>
-                            <ion-label>caption:<ion-note color="danger">*</ion-note></ion-label>
-                            <ion-input required="" minlength="3"
+                            <ion-label
+                                >caption:<ion-note color="danger"
+                                    >*</ion-note
+                                ></ion-label
+                            >
+                            <ion-input
+                                required=""
+                                minlength="3"
                                 type="text"
                                 name="caption-{{preview.id}}"
                                 [(ngModel)]="preview.caption"

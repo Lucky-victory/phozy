@@ -18,6 +18,8 @@ import { AuthInterceptorService } from './services/auth-interceptor/auth-interce
 import { PhotoEffects } from './state/photo/photo.effects';
 import { AlbumEffects } from './state/album/album.effects';
 import { AuthEffects } from './state/auth/auth.effects';
+import { PhotosByUserEffects } from './state/photos-by-user/photos-by-user.effects';
+import { AlbumsByUserEffects } from './state/albums-by-user/albums-by-user.effects';
 
 @NgModule({
     declarations: [AppComponent],
@@ -30,6 +32,7 @@ import { AuthEffects } from './state/auth/auth.effects';
         StoreModule.forRoot(reducers, { metaReducers }),
         !environment.production ? StoreDevtoolsModule.instrument() : [],
         EffectsModule.forRoot([PhotoEffects, AlbumEffects, AuthEffects]),
+        EffectsModule.forFeature([PhotosByUserEffects, AlbumsByUserEffects]),
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

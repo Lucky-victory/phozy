@@ -262,6 +262,8 @@ export default class UsersController {
       const photos = await photosModel.find<PHOTO_RESULT[]>({
         getAttributes: DEFAULT_PHOTO_FIELDS,
         where: `user_id="${user.data?.id}"`,
+        orderby: ["created_at"],
+        order: "desc",
       });
 
       res.status(200).json({

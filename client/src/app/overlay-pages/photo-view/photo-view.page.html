@@ -25,7 +25,7 @@
                                     slot="{{isDesktop ?'start':''}}"
                                     name="bookmarks-outline"
                                 ></ion-icon>
-                                <span class="ion-hide-sm-down">
+                                <span class="ion-hide-md-down">
                                     {{'Collect'}}
                                 </span>
                             </ion-button>
@@ -39,7 +39,7 @@
                                     slot="{{isDesktop ? 'start':''}}"
                                     name="{{isLiked ? 'heart':'heart-outline'}}"
                                 ></ion-icon>
-                                <span class="ion-hide-sm-down">
+                                <span class="ion-hide-md-down">
                                     {{isLiked?'Unlike':'Like'}}
                                     <ion-note
                                         [ngClass]="{'ion-hide':likesCount <=0}"

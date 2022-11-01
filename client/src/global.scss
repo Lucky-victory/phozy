@@ -82,11 +82,10 @@
     text-decoration: none;
 }
 .btn {
-    height: auto;
-    max-height: 40px !important;
     &::part(native) {
-        padding: 0.75rem 1rem;
-        height: 100%;
+        padding: 0.5rem 1rem;
+
+        max-height: 45px !important;
     }
 }
 ion-chip {

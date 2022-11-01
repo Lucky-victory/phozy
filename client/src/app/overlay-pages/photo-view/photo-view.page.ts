@@ -73,7 +73,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
          */
         if (!this.photo) {
             const id = this.activeRoute.snapshot.paramMap.get('id');
-            console.log(id);
+            
 
             this.photoService.getPhoto$(id).subscribe(
                 (photo) => {

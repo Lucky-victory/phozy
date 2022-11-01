@@ -24,7 +24,7 @@
     <div class="card-image-wrapper">
         <a
             [routerLink]="['/photo', photo.id]"
-            [state]="useState ? photo : null"
+            [state]="useState ? photo : undefined"
             class="card-image-link"
         >
             <ion-img

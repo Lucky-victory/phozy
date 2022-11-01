@@ -8,14 +8,12 @@ import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 
 import { BannerComponent } from 'src/app/components/banner/banner.component';
-import { FooterModule } from 'src/app/components/footer/footer.module';
-import { ApiService } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 
 import { SignInPageModule } from '../sign-in/sign-in.module';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
 import { ProfilePageModule } from '../profile/profile.module';
+import { PopoverComponent } from 'src/app/components/popover/popover.component';
 
 @NgModule({
     imports: [
@@ -25,11 +23,11 @@ import { ProfilePageModule } from '../profile/profile.module';
         HomePageRoutingModule,
         CardsComponent,
         AlbumListComponent,
-        FooterModule,
+
         BannerComponent,
-        SignInPageModule,
+
         SignInFormComponent,
-        ProfilePageModule,
+        PopoverComponent,
     ],
     declarations: [HomePage],
     exports: [HomePage],

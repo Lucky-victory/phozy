@@ -24,7 +24,7 @@ export class UserProfilePage implements OnInit {
     selectedTab: string = 'gallery';
     userAlbums: any;
     isLoaded: boolean;
-    photos$: Observable<PHOTO_TO_VIEW[]>;
+    photos$= this.store.select(selectPhotosByUser);
     constructor(
         private activeRoute: ActivatedRoute,
         private apiService: ApiService,
@@ -42,7 +42,7 @@ export class UserProfilePage implements OnInit {
             this.isLoaded = status === 'complete';
         });
 
-        this.photos$ = this.store.select(selectPhotosByUser);
+    
     }
     segmentChanged(event: Event) {
         const ev = event as SegmentCustomEvent;

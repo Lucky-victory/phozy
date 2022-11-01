@@ -28,7 +28,18 @@ export class NewPhotoPage implements OnInit {
     ) {}
 
     ngOnInit() {}
-
+    /**
+     * Removes an image from image upload form
+     * @param id
+     */
+    removeImage(id: string) {
+        this.photosToPreview = this.photosToPreview.filter(
+            (preview) => preview.id !== id
+        );
+        this.photosToUpload = this.photosToUpload.filter(
+            (photo) => photo.id !== id
+        );
+    }
     addNewPhoto() {
         this.isSending = true;
         console.log(this.photosToPreview, 'preview');

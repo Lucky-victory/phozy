@@ -14,7 +14,7 @@
                         class="profile-avatar"
                     ></ion-img>
                 </div>
-                <h2>{{user?.fullname}}</h2>
+                <h2 class="profile-name">{{user?.fullname}}</h2>
                 <span>@{{user?.username}}</span>
             </ng-container>
         </ion-card-header>
@@ -27,9 +27,9 @@
             >
                 <ion-segment-button value="gallery" class="tab">
                     <ion-label
-                        >Gallery
+                        >Gallery -
                         <ion-note *ngIf="photos$|async as photos"
-                            >{{photos.length}}</ion-note
+                            >{{photos.length||0}}</ion-note
                         ></ion-label
                     >
                 </ion-segment-button>
@@ -37,14 +37,14 @@
                     <ion-label>Albums</ion-label>
                 </ion-segment-button>
             </ion-segment>
-            <ng-container [ngSwitch]="selectedTab">
-                <app-gallery
-                    [photos$]="photos$"
-                    [isLoaded]="isLoaded"
-                    *ngSwitchCase="'gallery'"
-                ></app-gallery>
-            </ng-container>
         </div>
+        <ng-container [ngSwitch]="selectedTab">
+            <app-gallery
+                [photos$]="photos$"
+                [isLoaded]="isLoaded"
+                *ngSwitchCase="'gallery'"
+            ></app-gallery>
+        </ng-container>
     </ion-card>
 </ion-content>
 <ng-template #avatarSkeleton>

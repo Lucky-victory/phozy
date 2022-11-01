@@ -1,6 +1,6 @@
-<div class="container flex">
+<div class="container flex ai-center">
     <ng-container *ngIf="isLoaded$ | async as isLoaded">
-        <ion-button (click)="createAlbum()" class="primary-btn">
+        <ion-button (click)="createAlbum()" class="primary-btn" routerLink="/create/album">
             <ion-icon slot="start" name="add"></ion-icon>
             Create Album
         </ion-button>

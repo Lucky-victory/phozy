@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
+import { PopoverComponent } from 'src/app/components/popover/popover.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { USER_RESULT } from 'src/app/interfaces/user.interface';
@@ -155,7 +156,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
     showPopover(event) {
         this.utilsService.showPopover({
-            component: ProfilePage,
+            component: PopoverComponent,
             event,
             arrow: true,
         });

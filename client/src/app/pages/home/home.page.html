@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title><a routerLink="/"> Phozy </a> </ion-title>
+        <ion-title><a class="site-title" routerLink="/"> Phozy </a> </ion-title>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
             <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"
                 >Join</ion-button
@@ -38,26 +38,6 @@
     <ion-item lines="none" *ngIf="noMoreData">
         <div class="ion-text-center">You have reached the end.</div>
     </ion-item>
-
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
-            <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-list side="top">
-            <ion-fab-button
-                title="upload images"
-                [routerLink]="[!isLoggedIn ? '/sign-in':'/new-photo']"
-            >
-                <ion-icon name="image-outline"></ion-icon>
-            </ion-fab-button>
-            <ion-fab-button
-                title="add new album"
-                [routerLink]="[!isLoggedIn ? '/sign-in':'/new-album']"
-            >
-                <ion-icon name="albums-outline"></ion-icon>
-            </ion-fab-button>
-        </ion-fab-list>
-    </ion-fab>
 
     <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore($event)">
         <ion-infinite-scroll-content
