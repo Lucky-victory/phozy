@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/app.ts",
     "db:init": "ts-node src/config/init.ts",
-    "postinstall": "cd client && set NODE_ENV='development' && npm i && npm run build",
+    "postinstall": "cd client && npm i && npm run build",
     "start": "npm run build && node dist/app.js",
     "build": "npx tsc",
     "lint": "eslint ./src/**/** --fix"
@@ -23,6 +23,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lucky-victory/phozy-api/issues"
+  },
+  "engines": {
+    "node": "^14||^16"
   },
   "homepage": "https://github.com/lucky-victory/phozy-api#readme",
   "dependencies": {
