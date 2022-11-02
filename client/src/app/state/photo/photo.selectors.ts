@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AppState } from '../app.state';
-import { PhotosByUserState, PhotosState } from './photo.reducer';
+import { PhotosState } from './photo.reducer';
 
 export const selectPhotos = (state: AppState) => state.photos;
 export const selectAllPhotos = createSelector(

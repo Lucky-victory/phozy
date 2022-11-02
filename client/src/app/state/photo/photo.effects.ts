@@ -12,9 +12,7 @@ import {
     loadPaginatedPhotos,
     loadPaginatedPhotosSuccess,
     loadPhotos,
-    loadPhotosByUser,
-    loadPhotosByUserFailure,
-    loadPhotosByUserSuccess,
+    
     photoLikeOrUnlikeSuccess,
     photosLoadFailure,
     photosLoadSuccess,

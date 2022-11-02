@@ -5,8 +5,9 @@ import { AppState } from '../state/app.state';
 import { authReducer } from '../state/auth/auth.reducer';
 import {
     photoReducer,
-    photosByUserReducer,
+    
 } from '../state/photo/photo.reducer';
+import { photosByUserReducer } from '../state/photos-by-user/photos-by-user.reducer';
 
 export const reducers: ActionReducerMap<AppState> = {
     photos: photoReducer,

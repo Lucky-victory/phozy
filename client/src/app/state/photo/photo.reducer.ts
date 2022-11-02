@@ -12,9 +12,7 @@ import {
     loadOnePhoto,
     loadOnePhotoSuccess,
     photosLoadFailure,
-    loadPhotosByUser,
-    loadPhotosByUserSuccess,
-    loadPhotosByUserFailure,
+    
 } from './photo.actions';
 
 export const photoFeatureKey = 'photo';

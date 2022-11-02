@@ -70,6 +70,10 @@ const routes: Routes = [
                 (m) => m.NotFoundPageModule
             ),
     },
+  {
+    path: 'search',
+    loadChildren: () => import('./pages/search/search.module').then( m => m.SearchPageModule)
+  },
 ];
 
 @NgModule({

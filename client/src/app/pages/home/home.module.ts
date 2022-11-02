@@ -13,6 +13,7 @@ import { AlbumListComponent } from 'src/app/components/album-list/album-list.com
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
 
 import { PopoverComponent } from 'src/app/components/popover/popover.component';
+import { SearchBarComponent } from 'src/app/components/search-bar/search-bar.component';
 
 @NgModule({
     imports: [
@@ -22,7 +23,7 @@ import { PopoverComponent } from 'src/app/components/popover/popover.component';
         HomePageRoutingModule,
         CardsComponent,
         AlbumListComponent,
-
+SearchBarComponent,
         BannerComponent,
 
         SignInFormComponent,

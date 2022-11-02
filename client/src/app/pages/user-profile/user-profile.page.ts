@@ -7,11 +7,8 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { USER_RESULT } from 'src/app/interfaces/user.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { AppState } from 'src/app/state/app.state';
-import { loadPhotosByUser } from 'src/app/state/photo/photo.actions';
-import {
-    selectPhotosByUser,
-    selectPhotosByUserStatus,
-} from 'src/app/state/photo/photo.selectors';
+import { loadPhotosByUser } from 'src/app/state/photos-by-user/photos-by-user.actions';
+import { selectPhotosByUser, selectPhotosByUserStatus } from 'src/app/state/photos-by-user/photos-by-user.selectors';
 
 @Component({
     selector: 'app-user-profile',

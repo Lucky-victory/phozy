@@ -5,17 +5,14 @@ import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state/app.state';
 import {
     likePhoto,
-    loadPhotosByUser,
+    
     unlikePhoto,
-} from 'src/app/state/photo/photo.actions';
+} from 'src/app/state/photos-by-user/photos-by-user.actions';
 import {
     PHOTO_RESULT,
     PHOTO_TO_VIEW,
 } from 'src/app/interfaces/photo.interface';
-import {
-    selectPhotosByUser,
-    selectPhotosByUserStatus,
-} from 'src/app/state/photo/photo.selectors';
+
 import { Observable, Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CardsComponent } from '../cards/cards.component';
