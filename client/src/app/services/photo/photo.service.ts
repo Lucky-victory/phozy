@@ -26,6 +26,18 @@ export class PhotoService extends ApiService {
                 catchError(this.errorHandler)
             );
     }
+    search$(query:string) {
+        return this.http
+            .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(`${this.apiBaseUrl}/photos/search`, {
+                params: { q:query},
+            })
+            .pipe(
+                retry(this.retryCount),
+                delay(this.retryDelay),
+                map((response) => response.data),
+                catchError(this.errorHandler)
+            );
+    }
     getPhotosByUser$(username: string) {
         return this.http
             .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(

@@ -96,8 +96,6 @@ export default class PhotosController {
 
       res.status(200).json({ message: "photos retrieved", data });
     } catch (error) {
-      console.log(error);
-
       res.status(500).json({
         message: "an error occured",
         error,
@@ -172,8 +170,6 @@ export default class PhotosController {
 
       res.status(200).json({ message: "photo retrieved successfully", data });
     } catch (error) {
-      console.log(error);
-
       res.status(500).json({
         message: "an error occured",
         error,
@@ -208,8 +204,6 @@ export default class PhotosController {
         message: "photos added successfully",
       });
     } catch (error) {
-      console.log(error);
-
       res.status(500).json({
         message: "an error occurred",
         error,
@@ -353,8 +347,6 @@ export default class PhotosController {
         data: photoToView,
       });
     } catch (error) {
-      console.log(error);
-
       res.status(500).json({
         message: "An error occcured",
         error,

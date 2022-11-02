@@ -58,11 +58,19 @@ const routes: Routes = [
     {
         path: 'photo',
         loadChildren: () =>
-            import('./overlay-pages/photo-view/photo-view.module').then(
+            import('./pages/photo-view/photo-view.module').then(
                 (m) => m.PhotoViewPageModule
             ),
     },
 
+    {
+        path: 'search/:query',
+
+        loadChildren: () =>
+            import('./pages/search/search.module').then(
+                (m) => m.SearchPageModule
+            ),
+    },
     {
         path: '**',
         loadChildren: () =>
@@ -70,10 +78,6 @@ const routes: Routes = [
                 (m) => m.NotFoundPageModule
             ),
     },
-  {
-    path: 'search',
-    loadChildren: () => import('./pages/search/search.module').then( m => m.SearchPageModule)
-  },
 ];
 
 @NgModule({

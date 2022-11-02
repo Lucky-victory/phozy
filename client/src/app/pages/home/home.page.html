@@ -1,6 +1,8 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title><a class="site-title" routerLink="/"> Phozy </a> </ion-title>
+        <ion-title [ngClass]="{'ion-hide':isIos}"
+            ><a class="site-title" routerLink="/"> Phozy </a>
+        </ion-title>
         <app-search-bar></app-search-bar>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
             <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"

@@ -70,6 +70,7 @@
                         color="secondary"
                         outline="true"
                         *ngFor="let tag of photo?.tags"
+                        [routerLink]="['/search',tag]"
                     >
                         <ion-label>{{tag}}</ion-label>
                     </ion-chip>
@@ -86,12 +87,12 @@
             <div class="flex ai-center">
                 <ion-avatar class="photo-owner-avatar">
                     <ion-skeleton-text
-                        class="photo-owner-avatr"
+                        class="photo-owner-avatar"
                     ></ion-skeleton-text>
                 </ion-avatar>
                 <ion-skeleton-text
                     animated
-                    style="width: 100px; height: 15px"
+                    style="width: 100px; height: 15px; margin-left: 8px"
                 ></ion-skeleton-text>
             </div>
             <div class="btns-wrapper">

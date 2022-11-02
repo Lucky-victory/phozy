@@ -7,7 +7,10 @@ import { Observable, Subscription } from 'rxjs';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { PopoverComponent } from 'src/app/components/popover/popover.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
-import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import {
+    PHOTO_TO_VIEW,
+    PHOTO_RESULT,
+} from 'src/app/interfaces/photo.interface';
 import { USER_RESULT } from 'src/app/interfaces/user.interface';
 
 import { loadAlbums } from 'src/app/state/album/album.actions';
@@ -31,17 +34,18 @@ import {
 } from 'src/app/state/photo/photo.selectors';
 
 import { UtilitiesService } from './../../services/utilities/utilities.service';
+
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, OnDestroy {
-    photos$: Observable<PHOTO_TO_VIEW[]>;
+    photos$: Observable<(PHOTO_TO_VIEW | PHOTO_RESULT)[]>;
     isLoggedIn!: boolean;
     private currentPage = 1;
     noMoreData: boolean;
-
+    isIos: boolean;
     private loadingSub: Subscription;
     private loginSub: Subscription;
     private photoStateSub: Subscription;
@@ -57,6 +61,7 @@ export class HomePage implements OnInit, OnDestroy {
 
         private store: Store<AppState>
     ) {
+        this.isIos = this.platform.is('ios');
         this.isMobile = this.platform.is('mobile');
     }
 
@@ -108,7 +113,7 @@ export class HomePage implements OnInit, OnDestroy {
             event.target.complete();
         }, 1000);
     }
-    addToCollection(photo: PHOTO_TO_VIEW) {
+    addToCollection(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
         if (!this.isLoggedIn) {
             this.showModal();
             return;
@@ -124,8 +129,8 @@ export class HomePage implements OnInit, OnDestroy {
             },
         });
     }
-    downloadPhoto(photo: PHOTO_TO_VIEW) {
-        this.utilsService.downloadPhoto(photo);
+    downloadPhoto(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
+        this.utilsService.downloadPhoto(photo as PHOTO_TO_VIEW);
         this.utilsService.$downloadComplete.subscribe((isComplete) => {
             if (isComplete) {
                 alert('Thanks for downloading');
@@ -133,7 +138,10 @@ export class HomePage implements OnInit, OnDestroy {
         });
     }
 
-    likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
+    likeOrUnlikePhoto([photo, isLiked]: [
+        PHOTO_TO_VIEW | PHOTO_RESULT,
+        boolean
+    ]) {
         if (isLiked) {
             return this.store.dispatch(unlikePhoto({ id: photo.id }));
         }
@@ -166,4 +174,3 @@ export class HomePage implements OnInit, OnDestroy {
         this.userSub && this.userSub.unsubscribe();
     }
 }
-

@@ -1,9 +1,33 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>search</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title><a class="site-title" routerLink="/"> Phozy </a> </ion-title>
+        <ng-container *ngIf="photos$;else noResults">
+            <app-search-bar
+                (onSubmit)="search($event)"
+                (onSearch)="search($event)"
+                [query]="query"
+                [canNavigate]="false"
+            ></app-search-bar>
+        </ng-container>
+    </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
+    <h2>
+        You search for:
 
+        <ion-note style="font-size: inherit"> {{query}} </ion-note>
+    </h2>
+    <app-cards
+        [photos$]="photos$"
+        [loaded]="true"
+        [showOwner]="false"
+        [useState]="false"
+    ></app-cards>
 </ion-content>
+<ng-template #noResults>
+    <h2>
+        No results found for:
+        <ion-note style="font-size: inherit"> {{query}} </ion-note>
+    </h2>
+</ng-template>

@@ -15,7 +15,7 @@ import PhotosController, { DEFAULT_PHOTO_FIELDS } from "./Photos";
 import { DEFAULT_ALBUM_FIELDS } from "./Albums";
 import { ALBUM_RESULT } from "../interfaces/Albums";
 const userCache = new CacheManager();
-const CACHE_TIME=120;
+const CACHE_TIME = 2000;
 export default class UsersController {
   /**
    * Login an existing user
@@ -214,13 +214,15 @@ export default class UsersController {
         });
         return;
       }
-      const cachedAlbums = userCache.get<ALBUM_RESULT[]>(`albums_${user.data.id}`);;
-      if(cachedAlbums){
-  res.status(200).json({
-    message: "albums retrieved successfully from cache",
-    data: cachedAlbums,
-  });
-  return
+      const cachedAlbums = userCache.get<ALBUM_RESULT[]>(
+        `albums_${user.data.id}`
+      );
+      if (cachedAlbums) {
+        res.status(200).json({
+          message: "albums retrieved successfully from cache",
+          data: cachedAlbums,
+        });
+        return;
       }
       // checks if the authnticated user is the same user requesting for the resource
       const isSameUser = UsersController.isCurrentUser(authUser, user.data?.id);
@@ -242,7 +244,7 @@ export default class UsersController {
         })
       );
       // cache users albums
-userCache.set(`albums_${user.data.id}`,albums,CACHE_TIME);
+      userCache.set(`albums_${user.data.id}`, albums, CACHE_TIME);
       res.status(200).json({
         message: "albums retrieved successfully",
         data: albums,

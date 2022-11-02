@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/state/app.state';
 import {
     likePhoto,
-    
     unlikePhoto,
 } from 'src/app/state/photos-by-user/photos-by-user.actions';
 import {
@@ -41,7 +40,7 @@ import { SignInFormComponent } from '../sign-in-form/sign-in-form.component';
     ],
 })
 export class GalleryComponent implements OnInit, OnDestroy {
-    @Input() photos$: Observable<PHOTO_TO_VIEW[]>;
+    @Input() photos$: Observable<PHOTO_TO_VIEW[] | PHOTO_RESULT[]>;
     username: string;
     @Input() isLoaded: boolean;
     isLoggedIn: boolean;
@@ -62,7 +61,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
                 this.isLoggedIn = isLoggedIn;
             });
     }
-    addToCollection(photo: PHOTO_TO_VIEW) {
+    addToCollection(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
         if (!this.isLoggedIn) {
             this.showFormModal();
             return;
@@ -88,8 +87,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
             },
         });
     }
-    downloadPhoto(photo: PHOTO_TO_VIEW) {
-        this.utilsService.downloadPhoto(photo);
+    downloadPhoto(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
+        this.utilsService.downloadPhoto(photo as PHOTO_TO_VIEW);
         this.utilsService.$downloadComplete.subscribe((isComplete) => {
             if (isComplete) {
                 alert('Thanks for downloading');
@@ -97,7 +96,10 @@ export class GalleryComponent implements OnInit, OnDestroy {
         });
     }
 
-    likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
+    likeOrUnlikePhoto([photo, isLiked]: [
+        PHOTO_TO_VIEW | PHOTO_RESULT,
+        boolean
+    ]) {
         if (isLiked) {
             return this.store.dispatch(unlikePhoto({ id: photo.id }));
         }

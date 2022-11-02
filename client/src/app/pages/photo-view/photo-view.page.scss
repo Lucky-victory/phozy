@@ -35,7 +35,7 @@
     &.liked {
         color: var(--like-btn-color);
     }
-    border: 1px solid #5e5e5e;
+    border: 1px solid #5e5e5e55;
     border-radius: 8px;
     &:not(:last-child) {
         margin-right: 1rem;

@@ -38,14 +38,14 @@
                 </ion-segment-button>
             </ion-segment>
         </div>
-        <ng-container [ngSwitch]="selectedTab">
-            <app-gallery
-                [photos$]="photos$"
-                [isLoaded]="isLoaded"
-                *ngSwitchCase="'gallery'"
-            ></app-gallery>
-        </ng-container>
     </ion-card>
+    <ng-container [ngSwitch]="selectedTab">
+        <app-gallery
+            [photos$]="photos$"
+            [isLoaded]="isLoaded"
+            *ngSwitchCase="'gallery'"
+        ></app-gallery>
+    </ng-container>
 </ion-content>
 <ng-template #avatarSkeleton>
     <div class="flex jc-center ai-center fd-column">
