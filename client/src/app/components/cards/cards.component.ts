@@ -4,7 +4,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { CardComponent } from '../card/card.component';
 
-import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import {
+    PHOTO_RESULT,
+    PHOTO_TO_VIEW,
+} from 'src/app/interfaces/photo.interface';
 import { Observable } from 'rxjs';
 @Component({
     selector: 'app-cards',
@@ -14,11 +17,13 @@ import { Observable } from 'rxjs';
     imports: [CommonModule, IonicModule, CardComponent],
 })
 export class CardsComponent implements OnInit {
-    @Input() photos$!: Observable<PHOTO_TO_VIEW[]>;
+    @Input() photos$!: Observable<PHOTO_TO_VIEW[] | PHOTO_RESULT[]>;
     @Input() isLoggedIn: boolean;
-    @Output() onLike = new EventEmitter<[PHOTO_TO_VIEW, boolean]>();
-    @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW>();
-    @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW>();
+    @Output() onLike = new EventEmitter<
+        [PHOTO_TO_VIEW | PHOTO_RESULT, boolean]
+    >();
+    @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW | PHOTO_RESULT>();
+    @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW | PHOTO_RESULT>();
     @Input() loaded: boolean = true;
     @Input() useState: boolean = true;
     @Input() showOwner: boolean = true;
@@ -28,13 +33,13 @@ export class CardsComponent implements OnInit {
 
     ngOnInit() {}
 
-    downloadPhoto(photo: PHOTO_TO_VIEW) {
+    downloadPhoto(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
         this.onDownload.emit(photo);
     }
-    likePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
+    likePhoto([photo, isLiked]: [PHOTO_TO_VIEW | PHOTO_RESULT, boolean]) {
         this.onLike.emit([photo, isLiked]);
     }
-    collectPhoto(photo: PHOTO_TO_VIEW) {
+    collectPhoto(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
         this.onCollect.emit(photo);
     }
 }

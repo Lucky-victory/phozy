@@ -40,23 +40,6 @@ export class PhotoEffects {
             )
         )
     );
-    loadPhotosByUser$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(loadPhotosByUser),
-            switchMap(({ username }) =>
-                this.photoService.getPhotosByUser$(username).pipe(
-                    map((photos) => loadPhotosByUserSuccess({ photos })),
-                    catchError(() =>
-                        of(
-                            loadPhotosByUserFailure({
-                                error: "Sorry, couldn't load photos, Try again",
-                            })
-                        )
-                    )
-                )
-            )
-        )
-    );
 
     likePhoto$ = createEffect(() =>
         this.actions$.pipe(
