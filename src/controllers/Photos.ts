@@ -56,7 +56,7 @@ export default class PhotosController {
         return;
       }
 
-      const fieldsInSchema = albumsModel.fields;
+      const fieldsInSchema = photosModel.fields;
       const getAttributes = Utils.getFields(
         fields as string,
         fieldsInSchema,
@@ -87,7 +87,7 @@ export default class PhotosController {
       }) as (USER_RESULT & PHOTO_RESULT)[];
       data = data.map((photo) => {
         photo = PhotosController.checkLike(photo, authUser?.id);
-        photo = PhotosController.convertTags(photo);
+
         return photo;
       });
       // remove user_id property since the user object now has the ID
@@ -155,12 +155,12 @@ export default class PhotosController {
       const user = await PhotosController.getOwner(photoOwnerId);
 
       photo = PhotosController.checkLike(photo, authUser?.id);
-      photo = PhotosController.convertTags(photo);
 
       const mergedData = Object.assign({}, photo, { user });
 
       // remove user_id property since the user object now has the ID
       const data = Utils.omit(mergedData, ["user_id"]);
+      photoCache.set(`photo_${id}`, data, CACHE_TIME);
       await photosModel.updateNested({
         id,
         path: ".views",
@@ -170,7 +170,6 @@ export default class PhotosController {
         },
       });
 
-      photoCache.set(`photo_${id}`, data, CACHE_TIME);
       res.status(200).json({ message: "photo retrieved successfully", data });
     } catch (error) {
       console.log(error);
@@ -197,7 +196,7 @@ export default class PhotosController {
         return {
           url: photo.url,
           caption: photo.caption,
-          tags: Utils.stringToObjectArray(photo.tags),
+          tags: Utils.stringArray(photo.tags),
           user_id: authUser?.id,
         };
       });
@@ -301,7 +300,7 @@ export default class PhotosController {
     }
   }
   /**
-   * @desc
+   * @desc Like a photo
    * @route POST /api/photos/:id/like
    * @param req
    * @param res
@@ -344,7 +343,7 @@ export default class PhotosController {
         photo.user_id
       )) as USER_RESULT;
       photo = PhotosController.checkLike(photo, authUserId);
-      photo = PhotosController.convertTags(photo);
+
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user }) as PHOTO_TO_VIEW;
       photoToView = Utils.omit(photoToView, ["user_id"]) as PHOTO_TO_VIEW;
@@ -363,7 +362,7 @@ export default class PhotosController {
     }
   }
   /**
-   * @desc
+   * @desc Unlike a photo
    * @route POST /api/photos/:id/unlike
    * @param req
    * @param res
@@ -404,7 +403,7 @@ export default class PhotosController {
         photo.user_id
       )) as USER_RESULT;
       photo = PhotosController.checkLike(photo, authUserId);
-      photo = PhotosController.convertTags(photo);
+
       //merge the photo object with the user object
       let photoToView = Object.assign({}, photo, { user }) as PHOTO_TO_VIEW;
       photoToView = Utils.omit(photoToView, ["user_id"]) as PHOTO_TO_VIEW;
@@ -420,18 +419,51 @@ export default class PhotosController {
       });
     }
   }
+  /**
+   * @desc Search photos by caption or tags
+   * @route POST /api/photos/search
+   * @param req
+   * @param res
+   * @returns
+   */
   static async search(req: Request, res: Response) {
     try {
-      let { q } = req.query;
+      let { q, page = 1, perPage = 10 } = req.query;
+
+      perPage = +perPage;
+      page = +page;
+      const offset = (page - 1) * perPage;
+
+      // get the total records and use it restrict the offset.
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recordCountResult = await photosModel.describeModel<any>();
+      const recordCount = recordCountResult.data.record_count;
+
+      if (recordCount - offset <= 0 || offset > recordCount) {
+        res.status(200).json({ message: "No more Photos", data: [] });
+        return;
+      }
+
       q = Utils.lower(q as string);
-      const sqlQueryBuilder = new harpee.Sqler();
-      const { query } = sqlQueryBuilder
-        .select(DEFAULT_PHOTO_FIELDS)
-        .from("phozy", "photos")
-        .where("caption")
-        .like(`%${q}%`)
-        .or(`search_json('$[title in "${q}"]',tags)`);
-      const response = await photosModel.query<PHOTO_RESULT[]>(query);
+      const response = await photosModel.findByConditions<PHOTO_RESULT[]>({
+        operator: "or",
+        limit: perPage,
+        getAttributes: DEFAULT_PHOTO_FIELDS,
+        offset,
+        conditions: [
+          {
+            search_attribute: "caption",
+            search_type: "contains",
+            search_value: `${q}`,
+          },
+          {
+            search_attribute: "tags",
+            search_type: "contains",
+            search_value: `${q}`,
+          },
+        ],
+      });
 
       res.status(200).json({
         message: "search results recieved",
@@ -462,24 +494,20 @@ export default class PhotosController {
       //
     }
   }
- static async getByIds(ids:string[],authUserId?:string): Promise<PHOTO_RESULT[] | null>{
-  try{
+  static async getByIds(
+    ids: string[],
+    authUserId?: string
+  ): Promise<PHOTO_RESULT[] | null> {
+    try {
+      const response = await photosModel.findById<PHOTO_RESULT[]>({
+        getAttributes: DEFAULT_PHOTO_FIELDS,
+        id: ids,
+      });
+      const photos = response.data as PHOTO_RESULT[];
 
-    const response=await photosModel.findById<PHOTO_RESULT[]>({
-      getAttributes: DEFAULT_PHOTO_FIELDS,
-      id: ids
-    });
-    const photos=response.data as PHOTO_RESULT[]
-    // photos=photos?.map((photo)=>{
-      // photo=PhotosController.checkLike(photo,authUserId);
-      // photo=PhotosController.convertTags(photo);
-      // return photo
-      // })
-      
-      return photos
-    }
-    catch(_){
-      return null
+      return photos;
+    } catch (_) {
+      return null;
     }
   }
   /**

@@ -1,14 +1,17 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
 import PhotosController from "../controllers/Photos";
-import { checkIfAuthenticated, checkIfAuthenticatedOptional } from "../middlewares/Auth";
+import {
+  checkIfAuthenticated,
+  checkIfAuthenticatedOptional,
+} from "../middlewares/Auth";
 import ImageUploader from "../utils/Image-uploader";
 const router = Router();
 
 router
-  .get("/",checkIfAuthenticatedOptional,  PhotosController.getAll)
-  .get("/search",checkIfAuthenticatedOptional,  PhotosController.search)
-  .get("/:id",checkIfAuthenticatedOptional, PhotosController.getOne)
+  .get("/", checkIfAuthenticatedOptional, PhotosController.getAll)
+  .get("/search", checkIfAuthenticatedOptional, PhotosController.search)
+  .get("/:id", checkIfAuthenticatedOptional, PhotosController.getOne)
   .use(checkIfAuthenticated)
   .post(
     "/",

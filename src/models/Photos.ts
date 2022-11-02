@@ -18,7 +18,7 @@ const photosSchema = new Schema({
       users: HType.array(),
     }).default({ count: 0, users: [] }),
 
-    tags: HType.array().default([]).items({ title: HType.string() }),
+    tags: HType.array().default([]),
     views: HType.number().default(0),
   },
 });

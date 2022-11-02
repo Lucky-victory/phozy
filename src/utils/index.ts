@@ -89,6 +89,13 @@ export class Utils extends MyUtils {
 
     return textToObject;
   }
+  static stringArray(text: string) {
+    if (typeof text !== "string") return text;
+    if (Utils.isEmpty(text.trim())) return [];
+    const _text = text.split(",");
+
+    return _text;
+  }
   static objectToStringArray<T extends object>(arr: T[], prop = "title") {
     return arr.reduce((accum, val) => {
       for (const key in val) {
