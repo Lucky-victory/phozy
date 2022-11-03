@@ -82,6 +82,7 @@
 .outline-btn {
     --color: var(--primary);
     color: var(--primary);
+    
     text-decoration: none;
 }
 .btn {
@@ -89,6 +90,11 @@
         padding: 0.5rem 1rem;
 
         max-height: 45px !important;
+        &.outline {
+        border-color: var(--primary);
+        background: transparent;
+        color: var(--primary);
+    }
     }
 }
 ion-chip {
