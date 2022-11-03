@@ -1,12 +1,10 @@
-<div class="container">
+<div class="container flex ai-center">
     <ng-container *ngIf="isLoaded$ | async as isLoaded">
+        <ion-button (click)="createAlbum()" class="primary-btn" routerLink="/create/album">
+            <ion-icon slot="start" name="add"></ion-icon>
+            Create Album
+        </ion-button>
         <div class="flex flex-wrap jc-center">
-            <ion-card button class="flex ai-center jc-center album-card">
-                <ion-button fill="clear">
-                    <ion-icon slot="icon-only" name="add"></ion-icon>
-                </ion-button>
-                <ion-card-subtitle>Create New Album</ion-card-subtitle>
-            </ion-card>
             <ng-container *ngIf="isLoaded === 'complete'; else loading">
                 <app-album-item
                     *ngFor="let album of albums$ | async"
@@ -18,6 +16,12 @@
             <ng-container
                 *ngIf="isLoaded === 'complete' && albums$ | async as albums"
             >
+                <div
+                    *ngIf="!albums.length"
+                    class="no-album flex jc-center ai-center"
+                >
+                    <h2 class="">You don't any albums yet.</h2>
+                </div>
             </ng-container>
         </div>
     </ng-container>
@@ -28,9 +32,4 @@
         <ion-skeleton-text style="width: 100%; height: 100%" animated>
         </ion-skeleton-text>
     </ion-card>
-</ng-template>
-<ng-template #noAlbums>
-    <div class="no-album flex jc-center ai-center">
-        <h2 class="">You don't any albums yet.</h2>
-    </div>
 </ng-template>

@@ -1,0 +1,143 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="container">
+        <ng-container *ngIf="isLoaded;else loading ">
+            <div class="photo-view-wrapper">
+                <div class="photo-view-top">
+                    <app-photo-owner
+                        color="currentColor"
+                        [photo]="photo"
+                        class="ion-hide-sm-down"
+                    >
+                    </app-photo-owner>
+
+                    <div class="btns-wrapper">
+                        <ion-buttons slot="end">
+                            <ion-button
+                                (click)="addToCollection(photo)"
+                                class="btn"
+                                title="Add to collection"
+                            >
+                                <ion-icon
+                                    slot="{{isDesktop ?'start':''}}"
+                                    name="bookmarks-outline"
+                                ></ion-icon>
+                                <span class="ion-hide-md-down">
+                                    {{'Collect'}}
+                                </span>
+                            </ion-button>
+                            <ion-button
+                                (click)="likeOrUnlikePhoto(photo)"
+                                [ngClass]="{liked:isLiked}"
+                                class="btn"
+                                title="{{isLiked ?'Unlike':'Like'}}"
+                            >
+                                <ion-icon
+                                    slot="{{isDesktop ? 'start':''}}"
+                                    name="{{isLiked ? 'heart':'heart-outline'}}"
+                                ></ion-icon>
+                                <span class="ion-hide-md-down">
+                                    {{isLiked?'Unlike':'Like'}}
+                                    <ion-note
+                                        [ngClass]="{'ion-hide':likesCount <=0}"
+                                        >{{likesCount}}</ion-note
+                                    >
+                                </span>
+                            </ion-button>
+                            <ion-button
+                                (click)="downloadPhoto(photo)"
+                                class="btn download-btn"
+                                title="Download"
+                            >
+                                <ion-icon
+                                    slot="{{isDesktop ? 'start':''}}"
+                                    name="arrow-down-outline"
+                                ></ion-icon>
+                                <span> Download </span>
+                            </ion-button>
+                        </ion-buttons>
+                    </div>
+                </div>
+                <div class="photo-wrapper">
+                    <ion-img [src]="photo?.url" class="photo"></ion-img>
+                </div>
+                <div class="flex ion-wrap jc-sb ion-margin-bottom">
+                    <div
+                        class="photo-tags-container"
+                        *ngIf="photo?.tags?.length"
+                    >
+                        Tags:
+                        <ion-chip
+                            color="secondary"
+                            outline="true"
+                            *ngFor="let tag of photo?.tags"
+                            [routerLink]="['/search',tag]"
+                        >
+                            <ion-label>{{tag}}</ion-label>
+                        </ion-chip>
+                    </div>
+                    <share-buttons
+                    [url]="shareUrl"
+                        [include]="['copy', 'facebook', 'linkedin', 'pinterest','twitter', 'whatsapp']"
+                        [showIcon]="true"
+                        [showText]="false"
+                        theme="circles-dark"
+                    ></share-buttons>
+                </div>
+                <app-photo-owner
+                    [photo]="photo"
+                    class="ion-hide-sm-up"
+                    color="currentColor"
+                >
+                </app-photo-owner>
+            </div>
+        </ng-container>
+    </div>
+</ion-content>
+<ng-template #loading>
+    <div class="photo-view-wrapper">
+        <div class="photo-view-top">
+            <div class="flex ai-center">
+                <ion-avatar class="photo-owner-avatar">
+                    <ion-skeleton-text
+                        class="photo-owner-avatar"
+                    ></ion-skeleton-text>
+                </ion-avatar>
+                <ion-skeleton-text
+                    animated
+                    style="width: 100px; height: 15px; margin-left: 8px"
+                ></ion-skeleton-text>
+            </div>
+            <div class="btns-wrapper">
+                <ion-skeleton-text
+                    animated
+                    style="width: 40px; height: 40px"
+                    class="btn"
+                ></ion-skeleton-text>
+                <ion-skeleton-text
+                    class="btn"
+                    animated
+                    style="width: 40px; height: 40px"
+                ></ion-skeleton-text>
+                <ion-skeleton-text
+                    class="btn"
+                    animated
+                    style="width: 70px; height: 40px"
+                ></ion-skeleton-text>
+            </div>
+        </div>
+        <div class="photo-wrapper">
+            <ion-skeleton-text
+                animated
+                style="width: 100%; height: 400px"
+            ></ion-skeleton-text>
+        </div>
+    </div>
+</ng-template>

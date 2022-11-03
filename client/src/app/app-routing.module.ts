@@ -29,18 +29,23 @@ const routes: Routes = [
     },
 
     {
-        path: 'new-album',
-        loadChildren: () =>
-            import('./pages/new-album/new-album.module').then(
-                (m) => m.NewAlbumPageModule
-            ),
-    },
-    {
-        path: 'new-photo',
-        loadChildren: () =>
-            import('./pages/new-photo/new-photo.module').then(
-                (m) => m.NewPhotoPageModule
-            ),
+        path: 'create',
+        children: [
+            {
+                path: 'album',
+                loadChildren: () =>
+                    import('./pages/new-album/new-album.module').then(
+                        (m) => m.NewAlbumPageModule
+                    ),
+            },
+            {
+                path: 'photo',
+                loadChildren: () =>
+                    import('./pages/new-photo/new-photo.module').then(
+                        (m) => m.NewPhotoPageModule
+                    ),
+            },
+        ],
     },
     {
         path: 'sign-up',
@@ -53,15 +58,17 @@ const routes: Routes = [
     {
         path: 'photo',
         loadChildren: () =>
-            import('./overlay-pages/photo-view/photo-view.module').then(
+            import('./pages/photo-view/photo-view.module').then(
                 (m) => m.PhotoViewPageModule
             ),
     },
+
     {
-        path: 'profile',
+        path: 'search/:query',
+
         loadChildren: () =>
-            import('./pages/profile/profile.module').then(
-                (m) => m.ProfilePageModule
+            import('./pages/search/search.module').then(
+                (m) => m.SearchPageModule
             ),
     },
     {

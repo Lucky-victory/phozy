@@ -7,25 +7,56 @@
 <ion-content>
     <ion-card>
         <ion-card-header>
-            <div class="image-wrapper">
-                <img src="{{userData?.profile_image}}" class="profile-avatar" />
-            </div>
+            <ng-container *ngIf="user; else avatarSkeleton">
+                <div class="image-wrapper">
+                    <ion-img
+                        src="{{user?.profile_image}}"
+                        class="profile-avatar"
+                    ></ion-img>
+                </div>
+                <h2 class="profile-name">{{user?.fullname}}</h2>
+                <span>@{{user?.username}}</span>
+            </ng-container>
         </ion-card-header>
-        <ion-card-content>
-            <div class="tabs-container">
-                <ion-segment
-                    value="gallery"
-                    [swipeGesture]="true"
-                    (ionChange)="segmentChanged($event)"
-                >
-                    <ion-segment-button value="gallery" class="tab">
-                        <ion-label>Gallery</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button value="albums" class="tab">
-                        <ion-label>Albums</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </div>
-        </ion-card-content>
+
+        <div class="tabs-container">
+            <ion-segment
+                value="gallery"
+                [swipeGesture]="true"
+                (ionChange)="segmentChanged($event)"
+            >
+                <ion-segment-button value="gallery" class="tab">
+                    <ion-label
+                        >Gallery -
+                        <ion-note *ngIf="photos$|async as photos"
+                            >{{photos.length||0}}</ion-note
+                        ></ion-label
+                    >
+                </ion-segment-button>
+                <ion-segment-button value="albums" class="tab">
+                    <ion-label>Albums</ion-label>
+                </ion-segment-button>
+            </ion-segment>
+        </div>
     </ion-card>
+    <ng-container [ngSwitch]="selectedTab">
+        <app-gallery
+            [photos$]="photos$"
+            [isLoaded]="isLoaded"
+            *ngSwitchCase="'gallery'"
+        ></app-gallery>
+    </ng-container>
 </ion-content>
+<ng-template #avatarSkeleton>
+    <div class="flex jc-center ai-center fd-column">
+        <ion-skeleton-text animated class="profile-avatar"></ion-skeleton-text>
+        <ion-skeleton-text
+            animated
+            style="width: 250px; height: 20px"
+        ></ion-skeleton-text>
+        <ion-skeleton-text
+            animated
+            style="width: 100px; height: 10px"
+        ></ion-skeleton-text>
+    </div>
+</ng-template>

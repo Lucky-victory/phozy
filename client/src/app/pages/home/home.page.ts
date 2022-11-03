@@ -5,16 +5,20 @@ import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
+import { PopoverComponent } from 'src/app/components/popover/popover.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
-import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
+import {
+    PHOTO_TO_VIEW,
+    PHOTO_RESULT,
+} from 'src/app/interfaces/photo.interface';
 import { USER_RESULT } from 'src/app/interfaces/user.interface';
 
 import { loadAlbums } from 'src/app/state/album/album.actions';
 import { selectAllAlbums } from 'src/app/state/album/album.selectors';
-import { AppState, } from 'src/app/state/app.state';
+import { AppState } from 'src/app/state/app.state';
 import { userLogout } from 'src/app/state/auth/auth.actions';
 import {
-     selectIsLoggedIn,
+    selectIsLoggedIn,
     selectUser,
 } from 'src/app/state/auth/auth.selectors';
 import {
@@ -30,43 +34,47 @@ import {
 } from 'src/app/state/photo/photo.selectors';
 
 import { UtilitiesService } from './../../services/utilities/utilities.service';
+
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, OnDestroy {
-    photos$: Observable<PHOTO_TO_VIEW[]>;
+    photos$: Observable<(PHOTO_TO_VIEW | PHOTO_RESULT)[]>;
     isLoggedIn!: boolean;
     private currentPage = 1;
     noMoreData: boolean;
-isIos:boolean;
+    isIos: boolean;
     private loadingSub: Subscription;
     private loginSub: Subscription;
     private photoStateSub: Subscription;
     isLoaded: boolean = false;
-    isMobile:boolean;
-    user$: Observable<USER_RESULT>;
+    isMobile: boolean;
+    user: USER_RESULT;
+    private userSub: Subscription;
 
     constructor(
         private utilsService: UtilitiesService,
-private platform:Platform,
+        private platform: Platform,
         private navCtrl: NavController,
 
         private store: Store<AppState>
     ) {
-        this.isIos=this.platform.is('ios');
-        this.isMobile=this.platform.is('mobile');
+        this.isIos = this.platform.is('ios');
+        this.isMobile = this.platform.is('mobile');
     }
 
     ngOnInit() {
-        this.user$ = this.store.select(selectUser);
+        this.userSub = this.store.select(selectUser).subscribe((user) => {
+            this.user = user;
+        });
         this.store.dispatch(loadPhotos());
         this.photos$ = this.store.select(selectAllPhotos);
         this.loadingSub = this.store
             .select(selectPhotosStatus)
             .subscribe((status) => {
-                this.isLoaded = status === 'complete';
+                this.isLoaded = status !== 'pending';
             });
         this.loginSub = this.store
             .select(selectIsLoggedIn)
@@ -74,14 +82,14 @@ private platform:Platform,
                 this.isLoggedIn = isLoggedIn;
             });
     }
-    onRefresh() {
+    private onRefresh() {
         this.isLoaded = false;
         this.store.dispatch(loadPhotos());
         this.loadingSub.unsubscribe();
         this.loadingSub = this.store
             .select(selectPhotosStatus)
             .subscribe((status) => {
-                this.isLoaded = status === 'complete';
+                this.isLoaded = status !== 'pending';
             });
     }
 
@@ -105,13 +113,13 @@ private platform:Platform,
             event.target.complete();
         }, 1000);
     }
-    addToCollection(photo: PHOTO_TO_VIEW) {
+    addToCollection(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
         if (!this.isLoggedIn) {
             this.showModal();
             return;
         }
 
-        this.store.dispatch(loadAlbums());
+        this.store.dispatch(loadAlbums({ username: this.user?.username }));
         const albums$ = this.store.select(selectAllAlbums);
         this.utilsService.showModal({
             component: AlbumListComponent,
@@ -121,8 +129,8 @@ private platform:Platform,
             },
         });
     }
-    downloadPhoto(photo: PHOTO_TO_VIEW) {
-        this.utilsService.downloadPhoto(photo);
+    downloadPhoto(photo: PHOTO_TO_VIEW | PHOTO_RESULT) {
+        this.utilsService.downloadPhoto(photo as PHOTO_TO_VIEW);
         this.utilsService.$downloadComplete.subscribe((isComplete) => {
             if (isComplete) {
                 alert('Thanks for downloading');
@@ -130,11 +138,10 @@ private platform:Platform,
         });
     }
 
-    likeOrUnlikePhoto([photo, isLiked]: [PHOTO_TO_VIEW, boolean]) {
-        if (!this.isLoggedIn) {
-            this.showModal();
-            return;
-        }
+    likeOrUnlikePhoto([photo, isLiked]: [
+        PHOTO_TO_VIEW | PHOTO_RESULT,
+        boolean
+    ]) {
         if (isLiked) {
             return this.store.dispatch(unlikePhoto({ id: photo.id }));
         }
@@ -153,9 +160,17 @@ private platform:Platform,
         this.store.dispatch(userLogout());
         this.navCtrl.navigateForward('/');
     }
+    showPopover(event) {
+        this.utilsService.showPopover({
+            component: PopoverComponent,
+            event,
+            arrow: true,
+        });
+    }
     ngOnDestroy(): void {
-        this.loginSub.unsubscribe();
-        this.loadingSub.unsubscribe();
-        this.photoStateSub.unsubscribe();
+        this.loginSub && this.loginSub.unsubscribe();
+        this.loadingSub && this.loadingSub.unsubscribe();
+        this.photoStateSub && this.photoStateSub.unsubscribe();
+        this.userSub && this.userSub.unsubscribe();
     }
 }

@@ -8,13 +8,12 @@ import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 
 import { BannerComponent } from 'src/app/components/banner/banner.component';
-import { FooterModule } from 'src/app/components/footer/footer.module';
-import { ApiService } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 
-import { SignInPageModule } from '../sign-in/sign-in.module';
 import { AlbumListComponent } from 'src/app/components/album-list/album-list.component';
 import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-form.component';
+
+import { PopoverComponent } from 'src/app/components/popover/popover.component';
+import { SearchBarComponent } from 'src/app/components/search-bar/search-bar.component';
 
 @NgModule({
     imports: [
@@ -24,13 +23,13 @@ import { SignInFormComponent } from 'src/app/components/sign-in-form/sign-in-for
         HomePageRoutingModule,
         CardsComponent,
         AlbumListComponent,
-        FooterModule,
+        SearchBarComponent,
         BannerComponent,
-        SignInPageModule,
+
         SignInFormComponent,
+        PopoverComponent,
     ],
     declarations: [HomePage],
-    providers: [ApiService, AuthService],
     exports: [HomePage],
 })
 export class HomePageModule {}

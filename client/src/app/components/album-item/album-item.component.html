@@ -5,15 +5,17 @@
     [ngClass]="{ collected: isCollected }"
     (click)="selectAlbum(album, photo)"
 >
-    <ion-card-content>
-        <!-- <ion-img
+    <div
+        [ngClass]="{ 'ion-hide': !isCollected }"
+        class="album-card-overlay"
+    ></div>
+    <!-- <ion-img
             [src]=""
             class="album-card-image"
         ></ion-img> -->
 
-        <ion-note slot="end">
-            <ion-icon name="camera"></ion-icon>
-            {{ album?.photos?.length }}
-        </ion-note>
-    </ion-card-content>
+    <ion-note class="album-card-meta">
+        <ion-icon name="camera"></ion-icon>
+        {{ album?.photos?.length }}
+    </ion-note>
 </ion-card>

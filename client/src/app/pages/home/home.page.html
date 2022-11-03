@@ -1,23 +1,25 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title> Phozy</ion-title>
+        <ion-title slot="start" [ngClass]="{'ion-hide':isIos}"
+            ><a class="site-title" routerLink="/"> Phozy </a>
+        </ion-title>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
             <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"
                 >Join</ion-button
             >
         </ion-buttons>
-        <ion-chip slot="end" outline="true" *ngIf="user$|async as user">
-            <ion-avatar>
-                <img [src]="user.profile_image" />
-            </ion-avatar>
-            <ion-label [ngClass]="{'ion-hide':isMobile}"
-                >{{user.fullname}}</ion-label
-            >
-        </ion-chip>
-        <!-- <ion-buttons *ngIf="isLoggedIn" slot="end">
-            <ion-button (click)="logout()"> Log out </ion-button>
-        </ion-buttons> -->
-    </ion-toolbar>
+        <ng-container *ngIf="user">
+            <ion-chip slot="end" outline="true" (click)="showPopover($event)">
+                <ion-avatar>
+                    <img [src]="user.profile_image" />
+                </ion-avatar>
+                <ion-label [ngClass]="{'ion-hide':isMobile}"
+                    >{{user.fullname}}</ion-label
+                    >
+                </ion-chip>
+            </ng-container>
+        </ion-toolbar>
+        <app-search-bar></app-search-bar>
 </ion-header>
 <ion-content [fullscreen]="true">
     <app-banner [loaded]="isLoaded"></app-banner>
@@ -39,23 +41,6 @@
     <ion-item lines="none" *ngIf="noMoreData">
         <div class="ion-text-center">You have reached the end.</div>
     </ion-item>
-
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
-            <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-list side="top">
-            <ion-fab-button title="upload images" [routerLink]="['/new-photo']">
-                <ion-icon name="image-outline"></ion-icon>
-            </ion-fab-button>
-            <ion-fab-button
-                title="add new album"
-                [routerLink]="[!isLoggedIn ? '/sign-in':'/new-album']"
-            >
-                <ion-icon name="albums-outline"></ion-icon>
-            </ion-fab-button>
-        </ion-fab-list>
-    </ion-fab>
 
     <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore($event)">
         <ion-infinite-scroll-content

@@ -1,0 +1,59 @@
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+.photo-view-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.photo-view-wrapper {
+    padding: 2rem 1rem;
+}
+.photo-wrapper {
+    width: 100%;
+    background-color: var(--ion-color-light-tint);
+    --max-h: 700px;
+    border-radius: 10px;
+    max-height: var(--max-h);
+    margin: 1rem auto;
+}
+.photo {
+    max-height: var(--max-h);
+
+    &::part(image) {
+        max-height: var(--max-h);
+
+        object-fit: contain;
+    }
+}
+.btn {
+    height: auto;
+    &::part(native) {
+        padding: 0.65rem;
+    }
+    &.liked {
+        color: var(--like-btn-color);
+    }
+    border: 1px solid #5e5e5e55;
+    border-radius: 8px;
+    &:not(:last-child) {
+        margin-right: 1rem;
+    }
+    &.download-btn {
+        background-color: var(--primary);
+        color: #fff;
+        border-color: transparent;
+    }
+}
+.btns-wrapper {
+    padding: 0.5rem;
+    gap: 0.25rem;
+    align-self: flex-end;
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+}
+.photo-tags-container {
+    margin: 1rem 0;
+}

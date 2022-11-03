@@ -1,0 +1,38 @@
+.photo-owner {
+    display: flex;
+}
+.photo-owner-link {
+    --text-color: var(--ion-text-color);
+    display: flex;
+    align-items: center;
+    flex: 1 0 auto;
+    letter-spacing: 1px;
+    font-weight: 600 !important;
+    text-decoration: none;
+    color: inherit;
+    color: inherit;
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+ion-avatar {
+    &.photo-owner-avatar {
+        max-width: 42px;
+        max-height: 42px;
+        margin-right: 0.875rem;
+        flex-shrink: 0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    ion-avatar {
+        &.photo-owner-avatar {
+            max-width: 35px;
+            max-height: 35px;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+    }
+    .photo-owner {
+        color: var(--text-color, #121212) !important;
+    }
+}

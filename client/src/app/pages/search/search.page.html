@@ -1,0 +1,44 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title slot="start"
+            ><a class="site-title" routerLink="/"> Phozy </a>
+        </ion-title>
+
+    </ion-toolbar>
+        <app-search-bar
+            (onSubmit)="search($event)"
+            (onSearch)="search($event)"
+            [query]="query"
+            [canNavigate]="false"
+        ></app-search-bar>
+</ion-header>
+
+<ion-content>
+    <h2 class="ion-padding">
+        Showing results for:
+
+        <ion-note style="font-size: inherit"> {{query}} </ion-note>
+    </h2>
+    <ng-container *ngIf="photos$|async as photos">
+        <ng-container *ngIf="photos.length;else noResults">
+            <app-cards
+                [photos$]="photos$"
+                [loaded]="isLoaded"
+                [showOwner]="false"
+                [useState]="false"
+                [showTop]="false"
+            ></app-cards>
+        </ng-container>
+    </ng-container>
+</ion-content>
+<ng-template #noResults>
+    <div
+        class="ion-padding ion-margin ion-text-center"
+        [ngClass]="{'ion-hide':!isLoaded}"
+    >
+        <h2>
+            No results found for:
+            <ion-note style="font-size: inherit"> {{query}} </ion-note>
+        </h2>
+    </div>
+</ng-template>

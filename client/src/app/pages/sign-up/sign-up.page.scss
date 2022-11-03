@@ -3,3 +3,17 @@
     margin: auto;
     width: 100%;
 }
+ion-content {
+    &.container {
+        &::part(background) {
+            background: #000
+                url('../../../assets/images/pexels-photomix-company-212372.jpg')
+                center/cover no-repeat;
+            background-blend-mode: hard-light;
+        }
+    }
+}
+.text-wrapper {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}

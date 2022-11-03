@@ -41,7 +41,10 @@
     align-items: flex-end;
 }
 .jc-center {
-    align-items: center;
+    justify-content: center;
+}
+.jc-sb {
+    justify-content: space-between;
 }
 .jc-end {
     justify-content: flex-end;
@@ -51,6 +54,9 @@
 }
 .flex-wrap {
     flex-wrap: wrap;
+}
+.fd-column {
+    flex-direction: column;
 }
 .btn {
     &.primary-btn {
@@ -66,13 +72,31 @@
 }
 .form-modal {
     &::part(content) {
-        max-width: 750px;
+        max-width: 700px;
     }
 }
 .primary-btn {
     --background: var(--primary);
-    --color:#fff!important
+    --color: #fff !important;
 }
 .outline-btn {
     --color: var(--primary);
+    color: var(--primary);
+    text-decoration: none;
+}
+.btn {
+    &::part(native) {
+        padding: 0.5rem 1rem;
+
+        max-height: 45px !important;
+    }
+}
+ion-chip {
+    border-color: var(--primary);
+
+    color: var(--primary) !important;
+}
+.site-title {
+    color: var(--ion-text-color, #121212);
+    text-decoration: none;
 }

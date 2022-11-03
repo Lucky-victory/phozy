@@ -1,1 +1,9 @@
 GET http://localhost:3300/api/photos
+
+
+###
+GET http://localhost:3300/api/photos/search?q=bo
+
+###
+GET http://localhost:3300/api/profile/988e5b2c-bb5e-4351-8809-7cb97bcaad10/albums
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiOTg4ZTViMmMtYmI1ZS00MzUxLTg4MDktN2NiOTdiY2FhZDEwIiwiZnVsbG5hbWUiOiJMdWNreSB2aWN0b3J5IiwidXNlcm5hbWUiOiJkZXB0aF9nYWluZTgxM2QifSwiaWF0IjoxNjY3MTY5NDMyfQ.-479lp7beRab4VqiycYuCFYGwvht2i0RYVSXj0YrQLw

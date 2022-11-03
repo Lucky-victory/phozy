@@ -5,7 +5,7 @@
         </ion-card-header>
         <ion-card-content>
             <ion-text color="danger" class="error-message">{{
-                errorMessage
+                errorMessage$ | async
             }}</ion-text>
             <br />
             <form [formGroup]="signInForm">
@@ -25,7 +25,6 @@
                         Password:</ion-label
                     >
                     <ion-input
-                        border
                         type="{{ isText ? 'text' : 'password' }}"
                         formControlName="password"
                         id="password"
@@ -36,17 +35,18 @@
                         (click)="passwordToText()"
                     ></ion-icon>
                 </ion-item>
-                <br />
-                <ion-text
-                    >Don't have an account yet?
-                    <ion-button
-                        [routerLink]="['/sign-up']"
-                        class="outline-btn"
-                        fill="clear"
-                        >Sign up</ion-button
-                    >
-                </ion-text>
-                <br />
+                <div class="text-wrapper">
+                    <ion-text
+                        >Don't have an account yet?
+                        <a
+                            [routerLink]="['/sign-up']"
+                            class="outline-btn"
+                            (click)="closeModal()"
+                            >Sign up</a
+                        >
+                    </ion-text>
+                </div>
+
                 <ion-button
                     type="submit"
                     class="btn primary-btn"

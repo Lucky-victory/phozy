@@ -6,6 +6,8 @@ import {
     ToastButton,
     ToastController,
     ToastOptions,
+    PopoverController,
+    PopoverOptions,
 } from '@ionic/angular';
 import { saveAs } from 'file-saver';
 import { BehaviorSubject } from 'rxjs';
@@ -24,7 +26,8 @@ export class UtilitiesService {
         private platform: Platform,
         private photoService: PhotoService,
         private modalCtrl: ModalController,
-        private toastCtrl: ToastController
+        private toastCtrl: ToastController,
+        private popoverCtrl: PopoverController
     ) {
         this.isMobile = platform.is('mobile');
     }
@@ -54,6 +57,12 @@ export class UtilitiesService {
         const opts = Object.assign({}, options, defOpts);
         const modal = await this.modalCtrl.create(opts);
         await modal.present();
+    }
+    async showPopover(options: PopoverOptions) {
+        const defOpts = { dismissOnSelect: true };
+        const opts = Object.assign({}, options, defOpts);
+        const popover = await this.popoverCtrl.create(opts);
+        await popover.present();
     }
     async showToast(options: ToastOptions) {
         const defBtn: ToastButton = {

@@ -1,0 +1,12 @@
+<div class="container">
+    <app-cards
+        [photos$]="photos$"
+        [loaded]="isLoaded"
+        [useState]="false"
+        [showOwner]="false"
+        (onLike)="likeOrUnlikePhoto($event)"
+        (onCollect)="addToCollection($event)"
+        (onDownload)="downloadPhoto($event)"
+        [isLoggedIn]="isLoggedIn"
+    ></app-cards>
+</div>

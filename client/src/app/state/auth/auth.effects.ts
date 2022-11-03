@@ -24,7 +24,16 @@ export class AuthEffects {
             switchMap((details) =>
                 this.authService
                     .signIn(details.email_or_username, details.password)
-                    .pipe(map((result) => userAuthSuccess(result)))
+                    .pipe(
+                        map((result) => userAuthSuccess(result)),
+                        catchError((error) => {
+                            return of(
+                                userAuthFailure({
+                                    error: error?.error?.message,
+                                })
+                            );
+                        })
+                    )
             )
         )
     );
@@ -32,9 +41,16 @@ export class AuthEffects {
         this.actions$.pipe(
             ofType(userSignUp),
             switchMap((details) =>
-                this.authService
-                    .signUp(details)
-                    .pipe(map((result) => userAuthSuccess(result)))
+                this.authService.signUp(details).pipe(
+                    map((result) => userAuthSuccess(result)),
+                    catchError((error) => {
+                        return of(
+                            userAuthFailure({
+                                error: error?.error?.message,
+                            })
+                        );
+                    })
+                )
             )
         )
     );

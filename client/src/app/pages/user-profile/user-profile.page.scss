@@ -1,28 +1,47 @@
+.image-wrapper {
+    width: 120px;
+    margin: auto;
+}
 .profile-avatar {
-    width: 150px;
-    height: 150px;
+    object-fit: cover;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     margin: 1rem auto;
+    &::part(image) {
+        border-radius: 50%;
+    }
 }
 .profile-name {
     text-transform: capitalize;
 }
 
-.image-wrapper {
-    width: 150px;
-    margin: auto;
+ion-card-header {
+    margin-bottom: 2rem;
+    text-align: center;
 }
+.tab {
+    &:not(.ios) {
+        --background-hover: var(--primary);
+        --background-focused: var(--primary);
 
-.tab:not(.ios) {
-    --background-hover: var(--primary);
-    --background-focused: var(--primary);
-
-    --background-hover-opacity: 0.04;
-    --color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6);
-    --color-checked: var(--primary, #3880ff);
-    --indicator-box-shadow: none;
-    --indicator-color: var(--primary);
+        --color-checked: var(--primary, #3880ff);
+        --background-hover-opacity: 0.04;
+        --color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6);
+        --indicator-box-shadow: none;
+        --indicator-color: var(--primary);
+    }
+    &.ios {
+        ion-note {
+            color: inherit;
+        }
+    }
 }
 .tabs-container {
     overflow-x: auto;
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+}
+.profile-name {
+    color: var(--ion-text-color, #121212);
 }
