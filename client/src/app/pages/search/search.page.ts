@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { PHOTO_RESULT } from 'src/app/interfaces/photo.interface';
-import { PhotoService } from 'src/app/services/photo/photo.service';
+import { Subscription } from 'rxjs';
 import { AppState } from 'src/app/state/app.state';
 import { photoSearch } from 'src/app/state/photo-search/photo-search.actions';
 import {
@@ -16,11 +14,11 @@ import {
     templateUrl: './search.page.html',
     styleUrls: ['./search.page.scss'],
 })
-export class SearchPage implements OnInit {
+export class SearchPage implements OnInit ,OnDestroy{
     query: string;
-    photos$: Observable<PHOTO_RESULT[]>;
+    photos$ = this.store.select(selectPhotoSearch);
     isLoaded: boolean;
-
+    loadingSub: Subscription;
     constructor(
         private activeRoute: ActivatedRoute,
 
@@ -30,13 +28,15 @@ export class SearchPage implements OnInit {
     ngOnInit() {
         this.query = this.activeRoute.snapshot.paramMap.get('query');
         this.search(this.query);
+        this.store.select(selectPhotoSearchStatus).subscribe((status) => {
+            this.isLoaded = status !== 'pending';
+        });
     }
     search(query: string) {
         this.query = query;
         this.store.dispatch(photoSearch({ query }));
-        this.photos$ = this.store.select(selectPhotoSearch);
-        this.store.select(selectPhotoSearchStatus).subscribe((status) => {
-            this.isLoaded = status === 'complete';
-        });
+    }
+    ngOnDestroy(): void {
+        this.loadingSub?.unsubscribe()
     }
 }
