@@ -12,13 +12,13 @@
                 Upload photo
             </ion-button>
         </ion-item>
+        
+        <ion-button fill="clear"  class="btn outline ion-margin" size="default"  [routerLink]="['/profile',currentUser.username]" >
+            <ion-icon name="person" slot="start"></ion-icon>
+            Profile
+        </ion-button>
         <ion-item lines="none">
-            <ion-buttons>
-
-                <ion-button class="ion-margin-bottom" size="default" class="ion-margin" [routerLink]="['/profile',currentUser.username]">
-                    <ion-icon name="person" slot="start"></ion-icon>
-                    Profile
-                </ion-button>
+                <ion-buttons>
                 <ion-button class="ion-margin" (click)="logout()">
                     <ion-icon name="log-out-outline" slot="start"></ion-icon>
                     Log out

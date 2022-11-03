@@ -4,7 +4,7 @@
             <ion-icon slot="start" name="add"></ion-icon>
             Create Album
         </ion-button>
-        <div class="flex flex-wrap jc-center">
+        <div class="inner-container flex flex-wrap ai-center">
             <ng-container *ngIf="isLoaded === 'complete'; else loading">
                 <app-album-item
                     *ngFor="let album of albums$ | async"
