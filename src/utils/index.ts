@@ -10,9 +10,10 @@ import merge from "just-merge";
 import slugify from "slugify";
 import { Request } from "express";
 
-export const defaultProfileImage =
-  "https://images.pexels.com/photos/3494648/pexels-photo-3494648.jpeg?auto=compress&cs=tinysrgb&w=640&h=854&dpr=2";
+const avatars:string[]=['https://i.pravatar.cc/150?img=3','https://i.pravatar.cc/150?img=10','https://i.pravatar.cc/150?img=41','https://i.pravatar.cc/150?img=58','https://i.pravatar.cc/150?img=67','https://i.pravatar.cc/150?img=41']
+const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
 
+export const defaultProfileImage = randomAvatar;
 export class Utils extends MyUtils {
   constructor() {
     super();

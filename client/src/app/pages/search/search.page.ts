@@ -27,14 +27,17 @@ export class SearchPage implements OnInit ,OnDestroy{
 
     ngOnInit() {
         this.query = this.activeRoute.snapshot.paramMap.get('query');
-        this.search(this.query);
+        this.store.dispatch(photoSearch({
+            query: this.query
+        
+        }));
         this.store.select(selectPhotoSearchStatus).subscribe((status) => {
             this.isLoaded = status !== 'pending';
         });
     }
     search(query: string) {
         this.query = query;
-        this.store.dispatch(photoSearch({ query }));
+        this.store.dispatch(photoSearch({query}))
     }
     ngOnDestroy(): void {
         this.loadingSub?.unsubscribe()

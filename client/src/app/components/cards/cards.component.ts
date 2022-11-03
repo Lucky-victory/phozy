@@ -24,7 +24,7 @@ export class CardsComponent implements OnInit {
     >();
     @Output() onCollect = new EventEmitter<PHOTO_TO_VIEW | PHOTO_RESULT>();
     @Output() onDownload = new EventEmitter<PHOTO_TO_VIEW | PHOTO_RESULT>();
-    @Input() loaded: boolean = true;
+    @Input() loaded: boolean = false;
     @Input() useState: boolean = true;
     @Input() showOwner: boolean = true;
     @Input() showTop: boolean = true;
