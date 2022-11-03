@@ -1,6 +1,12 @@
 <div class="search-bar-wrapper">
-    <form (ngSubmit)="formSubmit()">
+    <ion-buttons slot="start" class="ion-hide-sm-up">
+        <ion-button (click)="toggleInput()">
+            <ion-icon slot="start" name="search"></ion-icon>
+        </ion-button>
+    </ion-buttons>
+    <form (ngSubmit)="formSubmit()" [ngClass]="{ 'ion-hide-sm-down': !show }">
         <ion-searchbar
+            slot="start"
             placeholder="Search for photos e.g nature"
             [autocomplete]="true"
             class="search-bar"

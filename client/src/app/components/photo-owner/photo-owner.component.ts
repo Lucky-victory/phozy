@@ -13,6 +13,7 @@ import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 })
 export class PhotoOwnerComponent implements OnInit {
     @Input() photo: PHOTO_TO_VIEW;
+    @Input() color: string = '#fff';
     constructor() {}
 
     ngOnInit() {}

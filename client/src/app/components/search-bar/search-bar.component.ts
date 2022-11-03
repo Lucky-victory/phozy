@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import {
     IonicModule,
     NavController,
+    Platform,
     SearchbarCustomEvent,
 } from '@ionic/angular';
 
@@ -19,7 +20,11 @@ export class SearchBarComponent implements OnInit {
     @Input() canNavigate: boolean = true;
     @Output() onSubmit = new EventEmitter<string>();
     @Output() onSearch = new EventEmitter<string>();
-    constructor(private navCtrl: NavController) {}
+    isMobile: boolean;
+    show: boolean = false;
+    constructor(private navCtrl: NavController, private platform: Platform) {
+        this.isMobile = platform.is('mobile');
+    }
 
     ngOnInit() {}
     onSearchChange(event) {
@@ -30,9 +35,13 @@ export class SearchBarComponent implements OnInit {
         }
     }
     formSubmit() {
+        if (this.query === '') return;
         if (this.canNavigate) {
             this.navCtrl.navigateForward(`/search/${this.query}`);
         }
         this.onSubmit.emit(this.query);
+    }
+    toggleInput() {
+        this.show = !this.show;
     }
 }

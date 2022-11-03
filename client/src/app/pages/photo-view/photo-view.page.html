@@ -11,7 +11,11 @@
         <ng-container *ngIf="isLoaded;else loading ">
             <div class="photo-view-wrapper">
                 <div class="photo-view-top">
-                    <app-photo-owner [photo]="photo" class="ion-hide-sm-down">
+                    <app-photo-owner
+                        color="currentColor"
+                        [photo]="photo"
+                        class="ion-hide-sm-down"
+                    >
                     </app-photo-owner>
 
                     <div class="btns-wrapper">
@@ -64,18 +68,33 @@
                 <div class="photo-wrapper">
                     <ion-img [src]="photo?.url" class="photo"></ion-img>
                 </div>
-                <div class="photo-tags-container" *ngIf="photo?.tags?.length">
-                    Tags:
-                    <ion-chip
-                        color="secondary"
-                        outline="true"
-                        *ngFor="let tag of photo?.tags"
-                        [routerLink]="['/search',tag]"
+                <div class="flex ion-wrap">
+                    <div
+                        class="photo-tags-container"
+                        *ngIf="photo?.tags?.length"
                     >
-                        <ion-label>{{tag}}</ion-label>
-                    </ion-chip>
+                        Tags:
+                        <ion-chip
+                            color="secondary"
+                            outline="true"
+                            *ngFor="let tag of photo?.tags"
+                            [routerLink]="['/search',tag]"
+                        >
+                            <ion-label>{{tag}}</ion-label>
+                        </ion-chip>
+                    </div>
+                    <share-buttons
+                        [include]="['copy', 'facebook', 'linkedin', 'pinterest','twitter', 'whatsapp']"
+                        [showIcon]="true"
+                        [showText]="false"
+                        theme="circles-dark"
+                    ></share-buttons>
                 </div>
-                <app-photo-owner [photo]="photo" class="ion-hide-sm-up">
+                <app-photo-owner
+                    [photo]="photo"
+                    class="ion-hide-sm-up"
+                    color="currentColor"
+                >
                 </app-photo-owner>
             </div>
         </ng-container>

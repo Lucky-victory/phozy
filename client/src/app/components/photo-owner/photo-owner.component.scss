@@ -6,10 +6,10 @@
     display: flex;
     align-items: center;
     flex: 1 0 auto;
-    color: var(--text-color, #fff) !important;
     letter-spacing: 1px;
     font-weight: 600 !important;
     text-decoration: none;
+    color: inherit;
     color: inherit;
     font-size: 1rem;
     text-transform: capitalize;
@@ -31,5 +31,8 @@ ion-avatar {
             margin-right: 0.5rem;
             flex-shrink: 0;
         }
+    }
+    .photo-owner {
+        color: var(--text-color, #121212) !important;
     }
 }

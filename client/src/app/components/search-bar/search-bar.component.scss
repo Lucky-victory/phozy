@@ -1,9 +1,12 @@
 .search-bar {
     // flex: 1 1 0;
-    // width: 50%;
+    width: 100%;
+    // position: absolute;
 }
 .search-bar-wrapper {
-    // display: flex;
-    // width: auto;
+    display: flex;
+    align-items: center;
     flex: 1 1 auto;
+    position: relative;
+    z-index: 5;
 }

@@ -23,7 +23,7 @@ import { SearchBarComponent } from 'src/app/components/search-bar/search-bar.com
         HomePageRoutingModule,
         CardsComponent,
         AlbumListComponent,
-SearchBarComponent,
+        SearchBarComponent,
         BannerComponent,
 
         SignInFormComponent,

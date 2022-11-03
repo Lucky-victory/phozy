@@ -1,34 +1,44 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title><a class="site-title" routerLink="/"> Phozy </a> </ion-title>
-        <ng-container *ngIf="photos$;else noResults">
-            <app-search-bar
-                (onSubmit)="search($event)"
-                (onSearch)="search($event)"
-                [query]="query"
-                [canNavigate]="false"
-            ></app-search-bar>
-        </ng-container>
+        <ion-title slot="start"
+            ><a class="site-title" routerLink="/"> Phozy </a>
+        </ion-title>
+
+        <app-search-bar
+            (onSubmit)="search($event)"
+            (onSearch)="search($event)"
+            [query]="query"
+            [canNavigate]="false"
+        ></app-search-bar>
     </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-    <h2>
+<ion-content>
+    <h2 class="ion-padding">
         You search for:
 
         <ion-note style="font-size: inherit"> {{query}} </ion-note>
     </h2>
-    <app-cards
-        [photos$]="photos$"
-        [loaded]="isLoaded"
-        [showOwner]="false"
-        [useState]="false"
-        [showTop]="false"
-    ></app-cards>
+    <ng-container *ngIf="photos$|async as photos">
+        <ng-container *ngIf="photos.length;else noResults">
+            <app-cards
+                [photos$]="photos$"
+                [loaded]="isLoaded"
+                [showOwner]="false"
+                [useState]="false"
+                [showTop]="false"
+            ></app-cards>
+        </ng-container>
+    </ng-container>
 </ion-content>
 <ng-template #noResults>
-    <h2>
-        No results found for:
-        <ion-note style="font-size: inherit"> {{query}} </ion-note>
-    </h2>
+    <div
+        class="ion-padding ion-margin ion-text-center"
+        [ngClass]="{'ion-hide':!isLoaded}"
+    >
+        <h2>
+            No results found for:
+            <ion-note style="font-size: inherit"> {{query}} </ion-note>
+        </h2>
+    </div>
 </ng-template>
