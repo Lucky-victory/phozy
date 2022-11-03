@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, retry, delay, map } from 'rxjs/operators';
 import {
+    PHOTO_RESULT,
     PHOTO_TO_VIEW,
     QUERY_RESPONSE,
 } from 'src/app/interfaces/photo.interface';
@@ -26,11 +27,14 @@ export class PhotoService extends ApiService {
                 catchError(this.errorHandler)
             );
     }
-    search$(query:string) {
+    search$(query: string, page = 1, perPage = 10) {
         return this.http
-            .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(`${this.apiBaseUrl}/photos/search`, {
-                params: { q:query},
-            })
+            .get<QUERY_RESPONSE<PHOTO_RESULT[]>>(
+                `${this.apiBaseUrl}/photos/search`,
+                {
+                    params: { q: query, page, perPage },
+                }
+            )
             .pipe(
                 retry(this.retryCount),
                 delay(this.retryDelay),
@@ -40,7 +44,7 @@ export class PhotoService extends ApiService {
     }
     getPhotosByUser$(username: string) {
         return this.http
-            .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(
+            .get<QUERY_RESPONSE<PHOTO_RESULT[]>>(
                 `${this.apiBaseUrl}/profile/${username}/photos`
             )
             .pipe(

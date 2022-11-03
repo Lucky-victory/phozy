@@ -20,6 +20,7 @@ import { AlbumEffects } from './state/album/album.effects';
 import { AuthEffects } from './state/auth/auth.effects';
 import { PhotosByUserEffects } from './state/photos-by-user/photos-by-user.effects';
 import { AlbumsByUserEffects } from './state/albums-by-user/albums-by-user.effects';
+import { PhotoSearchEffects } from './state/photo-search/photo-search.effects';
 
 @NgModule({
     declarations: [AppComponent],
@@ -32,7 +33,11 @@ import { AlbumsByUserEffects } from './state/albums-by-user/albums-by-user.effec
         StoreModule.forRoot(reducers, { metaReducers }),
         !environment.production ? StoreDevtoolsModule.instrument() : [],
         EffectsModule.forRoot([PhotoEffects, AlbumEffects, AuthEffects]),
-        EffectsModule.forFeature([PhotosByUserEffects, AlbumsByUserEffects]),
+        EffectsModule.forFeature([
+            PhotosByUserEffects,
+            AlbumsByUserEffects,
+            PhotoSearchEffects,
+        ]),
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

@@ -6,7 +6,8 @@
             class="search-bar"
             (ionChange)="onSearchChange($event)"
             [debounce]="250"
-            [value]="query"
+            [ngModel]="query"
+            name="search"
         ></ion-searchbar>
     </form>
 </div>

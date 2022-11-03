@@ -74,7 +74,7 @@ export class HomePage implements OnInit, OnDestroy {
         this.loadingSub = this.store
             .select(selectPhotosStatus)
             .subscribe((status) => {
-                this.isLoaded = status === 'complete';
+                this.isLoaded = status !== 'pending';
             });
         this.loginSub = this.store
             .select(selectIsLoggedIn)
@@ -82,14 +82,14 @@ export class HomePage implements OnInit, OnDestroy {
                 this.isLoggedIn = isLoggedIn;
             });
     }
-    onRefresh() {
+    private onRefresh() {
         this.isLoaded = false;
         this.store.dispatch(loadPhotos());
         this.loadingSub.unsubscribe();
         this.loadingSub = this.store
             .select(selectPhotosStatus)
             .subscribe((status) => {
-                this.isLoaded = status === 'complete';
+                this.isLoaded = status !== 'pending';
             });
     }
 

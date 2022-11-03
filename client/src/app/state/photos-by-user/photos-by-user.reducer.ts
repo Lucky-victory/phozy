@@ -17,14 +17,14 @@ export interface PhotosByUserState {
     error: string;
 }
 
-export const initialPhotosByUserState: PhotosByUserState = {
+export const initialState: PhotosByUserState = {
     photos: [],
     status: 'pending',
     is_at_end: false,
     error: null,
 };
 export const photosByUserReducer = createReducer(
-    initialPhotosByUserState,
+    initialState,
     on(likePhoto, (state, action) => ({
         ...state,
 

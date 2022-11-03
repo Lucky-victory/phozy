@@ -20,9 +20,10 @@
     </h2>
     <app-cards
         [photos$]="photos$"
-        [loaded]="true"
+        [loaded]="isLoaded"
         [showOwner]="false"
         [useState]="false"
+        [showTop]="false"
     ></app-cards>
 </ion-content>
 <ng-template #noResults>

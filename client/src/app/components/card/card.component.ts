@@ -30,6 +30,7 @@ export class CardComponent implements OnInit {
     @Input() isLoggedIn: boolean;
     @Input() showOwner: boolean = true;
     @Input() useState:boolean=true;
+    @Input() showTop:boolean=true;
     constructor(private utilsService: UtilitiesService) {}
 
     ngOnInit(photo = this.photo) {

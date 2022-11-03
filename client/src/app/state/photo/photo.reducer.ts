@@ -12,7 +12,6 @@ import {
     loadOnePhoto,
     loadOnePhotoSuccess,
     photosLoadFailure,
-    
 } from './photo.actions';
 
 export const photoFeatureKey = 'photo';
@@ -71,7 +70,7 @@ export const photoReducer = createReducer(
         ],
     })),
 
-    on(loadPaginatedPhotos, (state) => ({ ...state })),
+    on(loadPaginatedPhotos, (state) => ({ ...state, status: 'loading' })),
     on(loadPaginatedPhotosSuccess, (state, { photos }) => {
         return {
             ...state,

@@ -1,6 +1,8 @@
 GET http://localhost:3300/api/photos
+
+
 ###
-GET http://localhost:3300/api/photos/search?q=boa
+GET http://localhost:3300/api/photos/search?q=bo
 
 ###
 GET http://localhost:3300/api/profile/988e5b2c-bb5e-4351-8809-7cb97bcaad10/albums

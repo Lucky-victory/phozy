@@ -27,6 +27,7 @@ export class CardsComponent implements OnInit {
     @Input() loaded: boolean = true;
     @Input() useState: boolean = true;
     @Input() showOwner: boolean = true;
+    @Input() showTop: boolean = true;
 
     skeletons = new Array(10).map((_, i) => i);
     constructor() {}

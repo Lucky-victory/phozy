@@ -426,6 +426,14 @@ export default class PhotosController {
       page = +page;
       const offset = (page - 1) * perPage;
 
+      const cachedData = photoCache.get(`photos_${q}_${page}`);
+      if (cachedData) {
+        res.status(200).json({
+          message: "search results recieved successfully from cache",
+          data: cachedData,
+        });
+        return;
+      }
       // get the total records and use it restrict the offset.
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -456,7 +464,7 @@ export default class PhotosController {
           },
         ],
       });
-
+      photoCache.set(`photos_${q}_${page}`, response.data, CACHE_TIME);
       res.status(200).json({
         message: "search results recieved",
         data: response.data,
@@ -473,7 +481,7 @@ export default class PhotosController {
    */
   private static async getOwner(
     userId: string,
-    columns = ["username", "fullname", "profile_image", "id"]
+    columns = ["username", "fullname", "profile_image", "id", "socials"]
   ) {
     try {
       const response = await usersModel.findOne<USER_RESULT>(
