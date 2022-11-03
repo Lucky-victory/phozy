@@ -41,7 +41,10 @@
     align-items: flex-end;
 }
 .jc-center {
-    align-items: center;
+    justify-content: center;
+}
+.jc-sb {
+    justify-content: space-between;
 }
 .jc-end {
     justify-content: flex-end;
