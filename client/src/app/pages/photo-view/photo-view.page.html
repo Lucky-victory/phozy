@@ -68,7 +68,7 @@
                 <div class="photo-wrapper">
                     <ion-img [src]="photo?.url" class="photo"></ion-img>
                 </div>
-                <div class="flex ion-wrap jc-sb">
+                <div class="flex ion-wrap jc-sb ion-margin-bottom">
                     <div
                         class="photo-tags-container"
                         *ngIf="photo?.tags?.length"
@@ -84,6 +84,7 @@
                         </ion-chip>
                     </div>
                     <share-buttons
+                    [url]="shareUrl"
                         [include]="['copy', 'facebook', 'linkedin', 'pinterest','twitter', 'whatsapp']"
                         [showIcon]="true"
                         [showText]="false"

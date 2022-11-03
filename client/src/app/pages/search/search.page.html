@@ -4,18 +4,18 @@
             ><a class="site-title" routerLink="/"> Phozy </a>
         </ion-title>
 
+    </ion-toolbar>
         <app-search-bar
             (onSubmit)="search($event)"
             (onSearch)="search($event)"
             [query]="query"
             [canNavigate]="false"
         ></app-search-bar>
-    </ion-toolbar>
 </ion-header>
 
 <ion-content>
     <h2 class="ion-padding">
-        You search for:
+        Showing results for:
 
         <ion-note style="font-size: inherit"> {{query}} </ion-note>
     </h2>

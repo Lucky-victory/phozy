@@ -3,7 +3,6 @@
         <ion-title slot="start" [ngClass]="{'ion-hide':isIos}"
             ><a class="site-title" routerLink="/"> Phozy </a>
         </ion-title>
-        <app-search-bar></app-search-bar>
         <ion-buttons slot="end" *ngIf="!isLoggedIn">
             <ion-button class="btn primary-btn" [routerLink]="['/sign-up']"
                 >Join</ion-button
@@ -16,10 +15,11 @@
                 </ion-avatar>
                 <ion-label [ngClass]="{'ion-hide':isMobile}"
                     >{{user.fullname}}</ion-label
-                >
-            </ion-chip>
-        </ng-container>
-    </ion-toolbar>
+                    >
+                </ion-chip>
+            </ng-container>
+        </ion-toolbar>
+        <app-search-bar></app-search-bar>
 </ion-header>
 <ion-content [fullscreen]="true">
     <app-banner [loaded]="isLoaded"></app-banner>

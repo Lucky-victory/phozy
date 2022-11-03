@@ -38,6 +38,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
     likesCount: number = 0;
     user: USER_RESULT;
     userSub: Subscription;
+    shareUrl:string=''
     constructor(
         private router: Router,
 
@@ -68,10 +69,13 @@ export class PhotoViewPage implements OnInit, OnDestroy {
         });
         this.isLiked = this.photo?.is_liked;
         this.likesCount = this.photo?.likes?.count;
+        this.generateShareUrl(this.photo?.id);
+        
         /**
          * if the photo object is not in router state,e.g when the url is shared,  then query the database for it,
          */
         if (!this.photo) {
+            
             const id = this.activeRoute.snapshot.paramMap.get('id');
             
 
@@ -81,6 +85,7 @@ export class PhotoViewPage implements OnInit, OnDestroy {
                     this.isLiked = photo?.is_liked;
                     this.likesCount = photo?.likes?.count;
                     this.isLoaded = true;
+                    this.generateShareUrl(photo.id)
                 },
                 (error) => {
                     if (error.status === 404) {
@@ -92,7 +97,10 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             );
         }
     }
-
+    private generateShareUrl(path: string) {
+        const baseUrl = window.location.origin;
+        this.shareUrl = `${baseUrl}/photo/${path}`;
+}
     addToCollection(photo: PHOTO_TO_VIEW) {
         if (!this.isLoggedIn) {
             this.showModal();
