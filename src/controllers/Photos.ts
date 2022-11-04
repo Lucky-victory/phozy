@@ -14,14 +14,14 @@ import { photosModel } from "../models/Photos";
 import { usersModel } from "../models/Users";
 import CacheManager from "../utils/cache-manager";
 const photoCache = new CacheManager();
-const CACHE_TIME = 2000;
+const CACHE_TIME = 120;
 
 export default class PhotosController {
   static async getAll(req: Request, res: Response) {
     try {
       let {
         page = 1,
-        perPage = 10,
+        perPage = 12,
         sort = "desc",
         orderby = "created_at",
       } = req.query;

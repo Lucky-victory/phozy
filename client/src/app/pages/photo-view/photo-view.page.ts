@@ -107,12 +107,12 @@ export class PhotoViewPage implements OnInit, OnDestroy {
             return;
         }
         this.store.dispatch(loadAlbums({ username: this.user.username }));
-        const albums$ = this.store.select(selectAllAlbums);
+        
         this.utilsService.showModal({
             component: AlbumListComponent,
             componentProps: {
                 photo: photo,
-                albums$,
+                
             },
         });
     }

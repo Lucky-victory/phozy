@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { ALBUM_RESULT } from 'src/app/interfaces/album.interface';
 import { PHOTO_TO_VIEW } from 'src/app/interfaces/photo.interface';
 import { collectPhoto } from 'src/app/state/album/album.actions';
-import { selectAlbumsStatus } from 'src/app/state/album/album.selectors';
+import { selectAlbumsStatus,selectAllAlbums } from 'src/app/state/album/album.selectors';
 import { AppState, STATE_STATUS } from 'src/app/state/app.state';
 
 import { AlbumItemComponent } from '../album-item/album-item.component';
@@ -20,7 +20,7 @@ import { AlbumItemComponent } from '../album-item/album-item.component';
     imports: [CommonModule, IonicModule, AlbumItemComponent, RouterModule],
 })
 export class AlbumListComponent implements OnInit {
-    @Input() albums$!: Observable<ALBUM_RESULT[]>;
+    @Input() albums$ = this.store.select(selectAllAlbums);
     @Input() photo: PHOTO_TO_VIEW;
     @Input() isLoaded$: Observable<STATE_STATUS>;
     skeletons = new Array(3).map((_, i) => i);
