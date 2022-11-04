@@ -3,8 +3,6 @@ import { Config } from "./interfaces/common";
 import { Utils } from "./utils";
 
 if (process.env.NODE_ENV !== "production") {
-  console.log("dev env");
-  
   dotenv.config({
     path: ".env",
   });
@@ -25,7 +23,7 @@ if (
   Utils.isEmpty(JWT_SECRET_KEY) ||
   Utils.isEmpty(CLOUDINARY_URL)
 ) {
- // throw new Er"DB_HOST,DB_PASS,DB_USER, JWT_SECRET_KEY, and CLOUDINARY_URL are required ");
+  // throw new Er"DB_HOST,DB_PASS,DB_USER, JWT_SECRET_KEY, and CLOUDINARY_URL are required ");
 }
 const config: Config = {
   db_host: DB_HOST as string,

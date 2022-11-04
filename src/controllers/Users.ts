@@ -15,7 +15,7 @@ import PhotosController, { DEFAULT_PHOTO_FIELDS } from "./Photos";
 import { DEFAULT_ALBUM_FIELDS } from "./Albums";
 import { ALBUM_RESULT } from "../interfaces/Albums";
 const userCache = new CacheManager();
-const CACHE_TIME = 2000;
+const CACHE_TIME = 120;
 export default class UsersController {
   /**
    * Login an existing user
