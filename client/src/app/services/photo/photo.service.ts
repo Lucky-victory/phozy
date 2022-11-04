@@ -15,7 +15,7 @@ export class PhotoService extends ApiService {
     constructor(http: HttpClient) {
         super(http);
     }
-    getAll$(page: number = 1, perPage = 10) {
+    getAll$(page: number = 1, perPage = 12) {
         return this.http
             .get<QUERY_RESPONSE<PHOTO_TO_VIEW[]>>(`${this.apiBaseUrl}/photos`, {
                 params: { page, perPage },
@@ -27,7 +27,7 @@ export class PhotoService extends ApiService {
                 catchError(this.errorHandler)
             );
     }
-    search$(query: string, page = 1, perPage = 10) {
+    search$(query: string, page = 1, perPage = 12) {
         return this.http
             .get<QUERY_RESPONSE<PHOTO_RESULT[]>>(
                 `${this.apiBaseUrl}/photos/search`,

@@ -34,7 +34,8 @@ export class SearchBarComponent implements OnInit {
             this.onSearch.emit(this.query);
         }
     }
-    formSubmit() {
+    formSubmit(event: Event) {
+        event.preventDefault();
         if (this.query === '') return;
         if (this.canNavigate) {
             this.navCtrl.navigateForward(`/search/${this.query}`);
