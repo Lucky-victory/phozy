@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { Config } from "./interfaces/common";
 import { Utils } from "./utils";
-
+dotenv.config();
 // if (process.env.NODE_ENV !== "production") {
 //   dotenv.config({
 //     path: ".env",
