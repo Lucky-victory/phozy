@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 import { Config } from "./interfaces/common";
 import { Utils } from "./utils";
 
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config({
-    path: ".env",
-  });
-}
+// if (process.env.NODE_ENV !== "production") {
+//   dotenv.config({
+//     path: ".env",
+//   });
+// }
 
 const {
   DB_HOST,
