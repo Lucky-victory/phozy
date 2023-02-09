@@ -31,7 +31,7 @@ const config: Config = {
   db_user: DB_USER as string,
   jwt_secret_key: JWT_SECRET_KEY as string,
   jwt_expiration: JWT_EXPIRATION,
-  cloudinary_url: CLOUDINARY_URL as string,allowed_origin:ALLOWED_ORIGIN
+  cloudinary_url: CLOUDINARY_URL as string,allowed_origin:ALLOWED_ORIGIN as string
 };
 
 export default config;

@@ -9,7 +9,7 @@ export interface Config {
   db_user: string;
   jwt_secret_key: string;
   jwt_expiration?: string;
-  cloudinary_url: string;
+  cloudinary_url: string;allowed_origin?:string
 }
 
 declare global {
