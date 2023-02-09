@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/app.ts",
     "db:init": "ts-node src/config/init.ts",
-    "postinstall": "cd client && npm i && npm run build && cd ..",
+    "postinstall": "cd client && npm install && npm run build && cd ..",
     "start": "npm run build && node dist/app.js",
     "build": "npx tsc",
     "lint": "eslint ./src/**/** --fix"
