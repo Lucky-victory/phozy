@@ -37,17 +37,17 @@ app.use(`${prefix}/profile`, usersRoute);
 
 // app.use(`${prefix}`, generalRoute);
 
-app.use(express.static(path.join(__dirname, "public/")));
-app.use(express.static(__dirname + "public/"));
+// app.use(express.static(path.join(__dirname, "public/")));
+// app.use(express.static(__dirname + "public/"));
 
 app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("PHOZY API 1.0");
 });
-app.get("*", (req: Request, res: Response) => {
+// app.get("*", (req: Request, res: Response) => {
 
-  const indexPath="public/index.html"
-  res.sendFile(path.join(__dirname,indexPath ));
-});
+//  const indexPath="public/index.html"
+//  res.sendFile(path.join(__dirname,indexPath ));
+// });
 // app.use((req: Request, res: Response, next: NextFunction) => {
 //   next(createError(404));
 // });
