@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiBaseUrl: '/api',
+    apiBaseUrl: 'https://phozy.up.railway.app/api',
 };
