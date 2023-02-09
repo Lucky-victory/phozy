@@ -13,9 +13,12 @@ import { errorHandler } from "./middlewares/Error-handler";
 import cors from "cors";
 import createError from "http-errors";
 import path from "path";
+import envConfig from "./env-config";
 
 // global middlewares
-app.use(cors());
+app.use(cors({
+   origin:envConfig.allowed_origin
+}));
 app.use(
   express.urlencoded({
     extended: true,
