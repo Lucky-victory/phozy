@@ -7,4 +7,4 @@ A Photo sharing App built with
 - HarperDB.
 
 
-Live URL: [phozy.app](https://phozy.up.railway.app)
+Live URL: [phozy.app](https://phozy.vercel.app)
